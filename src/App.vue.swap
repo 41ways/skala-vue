@@ -1,0 +1,34 @@
+<script setup>
+// 실습 컴포넌트를 하나씩 갈아 끼우면서 확인하는 구조
+//import SampleOne from './components/practices/basic/SampleOne.vue'
+//import SampleTwo from './components/practices/basic/SampleTwo.vue'
+//import VHtmlBasic from './components/practices/directive/VHtmlBasic.vue'
+//import VHtmlXss from './components/practices/directive/VHtmlXss.vue'
+//import VTextBasic from './components/practices/directive/VTextBasic.vue'
+//import VBindBasic from './components/practices/directive/VBindBasic.vue'
+//import VBindClass from './components/practices/directive/VBindClass.vue'
+//import VBindStyle from './components/practices/directive/VBindStyle.vue'
+//import VBindShorthand from './components/practices/directive/VBindShorthand.vue'
+//import VIfBasic from './components/practices/directive/VIfBasic.vue'
+//import VShowBasic from './components/practices/directive/VShowBasic.vue'
+//import VForBasic from './components/practices/directive/VForBasic.vue'
+//import VPreBasic from './components/practices/directive/VPreBasic.vue'
+//import VCloakBasic from './components/practices/directive/VCloakBasic.vue'
+//import VOnceBasic from './components/practices/directive/VOnceBasic.vue'
+//import VMemoBasic from './components/practices/directive/VMemoBasic.vue'
+//import EventBasic from './components/practices/event/EventBasic.vue'
+//import EventObject from './components/practices/event/EventObject.vue'
+//import EventModifier from './components/practices/event/EventModifier.vue'
+//import ModelBasic from './components/practices/form/ModelBasic.vue'
+//import ModelForm from './components/practices/form/ModelForm.vue'
+//import ModelModifier from './components/practices/form/ModelModifier.vue'
+//import StyleScoped from './components/practices/style/StyleScoped.vue'
+//import FormSubmit from './components/practices/form/FormSubmit.vue'
+import WeatherMockup from './components/exercise/WeatherMockup.vue'
+</script>
+
+<template>
+  <div style="padding: 20px">
+    <WeatherMockup />
+  </div>
+</template>
