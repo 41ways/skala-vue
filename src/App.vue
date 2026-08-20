@@ -2,6 +2,7 @@
 // 과제
 import WeatherMockup from './components/exercise/WeatherMockup.vue'
 import WeatherComposition from './components/exercise/WeatherComposition.vue'
+import WeatherParent from './components/exercise/WeatherParent.vue'
 
 // 1. 학습환경 구성
 import SampleOne from './components/practices/basic/SampleOne.vue'
@@ -79,6 +80,11 @@ import StoreCounter from './components/practices/library/StoreCounter.vue'
     <section class="chapter">
       <h2>과제 2: 날씨 컴포지션</h2>
       <WeatherComposition />
+    </section>
+
+    <section class="chapter">
+      <h2>과제 3: 날씨 컴포넌트 분리</h2>
+      <WeatherParent />
     </section>
 
     <section class="chapter">
