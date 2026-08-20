@@ -1,6 +1,7 @@
 <script setup>
 // 과제
 import WeatherMockup from './components/exercise/WeatherMockup.vue'
+import WeatherComposition from './components/exercise/WeatherComposition.vue'
 
 // 1. 학습환경 구성
 import SampleOne from './components/practices/basic/SampleOne.vue'
@@ -35,6 +36,32 @@ import FormSubmit from './components/practices/form/FormSubmit.vue'
 
 // 5. Vue Style Handling
 import StyleScoped from './components/practices/style/StyleScoped.vue'
+
+// 6. Reactive State
+import ReactiveRef from './components/practices/composition/ReactiveRef.vue'
+import ReactiveReactive from './components/practices/composition/ReactiveReactive.vue'
+
+// 7. Computed & Watchers
+import ComputedBasic from './components/practices/composition/ComputedBasic.vue'
+import WatchersBasic from './components/practices/composition/WatchersBasic.vue'
+import WatchersMulti from './components/practices/composition/WatchersMulti.vue'
+import WatchersDeep from './components/practices/composition/WatchersDeep.vue'
+import WatchersReactive from './components/practices/composition/WatchersReactive.vue'
+import WatchersWatchEffect from './components/practices/composition/WatchersWatchEffect.vue'
+
+// 8. Component Lifecycle
+import LifecycleParent from './components/practices/component/LifecycleParent.vue'
+
+// 9. Props & Emits
+import PropsEmitsParent from './components/practices/component/PropsEmitsParent.vue'
+
+// 10. Component Slot
+import SlotDefaultParent from './components/practices/component/SlotDefaultParent.vue'
+import SlotNamedParent from './components/practices/component/SlotNamedParent.vue'
+import SlotScopedParent from './components/practices/component/SlotScopedParent.vue'
+
+// 11. Pinia Store
+import StoreCounter from './components/practices/library/StoreCounter.vue'
 </script>
 
 <template>
@@ -45,8 +72,13 @@ import StyleScoped from './components/practices/style/StyleScoped.vue'
     </header>
 
     <section class="chapter">
-      <h2>과제</h2>
+      <h2>과제 1: 날씨 목업</h2>
       <WeatherMockup />
+    </section>
+
+    <section class="chapter">
+      <h2>과제 2: 날씨 컴포지션</h2>
+      <WeatherComposition />
     </section>
 
     <section class="chapter">
@@ -91,6 +123,44 @@ import StyleScoped from './components/practices/style/StyleScoped.vue'
     <section class="chapter">
       <h2>5. Vue Style Handling</h2>
       <StyleScoped />
+    </section>
+
+    <section class="chapter">
+      <h2>6. Reactive State</h2>
+      <ReactiveRef />
+      <ReactiveReactive />
+    </section>
+
+    <section class="chapter">
+      <h2>7. Computed &amp; Watchers</h2>
+      <ComputedBasic />
+      <WatchersBasic />
+      <WatchersMulti />
+      <WatchersDeep />
+      <WatchersReactive />
+      <WatchersWatchEffect />
+    </section>
+
+    <section class="chapter">
+      <h2>8. Component Lifecycle</h2>
+      <LifecycleParent />
+    </section>
+
+    <section class="chapter">
+      <h2>9. Props &amp; Emits</h2>
+      <PropsEmitsParent />
+    </section>
+
+    <section class="chapter">
+      <h2>10. Component Slot</h2>
+      <SlotDefaultParent />
+      <SlotNamedParent />
+      <SlotScopedParent />
+    </section>
+
+    <section class="chapter">
+      <h2>11. Pinia Store</h2>
+      <StoreCounter />
     </section>
   </div>
 </template>
