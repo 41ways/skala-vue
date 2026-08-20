@@ -2,16 +2,18 @@
 import { ref } from 'vue'
 
 const weatherList = ref([
-  { id: 'city_01', name: '서울', temp: 28, status: '맑음' },
-  { id: 'city_02', name: '수원', temp: 23, status: '비' },
-  { id: 'city_03', name: '부산', temp: 26, status: '구름' },
+  { id: 'city_01', name: '서울', temp: 28, status: '맑음', humidity: 62, wind: 2.4 },
+  { id: 'city_02', name: '수원', temp: 23, status: '비', humidity: 88, wind: 3.1 },
+  { id: 'city_03', name: '부산', temp: 26, status: '구름', humidity: 74, wind: 4.7 },
+  { id: 'city_04', name: '광주', temp: 30, status: '맑음', humidity: 55, wind: 1.8 },
+  { id: 'city_05', name: '강릉', temp: 19, status: '흐림', humidity: 70, wind: 5.2 },
+  { id: 'city_06', name: '제주', temp: 24, status: '바람', humidity: 81, wind: 7.3 },
 ])
 
 const keyword = ref('')
 const statusBar = ref('카드를 클릭하거나 검색해 보세요.')
 const selected = ref('')
 
-// v-model 대신 직접 받는 이유는 README에 정리
 const onInput = (e) => {
   keyword.value = e.target.value
 }
@@ -21,12 +23,34 @@ const selectCity = (cityName) => {
   statusBar.value = `${cityName}이 선택되었습니다.`
 }
 
-const showDetail = (cityName, status) => {
-  window.alert(`${cityName}의 현재 날씨는 [${status}] 상태입니다.`)
+const humidityText = (h) => {
+  if (h >= 80) return '매우 습함'
+  if (h >= 70) return '습함'
+  if (h >= 60) return '적당함'
+  return '쾌적'
 }
 
-// 기온이 색을 정한다. 25도를 경계로 따뜻한 쪽과 서늘한 쪽
-const tempColor = (temp) => (temp >= 25 ? '#c85a3c' : '#3b7d9e')
+const windText = (w) => {
+  if (w >= 7) return '매우 강한 바람'
+  if (w >= 4.5) return '강한 바람'
+  if (w >= 3) return '약한 바람'
+  return '아주 약한 바람'
+}
+
+const showDetail = (city) => {
+  window.alert(
+    `${city.name}의 현재 날씨는 [${city.status}] 상태입니다.\n` +
+      `습도 ${city.humidity}% (${humidityText(city.humidity)})\n` +
+      `바람 ${city.wind}m/s (${windText(city.wind)})`,
+  )
+}
+
+const level = (temp) => {
+  if (temp >= 28) return 'hot'
+  if (temp >= 25) return 'warm'
+  if (temp >= 20) return 'mild'
+  return 'cold'
+}
 </script>
 
 <template>
@@ -47,20 +71,24 @@ const tempColor = (temp) => (temp >= 25 ? '#c85a3c' : '#3b7d9e')
         v-for="city in weatherList.filter((c) => c.name.includes(keyword))"
         :key="city.id"
         class="card"
-        :class="{ on: selected === city.name }"
-        :style="{ borderLeftColor: tempColor(city.temp) }"
+        :class="[level(city.temp), { on: selected === city.name }]"
         @click="selectCity(city.name)"
       >
         <div class="left">
           <p class="name">{{ city.name }}</p>
           <p class="status">{{ city.status }}</p>
-          <span v-if="city.temp >= 25" class="tag hot">더움 25도 이상</span>
-          <span v-else class="tag cool">선선함 25도 미만</span>
+
+          <span v-if="city.temp >= 28" class="tag">무더움 28도 이상</span>
+          <span v-else-if="city.temp >= 25" class="tag">더움 25도 이상</span>
+          <span v-else-if="city.temp >= 20" class="tag">선선함 20도 이상</span>
+          <span v-else class="tag">쌀쌀함 20도 미만</span>
+
+          <p class="detail">습도 {{ city.humidity }}% · 바람 {{ city.wind }}m/s</p>
         </div>
 
         <div class="right">
-          <p class="temp" :style="{ color: tempColor(city.temp) }">{{ city.temp }}<sup>°</sup></p>
-          <button @click.stop="showDetail(city.name, city.status)">상세보기</button>
+          <p class="temp">{{ city.temp }}<sup>°</sup></p>
+          <button @click.stop="showDetail(city)">상세보기</button>
         </div>
       </article>
 
@@ -79,7 +107,6 @@ const tempColor = (temp) => (temp >= 25 ? '#c85a3c' : '#3b7d9e')
   color: #22303a;
 }
 
-/* 검색 */
 .search {
   display: flex;
   align-items: baseline;
@@ -113,7 +140,6 @@ const tempColor = (temp) => (temp >= 25 ? '#c85a3c' : '#3b7d9e')
   text-align: right;
 }
 
-/* 목록 */
 .list {
   display: flex;
   flex-direction: column;
@@ -139,10 +165,50 @@ const tempColor = (temp) => (temp >= 25 ? '#c85a3c' : '#3b7d9e')
 .card.on {
   background-color: #f4f8fa;
   border-color: #22303a;
+  border-left-width: 5px;
 }
 
-.card.on {
-  border-left-width: 5px;
+.card.hot {
+  border-left-color: #b23a20;
+}
+.card.warm {
+  border-left-color: #d8813a;
+}
+.card.mild {
+  border-left-color: #4a9070;
+}
+.card.cold {
+  border-left-color: #3b7d9e;
+}
+
+.card.hot .temp {
+  color: #b23a20;
+}
+.card.warm .temp {
+  color: #d8813a;
+}
+.card.mild .temp {
+  color: #4a9070;
+}
+.card.cold .temp {
+  color: #3b7d9e;
+}
+
+.card.hot .tag {
+  background-color: #f8e4de;
+  color: #93301a;
+}
+.card.warm .tag {
+  background-color: #fbeedd;
+  color: #9c5b1f;
+}
+.card.mild .tag {
+  background-color: #e3f0e9;
+  color: #2f6a51;
+}
+.card.cold .tag {
+  background-color: #e6f0f5;
+  color: #2d6480;
 }
 
 .left p {
@@ -165,17 +231,12 @@ const tempColor = (temp) => (temp >= 25 ? '#c85a3c' : '#3b7d9e')
   padding: 2px 7px;
   border-radius: 3px;
   font-size: 11px;
-  letter-spacing: 0.02em;
 }
 
-.hot {
-  background-color: #fbeae5;
-  color: #a8432a;
-}
-
-.cool {
-  background-color: #e6f0f5;
-  color: #2d6480;
+.detail {
+  margin-top: 7px !important;
+  font-size: 12px;
+  color: #8b979f;
 }
 
 .right {
@@ -220,7 +281,6 @@ const tempColor = (temp) => (temp >= 25 ? '#c85a3c' : '#3b7d9e')
   font-size: 14px;
 }
 
-/* 상태바 */
 .bar {
   margin: 20px 0 0;
   padding: 11px 16px;
