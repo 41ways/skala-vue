@@ -18,9 +18,11 @@ const onInput = (e) => {
   keyword.value = e.target.value
 }
 
+const hasBatchim = (word) => (word.charCodeAt(word.length - 1) - 0xac00) % 28 !== 0
+
 const selectCity = (cityName) => {
   selected.value = cityName
-  statusBar.value = `${cityName}이 선택되었습니다.`
+  statusBar.value = `${cityName}${hasBatchim(cityName) ? '이' : '가'} 선택되었습니다.`
 }
 
 const humidityText = (h) => {

@@ -24,11 +24,13 @@ const sortedList = computed(() =>
     : filteredWeatherList.value,
 )
 
-const statusBar = computed(() =>
-  selectedCityInfo.value
-    ? `${selectedCityInfo.value.name}이 선택되었습니다.`
-    : '카드를 클릭하거나 검색해 보세요.',
-)
+const hasBatchim = (word) => (word.charCodeAt(word.length - 1) - 0xac00) % 28 !== 0
+
+const statusBar = computed(() => {
+  if (!selectedCityInfo.value) return '카드를 클릭하거나 검색해 보세요.'
+  const name = selectedCityInfo.value.name
+  return `${name}${hasBatchim(name) ? '이' : '가'} 선택되었습니다.`
+})
 
 const averageTemp = computed(() => {
   if (filteredWeatherList.value.length === 0) return 0
@@ -138,7 +140,7 @@ const level = (temp) => {
       </article>
 
       <p v-if="filteredWeatherList.length === 0" class="empty">
-        "{{ searchQuery }}"와 검색 결과가 일치하는 도시가 없습니다.
+        "{{ searchQuery }}"{{ hasBatchim(searchQuery) ? '과' : '와' }} 일치하는 도시가 없습니다.
       </p>
     </div>
 
