@@ -26,7 +26,6 @@ defineProps({
 .panel h3 {
   margin: 0 0 12px;
   font-size: 12px;
-  letter-spacing: 0.08em;
   color: #6b7a84;
   font-weight: 600;
 }

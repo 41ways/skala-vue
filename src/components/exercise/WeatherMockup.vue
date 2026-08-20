@@ -118,7 +118,6 @@ const level = (temp) => {
 
 .search label {
   font-size: 12px;
-  letter-spacing: 0.08em;
   color: #6b7a84;
   white-space: nowrap;
 }
@@ -251,7 +250,6 @@ const level = (temp) => {
   font-size: 30px;
   font-weight: 300;
   line-height: 1;
-  font-variant-numeric: tabular-nums;
 }
 
 .temp sup {

@@ -146,7 +146,6 @@ const emit = defineEmits(['select-card', 'click-detail'])
   font-size: 30px;
   font-weight: 300;
   line-height: 1;
-  font-variant-numeric: tabular-nums;
 }
 
 .score .unit {
