@@ -1,11 +1,28 @@
 export const weatherList = [
-  { id: 'city_01', name: '서울', temp: 28, status: '맑음', humidity: 62, wind: 2.4 },
-  { id: 'city_02', name: '수원', temp: 23, status: '비', humidity: 88, wind: 3.1 },
-  { id: 'city_03', name: '부산', temp: 26, status: '구름', humidity: 74, wind: 4.7 },
-  { id: 'city_04', name: '광주', temp: 30, status: '맑음', humidity: 55, wind: 1.8 },
-  { id: 'city_05', name: '강릉', temp: 19, status: '흐림', humidity: 70, wind: 5.2 },
-  { id: 'city_06', name: '제주', temp: 24, status: '바람', humidity: 81, wind: 7.3 },
+  { id: 'city_01', name: '서울', temp: 28, status: '맑음', humidity: 62, wind: 2.4, x: 31, y: 21 },
+  { id: 'city_02', name: '수원', temp: 23, status: '비', humidity: 88, wind: 3.1, x: 32, y: 26 },
+  { id: 'city_03', name: '부산', temp: 26, status: '구름', humidity: 74, wind: 4.7, x: 87, y: 64 },
+  { id: 'city_04', name: '광주', temp: 30, status: '맑음', humidity: 55, wind: 1.8, x: 28, y: 64 },
+  { id: 'city_05', name: '강릉', temp: 19, status: '흐림', humidity: 70, wind: 5.2, x: 82, y: 17 },
+  { id: 'city_06', name: '제주', temp: 24, status: '바람', humidity: 81, wind: 7.3, x: 19, y: 94 },
 ]
+
+export const starCount = (city) => {
+  if (city.status === '비' || city.status === '눈') return 8
+  let n = 220
+  n -= (city.humidity - 40) * 2.2
+  if (city.status === '흐림') n -= 70
+  if (city.status === '구름') n -= 40
+  if (city.status === '맑음') n += 30
+  return Math.max(10, Math.min(240, Math.round(n)))
+}
+
+export const skyGrade = (n) => {
+  if (n >= 180) return '은하수까지 보여요'
+  if (n >= 120) return '별자리가 또렷해요'
+  if (n >= 60) return '밝은 별만 겨우'
+  return '오늘은 하늘이 닫혔어요'
+}
 
 export const findCity = (id) => weatherList.find((c) => c.id === id)
 

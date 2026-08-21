@@ -86,6 +86,12 @@ const goDetail = (city) => {
       <p>기온, 습도, 바람, 하늘 상태를 합쳐 100점으로 계산합니다.</p>
     </header>
 
+    <button class="banner" @click="router.push('/sky')">
+      <span class="btitle">별 보러 가기</span>
+      <span class="bsub">도시를 고르면 그 하늘로 내려갑니다</span>
+      <span class="barrow">→</span>
+    </button>
+
     <BaseDashboardCard title="도시 검색">
       <SearchBar :query="searchQuery" @update-query="updateQuery" />
     </BaseDashboardCard>
@@ -139,6 +145,42 @@ const goDetail = (city) => {
   margin: 0;
   font-size: 12px;
   color: #7f8b92;
+}
+
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(100deg, #0d1730, #21325c 60%, #33406b);
+  color: #dbe4ef;
+  cursor: pointer;
+  text-align: left;
+}
+
+.banner:hover {
+  background: linear-gradient(100deg, #121e3d, #2a3d6d 60%, #3d4c7d);
+}
+
+.btitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f2f6ff;
+}
+
+.bsub {
+  font-size: 12px;
+  color: #94a3bd;
+}
+
+.barrow {
+  margin-left: auto;
+  font-size: 16px;
+  color: #94a3bd;
 }
 
 .list {
