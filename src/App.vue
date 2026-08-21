@@ -65,6 +65,10 @@ import SlotScopedParent from './components/practices/component/SlotScopedParent.
 
 // 11. Pinia Store
 import StoreCounter from './components/practices/library/StoreCounter.vue'
+
+// 12. Axios
+import AxiosWeather from './components/practices/library/AxiosWeather.vue'
+import AxiosJson from './components/practices/library/AxiosJson.vue'
 </script>
 
 <template>
@@ -186,6 +190,12 @@ import StoreCounter from './components/practices/library/StoreCounter.vue'
     <section class="chapter">
       <h2>11. Pinia Store</h2>
       <StoreCounter />
+    </section>
+
+    <section class="chapter">
+      <h2>12. Axios</h2>
+      <AxiosWeather />
+      <AxiosJson />
     </section>
   </div>
 </template>
