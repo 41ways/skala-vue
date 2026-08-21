@@ -3,6 +3,7 @@
 import WeatherMockup from './components/exercise/WeatherMockup.vue'
 import WeatherComposition from './components/exercise/WeatherComposition.vue'
 import WeatherParent from './components/exercise/WeatherParent.vue'
+import { RouterLink, RouterView } from 'vue-router'
 
 // 1. 학습환경 구성
 import SampleOne from './components/practices/basic/SampleOne.vue'
@@ -85,6 +86,22 @@ import StoreCounter from './components/practices/library/StoreCounter.vue'
     <section class="chapter">
       <h2>과제 3: 날씨 컴포넌트 분리</h2>
       <WeatherParent />
+    </section>
+
+    <section class="chapter">
+      <h2>과제 4: 라우터 적용</h2>
+
+      <div class="router-app">
+        <nav>
+          <RouterLink to="/">날씨 대시보드</RouterLink>
+          <RouterLink to="/guide">지수 기준</RouterLink>
+          <RouterLink to="/about">서비스 소개</RouterLink>
+        </nav>
+
+        <main>
+          <RouterView />
+        </main>
+      </div>
     </section>
 
     <section class="chapter">
@@ -201,6 +218,40 @@ import StoreCounter from './components/practices/library/StoreCounter.vue'
   padding-bottom: 8px;
   border-bottom: 2px solid #42b883;
   margin-bottom: 16px;
+}
+
+.router-app {
+  border: 1px solid #d8e0e2;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.router-app nav {
+  display: flex;
+  gap: 4px;
+  padding: 10px 14px;
+  background-color: #1e2f33;
+}
+
+.router-app nav a {
+  padding: 5px 11px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: #b7c6c9;
+  text-decoration: none;
+}
+
+.router-app nav a:hover {
+  color: white;
+}
+
+.router-app nav a.router-link-exact-active {
+  background-color: #35494e;
+  color: white;
+}
+
+.router-app main {
+  padding: 20px;
 }
 
 /* 각 실습 컴포넌트를 카드로 구분 */
