@@ -69,6 +69,11 @@ import StoreCounter from './components/practices/library/StoreCounter.vue'
 // 12. Axios
 import AxiosWeather from './components/practices/library/AxiosWeather.vue'
 import AxiosJson from './components/practices/library/AxiosJson.vue'
+
+// 13. UI Library
+import ElementForm from './components/practices/library/ElementForm.vue'
+import ElementData from './components/practices/library/ElementData.vue'
+import ElementFeedback from './components/practices/library/ElementFeedback.vue'
 </script>
 
 <template>
@@ -196,6 +201,13 @@ import AxiosJson from './components/practices/library/AxiosJson.vue'
       <h2>12. Axios</h2>
       <AxiosWeather />
       <AxiosJson />
+    </section>
+
+    <section class="chapter">
+      <h2>13. UI Library</h2>
+      <ElementForm />
+      <ElementData />
+      <ElementFeedback />
     </section>
   </div>
 </template>
