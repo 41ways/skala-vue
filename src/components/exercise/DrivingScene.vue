@@ -102,6 +102,13 @@ const eta = computed(() => 12 + (props.city.name.length % 3) * 7)
         <span class="edge le"></span>
         <span class="edge re"></span>
       </div>
+
+      <span class="beam bl"></span>
+      <span class="beam br"></span>
+
+      <div class="reflectors">
+        <span v-for="n in 8" :key="n" class="ref" :style="{ '--n': n }"></span>
+      </div>
     </div>
 
     <span class="glass"></span>
@@ -208,7 +215,9 @@ const eta = computed(() => 12 + (props.city.name.length % 3) * 7)
 .world {
   position: absolute;
   inset: -4% 0 0 0;
-  animation: crest 5.5s ease-in-out infinite alternate;
+  animation:
+    crest 5.5s ease-in-out infinite alternate,
+    shake 0.19s steps(2, end) infinite;
 }
 
 @keyframes crest {
@@ -220,10 +229,104 @@ const eta = computed(() => 12 + (props.city.name.length % 3) * 7)
   }
 }
 
+/* 노면 진동. 아주 작게 흔들려야 자연스럽다 */
+@keyframes shake {
+  0% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0.4px -1.1px;
+  }
+  100% {
+    translate: -0.3px 0.7px;
+  }
+}
+
+/* 헤드라이트 */
+.beam {
+  position: absolute;
+  bottom: 36%;
+  width: 34%;
+  height: 20%;
+  background: radial-gradient(
+    ellipse at 50% 100%,
+    rgba(226, 236, 255, 0.3),
+    rgba(180, 205, 255, 0.09) 45%,
+    transparent 72%
+  );
+  filter: blur(9px);
+  pointer-events: none;
+}
+
+.beam.bl {
+  left: 12%;
+  transform: skewX(16deg);
+}
+
+.beam.br {
+  right: 12%;
+  transform: skewX(-16deg);
+}
+
+/* 갓길 반사판이 빠르게 다가온다 */
+.reflectors {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 38%;
+  height: 18%;
+  pointer-events: none;
+}
+
+.ref {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #ffd98a;
+  box-shadow: 0 0 7px 2px rgba(255, 210, 130, 0.65);
+  animation: approach 1.6s linear infinite;
+  animation-delay: calc(var(--n) * -0.2s);
+}
+
+@keyframes approach {
+  from {
+    transform: translate(-4px, 0) scale(0.35);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  to {
+    transform: translate(-330px, 100px) scale(2.4);
+    opacity: 0;
+  }
+}
+
+.ref:nth-child(even) {
+  animation-name: approach-r;
+}
+
+@keyframes approach-r {
+  from {
+    transform: translate(4px, 0) scale(0.35);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  to {
+    transform: translate(330px, 100px) scale(2.4);
+    opacity: 0;
+  }
+}
+
 /* 하늘 */
 .sky {
   position: absolute;
-  inset: 0 0 38% 0;
+  inset: 0 0 56% 0;
 }
 
 .star {
@@ -266,8 +369,8 @@ const eta = computed(() => 12 + (props.city.name.length % 3) * 7)
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 26%;
-  height: 32%;
+  bottom: 56%;
+  height: 24%;
 }
 
 .hill {
@@ -278,32 +381,36 @@ const eta = computed(() => 12 + (props.city.name.length % 3) * 7)
 }
 
 .h1 {
-  background-color: #16243f;
+  background: linear-gradient(160deg, #1d2e4e, #101b31);
   width: 68%;
   height: 200%;
   left: -14%;
-  animation-duration: 10s;
+  border-radius: 58% 42% 0 0 / 100% 100% 0 0;
+  animation-duration: 9s;
 }
 .h2 {
-  background-color: #121e34;
+  background: linear-gradient(190deg, #17253e, #0d1728);
   width: 58%;
   height: 158%;
   left: 44%;
-  animation-duration: 7s;
+  border-radius: 40% 60% 0 0 / 100% 100% 0 0;
+  animation-duration: 6.4s;
 }
 .h3 {
-  background-color: #0e182b;
+  background: linear-gradient(170deg, #121d33, #0a1220);
   width: 50%;
   height: 124%;
   left: 100%;
-  animation-duration: 5s;
+  border-radius: 64% 36% 0 0 / 100% 100% 0 0;
+  animation-duration: 4.6s;
 }
 .h4 {
-  background-color: #0b1424;
+  background: linear-gradient(200deg, #0e1728, #070d18);
   width: 44%;
   height: 96%;
   left: 150%;
-  animation-duration: 3.8s;
+  border-radius: 34% 66% 0 0 / 100% 100% 0 0;
+  animation-duration: 3.4s;
 }
 
 @keyframes roll {
@@ -320,8 +427,8 @@ const eta = computed(() => 12 + (props.city.name.length % 3) * 7)
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 25%;
-  height: 40px;
+  bottom: 55%;
+  height: 34px;
 }
 
 .grass {
@@ -348,10 +455,10 @@ const eta = computed(() => 12 + (props.city.name.length % 3) * 7)
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
-  height: 27%;
-  background: linear-gradient(#232a3d, #0a0d17);
-  clip-path: polygon(41% 0, 59% 0, 122% 100%, -22% 100%);
+  bottom: 38%;
+  height: 18%;
+  background: linear-gradient(#3b445e, #202739);
+  clip-path: polygon(46% 0, 54% 0, 148% 100%, -48% 100%);
   overflow: hidden;
 }
 
@@ -363,7 +470,7 @@ const eta = computed(() => 12 + (props.city.name.length % 3) * 7)
   height: 220%;
   transform: translateX(-50%);
   background: repeating-linear-gradient(#4f5c7c 0 24px, transparent 24px 58px);
-  animation: dashline 0.45s linear infinite;
+  animation: dashline 0.28s linear infinite;
 }
 
 @keyframes dashline {
@@ -396,10 +503,10 @@ const eta = computed(() => 12 + (props.city.name.length % 3) * 7)
   pointer-events: none;
   background: linear-gradient(
     112deg,
-    rgba(255, 255, 255, 0.055) 0 18%,
-    transparent 18% 42%,
-    rgba(255, 255, 255, 0.03) 42% 52%,
-    transparent 52%
+    rgba(255, 255, 255, 0.03) 0 14%,
+    transparent 14% 46%,
+    rgba(255, 255, 255, 0.018) 46% 54%,
+    transparent 54%
   );
 }
 
@@ -435,7 +542,7 @@ const eta = computed(() => 12 + (props.city.name.length % 3) * 7)
 
 .wiper {
   position: absolute;
-  bottom: 34%;
+  bottom: 38%;
   width: 5px;
   height: 42%;
   border-radius: 3px;
@@ -552,8 +659,8 @@ const eta = computed(() => 12 + (props.city.name.length % 3) * 7)
 /* 계기판 */
 .cluster {
   position: absolute;
-  left: 10%;
-  top: 12%;
+  left: 4%;
+  top: 3%;
   width: 136px;
   height: 48px;
   border-radius: 9px 9px 5px 5px;
@@ -786,10 +893,10 @@ const eta = computed(() => 12 + (props.city.name.length % 3) * 7)
 /* 핸들 */
 .wheel {
   position: absolute;
-  left: 3%;
-  bottom: -78px;
-  width: 222px;
-  height: 222px;
+  left: 6%;
+  bottom: -66px;
+  width: 252px;
+  height: 252px;
   border: 18px solid #1b212e;
   border-radius: 50%;
   box-shadow:
@@ -866,20 +973,20 @@ const eta = computed(() => 12 + (props.city.name.length % 3) * 7)
 /* 팔과 손을 한 덩어리로 묶어 끊겨 보이지 않게 한다 */
 .limb {
   position: absolute;
-  top: 30%;
+  top: 48%;
   width: 40px;
   height: 190px;
 }
 
 .limb.ll {
-  left: -26px;
-  transform: rotate(-15deg);
+  left: -24px;
+  transform: translateY(-26px) rotate(-13deg);
   transform-origin: top center;
 }
 
 .limb.lr {
-  right: -26px;
-  transform: rotate(15deg);
+  right: -24px;
+  transform: translateY(-26px) rotate(13deg);
   transform-origin: top center;
 }
 
