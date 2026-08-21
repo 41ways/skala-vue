@@ -110,24 +110,41 @@ const cloudLevel = computed(() => {
     </div>
 
     <div class="cabin">
+      <span class="roof"></span>
       <span class="pillar l"></span>
       <span class="pillar r"></span>
+
       <div class="dash">
-        <button class="nav" @click="emit('open-nav')">
-          <span class="navtitle">NAVI</span>
-          <span class="navsub">다른 하늘로</span>
-        </button>
+        <div class="console">
+          <span class="vent">
+            <i></i><i></i><i></i>
+          </span>
 
-        <div class="info">
-          <p class="cityname">{{ city.name }}</p>
-          <p class="grade">{{ skyGrade(starCount(city)) }}</p>
+          <button class="navi" @click="emit('open-nav')">
+            <span class="ntitle">{{ city.name }}</span>
+            <span class="nsub">{{ skyGrade(starCount(city)) }}</span>
+            <span class="ngo">다른 하늘로 ▸</span>
+          </button>
+
+          <span class="knobs">
+            <i></i><i></i><i></i><i></i>
+          </span>
         </div>
 
-        <div class="gauges">
-          <span>{{ city.temp }}°</span>
-          <span>습 {{ city.humidity }}%</span>
-          <span>풍 {{ city.wind }}</span>
-        </div>
+        <span class="vent side"><i></i><i></i></span>
+      </div>
+
+      <div class="cluster">
+        <span class="cg">{{ city.temp }}°</span>
+        <span class="cg">습 {{ city.humidity }}</span>
+        <span class="cg">풍 {{ city.wind }}</span>
+      </div>
+
+      <div class="wheel">
+        <span class="spoke sl"></span>
+        <span class="spoke sr"></span>
+        <span class="spoke sd"></span>
+        <span class="hub"></span>
       </div>
     </div>
   </div>
@@ -314,21 +331,35 @@ const cloudLevel = computed(() => {
 }
 
 /* 운전석 */
-.pillar {
+.roof {
   position: absolute;
   top: 0;
-  bottom: 24%;
-  width: 26px;
-  background: linear-gradient(#0b0f1c, #141a2c);
+  left: 0;
+  right: 0;
+  height: 7%;
+  background: linear-gradient(#1a1f2c, #0d1119);
+  border-bottom: 1px solid #2b3244;
+  border-radius: 0 0 40% 40% / 0 0 26% 26%;
+}
+
+.pillar {
+  position: absolute;
+  top: 5%;
+  bottom: 34%;
+  width: 44px;
+  background: linear-gradient(#20263a, #10141e);
 }
 
 .pillar.l {
-  left: 0;
-  transform: skewX(6deg);
+  left: -8px;
+  transform: skewX(9deg);
+  border-right: 1px solid #333c52;
 }
+
 .pillar.r {
-  right: 0;
-  transform: skewX(-6deg);
+  right: -8px;
+  transform: skewX(-9deg);
+  border-left: 1px solid #333c52;
 }
 
 .dash {
@@ -336,67 +367,169 @@ const cloudLevel = computed(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 25%;
-  background: linear-gradient(#12182a, #080b15);
-  border-top: 1px solid #2a3350;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 0 18px;
+  height: 36%;
+  background: linear-gradient(#262c3a 0%, #171c27 32%, #0a0d14 100%);
+  border-radius: 46% 46% 0 0 / 22% 22% 0 0;
+  border-top: 2px solid #3d4557;
 }
 
-.nav {
+/* 센터 콘솔 */
+.console {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-28%);
+  top: 16%;
+  width: 40%;
+  min-width: 190px;
+  padding: 8px;
+  border-radius: 6px;
+  background: linear-gradient(#1b202c, #10141c);
+  border: 1px solid #333b4d;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 7px 12px;
-  border: 1px solid #33608f;
-  border-radius: 5px;
-  background: linear-gradient(#12284a, #0d1d38);
+  gap: 7px;
+}
+
+.vent {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 5px 8px;
+  border-radius: 3px;
+  background-color: #0b0e15;
+}
+
+.vent i {
+  height: 3px;
+  border-radius: 2px;
+  
+  background-color: #2c3446;
+}
+
+.vent.side {
+  position: absolute;
+  right: 8%;
+  top: 20%;
+  width: 62px;
+}
+
+.navi {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px 10px;
+  border: 1px solid #2f5c8c;
+  border-radius: 4px;
+  
+  background-color: #0e2038;
   color: #9fc3ec;
   cursor: pointer;
   text-align: left;
 }
 
-.nav:hover {
+.navi:hover {
   border-color: #6ea8e0;
-  color: #d6ebff;
+  background-color: #14294a;
 }
 
-.navtitle {
-  font-size: 9px;
-  letter-spacing: 0.16em;
-}
-
-.navsub {
-  font-size: 12px;
-}
-
-.info {
-  flex: 1;
-}
-
-.info p {
-  margin: 0;
-}
-
-.cityname {
-  font-size: 17px;
+.ntitle {
+  font-size: 14px;
   font-weight: 600;
-  color: #e8eefc;
+  color: #e6f1ff;
 }
 
-.grade {
-  font-size: 12px;
-  color: #93a4c2;
-  margin-top: 2px !important;
-}
-
-.gauges {
-  display: flex;
-  gap: 12px;
+.nsub {
   font-size: 11px;
-  color: #7c8cab;
+  color: #8fb2d8;
+}
+
+.ngo {
+  margin-top: 4px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #5d86b4;
+}
+
+.knobs {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.knobs i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  
+  background-color: #2b3345;
+}
+
+/* 계기판 */
+.cluster {
+  position: absolute;
+  left: 12%;
+  bottom: 27%;
+  display: flex;
+  gap: 10px;
+  font-size: 10px;
+  color: #7f8ea8;
+}
+
+/* 핸들 */
+.wheel {
+  position: absolute;
+  left: 5%;
+  bottom: -72px;
+  width: 210px;
+  height: 210px;
+  border: 16px solid #171c27;
+  border-radius: 50%;
+  box-shadow:
+    
+    inset 0 0 0 2px #2f3646,
+    0 -3px 10px rgba(0, 0, 0, 0.5);
+}
+
+.spoke {
+  position: absolute;
+  background-color: #1b212e;
+  border-radius: 3px;
+}
+
+.spoke.sl {
+  left: -6px;
+  top: 44%;
+  width: 46%;
+  height: 15px;
+  transform: rotate(-9deg);
+}
+
+.spoke.sr {
+  right: -6px;
+  top: 44%;
+  width: 46%;
+  height: 15px;
+  transform: rotate(9deg);
+}
+
+.spoke.sd {
+  left: 50%;
+  top: 50%;
+  width: 15px;
+  height: 46%;
+  transform: translateX(-50%);
+}
+
+.hub {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 66px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  background: linear-gradient(#232a38, #141924);
+  border: 1px solid #333b4d;
 }
 
 @media (prefers-reduced-motion: reduce) {
