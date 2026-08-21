@@ -4,6 +4,7 @@ import WeatherMockup from './components/exercise/WeatherMockup.vue'
 import WeatherComposition from './components/exercise/WeatherComposition.vue'
 import WeatherParent from './components/exercise/WeatherParent.vue'
 import { RouterLink, RouterView } from 'vue-router'
+import UnitToggler from './components/exercise/UnitToggler.vue'
 
 // 1. 학습환경 구성
 import SampleOne from './components/practices/basic/SampleOne.vue'
@@ -89,13 +90,14 @@ import StoreCounter from './components/practices/library/StoreCounter.vue'
     </section>
 
     <section class="chapter">
-      <h2>과제 4: 라우터 적용</h2>
+      <h2>과제 4 · 5: 라우터와 스토어 적용</h2>
 
       <div class="router-app">
         <nav>
           <RouterLink to="/">날씨 대시보드</RouterLink>
           <RouterLink to="/guide">지수 기준</RouterLink>
           <RouterLink to="/about">서비스 소개</RouterLink>
+          <UnitToggler />
         </nav>
 
         <main>
@@ -228,9 +230,14 @@ import StoreCounter from './components/practices/library/StoreCounter.vue'
 
 .router-app nav {
   display: flex;
+  align-items: center;
   gap: 4px;
   padding: 10px 14px;
   background-color: #1e2f33;
+}
+
+.router-app nav > button {
+  margin-left: auto;
 }
 
 .router-app nav a {

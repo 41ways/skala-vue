@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { useConfigStore } from '@/stores/configStore.js'
 import {
   findCity,
   laundryScore,
@@ -11,6 +13,9 @@ import {
 
 const route = useRoute()
 const router = useRouter()
+
+const configStore = useConfigStore()
+const { unitSymbol } = storeToRefs(configStore)
 
 const city = ref(null)
 const score = ref(0)
@@ -45,7 +50,7 @@ const goBack = () => {
       <dd>{{ city.status }}</dd>
 
       <dt>기온</dt>
-      <dd>{{ city.temp }}도</dd>
+      <dd>{{ configStore.toTemp(city.temp) }}{{ unitSymbol }}</dd>
 
       <dt>습도</dt>
       <dd>{{ city.humidity }}% ({{ humidityText(city.humidity) }})</dd>

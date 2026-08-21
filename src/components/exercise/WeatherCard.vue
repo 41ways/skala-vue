@@ -1,4 +1,7 @@
 <script setup>
+import { storeToRefs } from 'pinia'
+import { useConfigStore } from '@/stores/configStore.js'
+
 defineProps({
   city: {
     type: Object,
@@ -19,6 +22,9 @@ defineProps({
 })
 
 const emit = defineEmits(['select-card', 'click-detail'])
+
+const configStore = useConfigStore()
+const { unitSymbol } = storeToRefs(configStore)
 </script>
 
 <template>
@@ -29,7 +35,9 @@ const emit = defineEmits(['select-card', 'click-detail'])
   >
     <div class="left">
       <p class="name">{{ city.name }}</p>
-      <p class="cond">{{ city.status }} · {{ city.temp }}도</p>
+      <p class="cond">
+        {{ city.status }} · {{ configStore.toTemp(city.temp) }}{{ unitSymbol }}
+      </p>
       <p class="cond">습도 {{ city.humidity }}% · 바람 {{ city.wind }}m/s</p>
       <span class="tag">{{ grade.label }}</span>
     </div>
