@@ -65,7 +65,7 @@ const openNav = () => {
 
 .stageview {
   position: relative;
-  height: 460px;
+  height: 520px;
   border-radius: 8px;
   overflow: hidden;
   background: linear-gradient(#070b1c, #16223f);
