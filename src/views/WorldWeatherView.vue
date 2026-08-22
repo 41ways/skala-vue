@@ -20,45 +20,16 @@ import sydneyImg from '@/assets/world-art/sydney.jpg'
 
 const { cities, loading, error, fetchLive } = useWorldWeather()
 
-// 콜라주 주인공 (레퍼런스의 치타 문법 — PD 명화 누끼)
-const wcutFiles = import.meta.glob('@/assets/world-art/cut_*.png', { eager: true, import: 'default' })
-const wcut = (n) => wcutFiles[Object.keys(wcutFiles).find((k) => k.includes(n))]
-
 const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
 
 // 도시 = 그 나라의 그림
 const artMap = {
   w_tokyo: { img: tokyoImg, caption: '가쓰시카 호쿠사이 「가나가와 해변의 높은 파도」 1831', focal: '38% 45%' },
   w_beijing: { img: beijingImg, caption: '왕희맹 「천리강산도」 1113 · 북송', focal: '50% 55%' },
-  w_paris: {
-    img: parisImg,
-    caption: '모네 「인상, 해돋이」 × 라파엘로 「두 푸티」',
-    focal: '55% 42%',
-    cut: () => wcut('putti'),
-    cutPos: { left: '56%', top: '52%', w: '34%' },
-  },
-  w_london: {
-    img: londonImg,
-    caption: '터너 「비, 증기, 속도」 × 스텁스 「휘슬재킷」',
-    focal: '58% 45%',
-    cut: () => wcut('horse'),
-    cutPos: { left: '52%', top: '12%', w: '36%' },
-    parcel: true,
-  },
-  w_newyork: {
-    img: newyorkImg,
-    caption: '비어슈타트 「로키산맥의 폭풍」 × 브뤼헐 「바벨탑」',
-    focal: '45% 40%',
-    cut: () => wcut('babel'),
-    cutPos: { left: '54%', top: '18%', w: '40%' },
-  },
-  w_sydney: {
-    img: sydneyImg,
-    caption: '폰 게라르 「시드니 헤즈」 × 보티첼리 「비너스의 탄생」',
-    focal: '50% 45%',
-    cut: () => wcut('venus'),
-    cutPos: { left: '58%', top: '20%', w: '26%' },
-  },
+  w_paris: { img: parisImg, caption: '클로드 모네 「인상, 해돋이」 1872', focal: '55% 42%' },
+  w_london: { img: londonImg, caption: '윌리엄 터너 「비, 증기, 속도」 1844', focal: '58% 45%' },
+  w_newyork: { img: newyorkImg, caption: '앨버트 비어슈타트 「로키산맥의 폭풍」 1866', focal: '45% 40%' },
+  w_sydney: { img: sydneyImg, caption: '유진 폰 게라르 「시드니 헤즈」 1865', focal: '50% 45%' },
 }
 
 
@@ -159,19 +130,6 @@ function paintStyle(i, art) {
     transform: `scale(${(1.18 - dive * 0.14 + leave * 0.08).toFixed(4)}) translate3d(${(mx.value * -10).toFixed(1)}px, ${(my.value * -7).toFixed(1)}px, 0)`,
     transformOrigin: art.focal,
     filter: `brightness(${(1 - leave * 0.6).toFixed(3)}) saturate(${(0.94 + dive * 0.1).toFixed(3)})`,
-  }
-}
-// 콜라주 컷 — 그림이 자리잡은 뒤 떠오르고, 마우스에 살짝 반응
-function wcutStyle(i, art) {
-  const p = progress.value[i] ?? 0
-  const t = easeOut(clamp01((p - 0.08) / 0.16))
-  const leave = clamp01((p - 0.84) / 0.13)
-  return {
-    left: art.cutPos.left,
-    top: art.cutPos.top,
-    width: art.cutPos.w,
-    opacity: (t * (1 - leave)).toFixed(3),
-    transform: `translate3d(${(mx.value * 16).toFixed(1)}px, ${(my.value * 10 + (1 - t) * 44).toFixed(1)}px, 0)`,
   }
 }
 function headStyle(i) {
@@ -297,16 +255,6 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
           <img :src="artMap[c.id].img" :alt="artMap[c.id].caption" loading="lazy" decoding="async" draggable="false" />
         </div>
         <div class="paint-shade"></div>
-
-        <!-- 콜라주 주인공 — 그림 위에 얹힌 누끼 (치타 문법) -->
-        <span
-          v-if="artMap[c.id].cut"
-          class="w-cut"
-          :style="wcutStyle(i, artMap[c.id])"
-        >
-          <img :src="artMap[c.id].cut()" alt="" class="w-cut-img" draggable="false" />
-          <span v-if="artMap[c.id].parcel" class="parcel util">청우록<br />特急</span>
-        </span>
 
         <!-- 날씨 기운 -->
         <template v-if="c.status === '비' || c.status === '뇌우'">
@@ -605,42 +553,6 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   height: 100%;
   object-fit: cover;
   user-select: none;
-}
-.w-cut {
-  position: absolute;
-  z-index: 2;
-  will-change: transform, opacity;
-  filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.5));
-}
-.w-cut-img {
-  width: 100%;
-  height: auto;
-  user-select: none;
-  animation: wcutFloat 7s ease-in-out infinite alternate;
-}
-@keyframes wcutFloat {
-  from { transform: translateY(0) rotate(-0.6deg); }
-  to { transform: translateY(-12px) rotate(0.8deg); }
-}
-/* 말 등의 주황 소포 — 레퍼런스의 위트 */
-.parcel {
-  position: absolute;
-  left: 46%;
-  top: 5%;
-  width: 17%;
-  aspect-ratio: 1 / 0.82;
-  background: linear-gradient(160deg, #e8722e, #c9571d);
-  border-radius: 6% / 8%;
-  transform: rotate(-9deg);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45), inset 0 0 0 2px rgba(255, 255, 255, 0.18);
-  color: #fff7ec;
-  font-size: clamp(8px, 0.9vw, 13px);
-  font-weight: 700;
-  line-height: 1.25;
-  display: grid;
-  place-items: center;
-  text-align: center;
-  letter-spacing: 0.08em;
 }
 .paint-shade {
   position: absolute;

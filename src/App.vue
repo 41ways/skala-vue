@@ -25,11 +25,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <header class="top" :class="{ dark: route.path.startsWith('/world') }">
+  <header class="top" :class="{ dark: route.path.startsWith('/world') || route.path.startsWith('/edition') }">
     <RouterLink to="/" class="logo">청우<em>록</em><small>晴雨錄</small></RouterLink>
     <nav class="util">
       <RouterLink to="/">국내 화폭</RouterLink>
       <RouterLink to="/world">세계화폭</RouterLink>
+      <RouterLink to="/edition">에디션</RouterLink>
       <RouterLink to="/guide">빨래 지침</RouterLink>
       <RouterLink to="/classic">실습 대시보드</RouterLink>
       <RouterLink to="/about">소개</RouterLink>
