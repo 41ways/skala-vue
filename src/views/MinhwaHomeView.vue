@@ -409,9 +409,9 @@ function jumpTo(r) {
           <span class="dc-haze"></span>
         </div>
         <div class="dc-photo" :style="dcPhotoStyle">
-          <img class="dc-base" :src="dcBase" alt="" draggable="false" />
-          <img class="dc-door l" :src="dcDoorL" alt="" draggable="false" />
-          <img class="dc-door r" :src="dcDoorR" alt="" draggable="false" />
+          <img class="dc-base" :src="dcBase" alt="" fetchpriority="high" decoding="async" draggable="false" />
+          <img class="dc-door l" :src="dcDoorL" alt="" fetchpriority="high" decoding="async" draggable="false" />
+          <img class="dc-door r" :src="dcDoorR" alt="" fetchpriority="high" decoding="async" draggable="false" />
         </div>
         <p class="dc-cap util">오리 이원익 종택 분합문 · 문화재청 (공공누리 제1유형)</p>
         <div class="hero-inner" :style="heroStyle">
@@ -481,7 +481,7 @@ function jumpTo(r) {
         <aside class="side-cities" :class="{ light: fld(ch, i, 'tone') === 'light' }" :style="sideStyle(i)">
           <p class="side-cap"><i class="cap-seal">{{ fld(ch, i, 'wHanja') }}</i>이 화폭의 고을</p>
           <template v-if="citiesFor(ch, i).length">
-            <button v-for="c in citiesFor(ch, i)" :key="c.id" class="vc" @click="sheetCity = c">
+            <button v-for="c in citiesFor(ch, i)" :key="c.id" class="vc" :aria-label="`${c.name} 날씨첩 열기 — ${c.temp}° ${c.status}`" @click="sheetCity = c">
               <b>{{ c.name }}</b><span><i class="n">{{ c.temp }}°</i> {{ c.status }}</span>
             </button>
           </template>
@@ -494,6 +494,7 @@ function jumpTo(r) {
           class="next-fab util"
           :class="{ light: fld(ch, i, 'tone') === 'light' }"
           :style="{ opacity: infoStyle(i, 1).opacity }"
+          aria-label="다음 폭으로 이동"
           @click="jumpTo({ i: i + 1, f: 0.42 })"
         >
           다음 폭 <span>↓</span>
