@@ -1019,6 +1019,9 @@ function jumpTo(r) {
   color: rgba(251, 246, 234, 0.6);
 }
 
+/* 화기 부기 서체 — 표제와 동일 (뒤따르는 규칙에 덮이지 않게 마지막에 선언) */
+.vc span { font-family: var(--font-display); }
+
 /* ── 다음 폭 버튼 ── */
 .next-fab {
   position: absolute;

@@ -562,7 +562,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .seal { right: 18px; bottom: 18px; width: 52px; height: 62px; }
   .seal-face { font-size: 16px; }
   .close { right: 18px; top: 18px; }
-  .guide-link { bottom: 14px; font-size: 13px; padding: 5px 12px; }
+  .guide-link { left: 18px; transform: none; bottom: 14px; font-size: 13px; padding: 5px 12px; }
   .rules { inset: 12px 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
