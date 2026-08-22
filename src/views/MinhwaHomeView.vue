@@ -207,7 +207,7 @@ const chapters = [
         idle: 'prowl',
         z: 3,
         parts: [
-          { src: cut('tiger_head'), left: '4.1%', top: '1.1%', w: '43.2%', anim: 'p-head', origin: '55% 92%' },
+          { src: cut('tiger_head'), left: '4.1%', top: '1.1%', w: '43.2%', anim: 'p-head', origin: '55% 92%', snow: true },
           { src: cut('tiger_tail'), left: '0%', top: '59.5%', w: '25.3%', anim: 'p-tail', origin: '88% 18%' },
           { src: cut('tiger_paw'), left: '17.8%', top: '80.6%', w: '18.5%', anim: 'p-paw', origin: '50% 20%' },
         ],
@@ -448,12 +448,6 @@ function jumpTo(r) {
           </p>
           <div class="hero-hint"><ScrollHint /></div>
         </div>
-        <svg class="hero-mts" viewBox="0 0 1200 200" preserveAspectRatio="xMidYMax slice">
-          <path d="M0 200 L190 90 L390 200 Z" fill="rgba(34,28,22,.07)" />
-          <path d="M290 200 L520 40 L760 200 Z" fill="rgba(34,28,22,.1)" />
-          <path d="M640 200 L860 80 L1080 200 Z" fill="rgba(34,28,22,.07)" />
-          <path d="M920 200 L1090 110 L1240 200 Z" fill="rgba(34,28,22,.05)" />
-        </svg>
       </div>
     </section>
 
@@ -660,14 +654,6 @@ function jumpTo(r) {
 @keyframes rise {
   from { opacity: 0; transform: translateY(18px); }
   to { opacity: 1; transform: translateY(0); }
-}
-.hero-mts {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 160px;
-  pointer-events: none;
 }
 
 /* ── 챕터 ── */

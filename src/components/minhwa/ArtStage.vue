@@ -203,12 +203,20 @@ const rainDrops = Array.from({ length: 30 }, (_, i) => ({
   delay: -((i * 7) % 20) / 10 + 's',
   opacity: 0.25 + ((i * 11) % 10) / 22,
 }))
-const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
-  left: ((i * 41) % 100) + '%',
-  duration: 7 + ((i * 17) % 50) / 10 + 's',
-  delay: -((i * 29) % 90) / 10 + 's',
-  size: 3 + ((i * 7) % 30) / 10 + 'px',
-}))
+// 눈 — 가까운 송이는 크고 빠르며 조금 흐리고, 먼 송이는 작고 느리다
+const snowFlakes = Array.from({ length: 70 }, (_, i) => {
+  const near = i % 5 === 0
+  const size = near ? 5 + ((i * 7) % 30) / 10 : 2 + ((i * 7) % 25) / 10
+  return {
+    left: ((i * 41) % 100) + '%',
+    duration: (near ? 5.5 : 8) + ((i * 17) % 50) / 10 + 's',
+    delay: -((i * 29) % 110) / 10 + 's',
+    size: size + 'px',
+    blur: near ? '0.8px' : '0px',
+    opacity: near ? 0.95 : 0.6 + ((i * 13) % 10) / 30,
+    sway: (i % 2 ? 1 : -1) * (14 + ((i * 11) % 30)) + 'px',
+  }
+})
 </script>
 
 <template>
@@ -372,7 +380,16 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
         v-for="(f, i) in snowFlakes"
         :key="'s' + i"
         class="stage-flake"
-        :style="{ left: f.left, width: f.size, height: f.size, animationDuration: f.duration, animationDelay: f.delay }"
+        :style="{
+          left: f.left,
+          width: f.size,
+          height: f.size,
+          opacity: f.opacity,
+          filter: `blur(${f.blur})`,
+          animationDuration: f.duration,
+          animationDelay: f.delay,
+          '--sway': f.sway,
+        }"
       ></span>
     </template>
 
@@ -747,13 +764,18 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   position: absolute;
   top: -4%;
   border-radius: 50%;
-  background: rgba(251, 246, 234, 0.95);
-  box-shadow: 0 0 4px rgba(34, 28, 22, 0.15);
-  animation: stageSnow linear infinite;
+  background: radial-gradient(circle at 40% 35%, #fff 0%, rgba(251, 246, 234, 0.95) 55%, rgba(251, 246, 234, 0.4) 100%);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.55), 0 0 2px rgba(34, 28, 22, 0.12);
+  animation: stageSnow ease-in-out infinite;
   pointer-events: none;
 }
+/* 좌우로 흔들리며 내려앉는다 */
 @keyframes stageSnow {
-  to { transform: translateY(110vh) translateX(24px); }
+  0% { transform: translate3d(0, 0, 0); }
+  25% { transform: translate3d(var(--sway, 20px), 27vh, 0); }
+  50% { transform: translate3d(calc(var(--sway, 20px) * -0.4), 55vh, 0); }
+  75% { transform: translate3d(var(--sway, 20px), 82vh, 0); }
+  100% { transform: translate3d(calc(var(--sway, 20px) * 0.3), 110vh, 0); }
 }
 
 /* ── 퇴장 먹 번짐 ── */

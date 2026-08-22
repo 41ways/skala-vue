@@ -15,18 +15,32 @@ defineProps({
   <span class="mcut" :class="[idle, { 'with-sil': silhouette }]">
     <img v-if="silhouette" class="sil" :src="src" alt="" draggable="false" />
     <img class="base" :src="src" alt="" draggable="false" loading="lazy" decoding="async" />
-    <img
+    <span
       v-for="(pt, i) in parts"
       :key="i"
       class="part"
-      :class="pt.anim"
-      :src="pt.src"
-      alt=""
-      draggable="false"
-      loading="lazy"
-      decoding="async"
+      :class="[pt.anim, { snowy: pt.snow }]"
       :style="{ left: pt.left, top: pt.top, width: pt.w, transformOrigin: pt.origin }"
-    />
+    >
+      <span class="part-in">
+        <img :src="pt.src" alt="" draggable="false" loading="lazy" decoding="async" />
+        <!-- 머리 위에 눈이 쌓이고, 이따금 털어 낸다 -->
+        <template v-if="pt.snow">
+          <svg class="snowcap" viewBox="0 0 315 350" aria-hidden="true">
+            <path
+              d="M44 62 C52 40 70 26 96 24 C126 22 150 30 176 38 C198 44 214 40 230 22 C244 10 254 20 258 36 C266 46 272 54 276 70 C268 66 258 60 246 56 C232 52 220 56 204 60 C184 64 164 58 144 50 C120 42 96 40 76 44 C62 48 52 54 44 62 Z"
+              class="sc-main"
+            />
+            <path d="M86 28 C100 20 122 22 136 28 C122 32 104 34 86 28 Z" class="sc-hi" />
+            <path d="M212 32 C224 20 240 18 250 28 C238 30 226 34 212 32 Z" class="sc-hi" />
+          </svg>
+          <span class="sc-fall f1"></span>
+          <span class="sc-fall f2"></span>
+          <span class="sc-fall f3"></span>
+          <span class="sc-fall f4"></span>
+        </template>
+      </span>
+    </span>
   </span>
 </template>
 
@@ -60,6 +74,74 @@ defineProps({
   z-index: 2;
   will-change: transform;
 }
+.part-in {
+  position: relative;
+  display: block;
+}
+.part img {
+  display: block;
+  width: 100%;
+}
+
+/* ── 눈 쌓임 — 12초 주기: 천천히 쌓이다(0~80%) 머리를 털면(84%) 눈이 떨어진다 ── */
+.part.snowy .part-in {
+  animation: scShake 12s ease-in-out infinite;
+  transform-origin: 55% 92%;
+}
+@keyframes scShake {
+  0%, 82%, 92%, 100% { transform: rotate(0deg) translateX(0); }
+  84% { transform: rotate(-4deg) translateX(-5px); }
+  86% { transform: rotate(4.5deg) translateX(5px); }
+  88% { transform: rotate(-3deg) translateX(-3px); }
+  90% { transform: rotate(1.5deg) translateX(1px); }
+}
+.snowcap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform-origin: 50% 18%;
+  animation: scPile 12s linear infinite;
+  filter: drop-shadow(0 1px 1px rgba(34, 28, 22, 0.18));
+}
+.sc-main { fill: rgba(252, 250, 246, 0.96); }
+.sc-hi { fill: rgba(255, 255, 255, 0.9); }
+@keyframes scPile {
+  0% { opacity: 0; transform: scaleY(0.1) translateY(4px); }
+  14% { opacity: 0.45; transform: scaleY(0.35) translateY(3px); }
+  50% { opacity: 0.9; transform: scaleY(0.78) translateY(1px); }
+  82% { opacity: 1; transform: scaleY(1) translateY(0); }
+  85% { opacity: 0.9; transform: scaleY(0.9) translateY(6px); }
+  88% { opacity: 0; transform: scaleY(0.5) translateY(26px); }
+  100% { opacity: 0; transform: scaleY(0.1) translateY(4px); }
+}
+/* 털어 낸 눈덩이 — 네 조각이 흩어져 떨어진다 */
+.sc-fall {
+  position: absolute;
+  top: 12%;
+  width: 7%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(252, 250, 246, 0.95);
+  opacity: 0;
+  pointer-events: none;
+  animation: scFall 12s ease-in infinite;
+}
+.sc-fall.f1 { left: 18%; animation-delay: 0s; }
+.sc-fall.f2 { left: 40%; width: 9%; animation-delay: 0.12s; }
+.sc-fall.f3 { left: 60%; animation-delay: 0.05s; }
+.sc-fall.f4 { left: 76%; width: 5%; animation-delay: 0.2s; }
+@keyframes scFall {
+  0%, 83% { opacity: 0; transform: translate(0, 0) scale(1); }
+  84% { opacity: 1; transform: translate(0, 0) scale(1); }
+  96% { opacity: 0; transform: translate(var(--sx, 0), 120%) scale(0.6); }
+  100% { opacity: 0; }
+}
+.sc-fall.f1 { --sx: -14px; }
+.sc-fall.f2 { --sx: -4px; }
+.sc-fall.f3 { --sx: 8px; }
+.sc-fall.f4 { --sx: 16px; }
 
 /* ── 부위 모션 ─────────────────────────────────────── */
 /* 머리 — 갸웃갸웃 (목 기준) */
@@ -193,7 +275,10 @@ defineProps({
 
 @media (prefers-reduced-motion: reduce) {
   .mcut,
-  .part {
+  .part,
+  .part-in,
+  .snowcap,
+  .sc-fall {
     animation: none !important;
   }
 }
