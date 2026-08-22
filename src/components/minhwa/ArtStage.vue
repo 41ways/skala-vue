@@ -112,12 +112,18 @@ function celestialStyle(c) {
 }
 
 // ── water ──
-// 그림이 일찍 자리잡고(비 소개), 말미에 물결로 퍼지며 흐려진다
-const wobble = computed(() => 14 + clamp01(props.p / 0.8) * 80)
+// 물 위에 떠 있는 그림을 내려다본다 — 항상 잔물결, 말미엔 전면이 부서진다
 const melt = computed(() => clamp01((props.p - 0.62) / 0.28))
-const mainWobble = computed(() => (melt.value * 75).toFixed(1))
-const reflStyle = computed(() => ({
-  opacity: (0.3 + melt.value * 0.7).toFixed(3),
+const mainWobble = computed(() => (7 + melt.value * 85).toFixed(1))
+const underStyle = computed(() => ({
+  opacity: (0.2 + melt.value * 0.8).toFixed(3),
+}))
+// 빗방울 파문 고리 위치 (마운트 시 고정)
+const rainRings = Array.from({ length: 7 }, (_, i) => ({
+  left: 8 + ((i * 137) % 84) + '%',
+  top: 8 + ((i * 61) % 80) + '%',
+  dur: (2.2 + ((i * 7) % 10) / 6).toFixed(2) + 's',
+  delay: -(((i * 13) % 22) / 10).toFixed(1) + 's',
 }))
 // 먹이 번지며 그림이 채워진다 — 빗속에 먹물이 떨어져 화폭이 살아나는 도입
 const inkFillR = computed(() => easeOut(clamp01((props.p - 0.03) / 0.44)) * 170)
@@ -126,9 +132,9 @@ const mainRise = computed(() => {
   const t = easeOut(clamp01((props.p - 0.02) / 0.1))
   const g = `radial-gradient(ellipse 80% 95% at 48% 30%, #000 ${Math.max(0, inkFillR.value - 40)}%, transparent ${inkFillR.value}%)`
   return {
-    opacity: (t * (1 - melt.value * 0.92)).toFixed(3),
-    transform: `translateY(${((1 - t) * 4 + melt.value * 7).toFixed(2)}%)`,
-    filter: melt.value > 0.01 ? 'url(#wobmain)' : 'none',
+    opacity: (t * (1 - melt.value * 0.94)).toFixed(3),
+    transform: `scale(${(1 + melt.value * 0.03).toFixed(3)})`,
+    filter: 'url(#wobmain)', // 물 위라 항상 잔물결
     maskImage: g,
     WebkitMaskImage: g,
   }
@@ -163,30 +169,29 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
             <feGaussianBlur :stdDeviation="(melt * 2.2).toFixed(2)" />
           </filter>
         </svg>
+        <!-- 아래의 물 — 그림이 부서질수록 드러난다 -->
+        <div class="w-under" :style="underStyle">
+          <div class="iw-shimmer"></div>
+        </div>
+        <!-- 물 위에 떠 있는 그림 (위에서 내려다봄) — 항상 미세하게 일렁인다 -->
         <div class="w-main" :style="mainRise">
           <img :src="img" alt="" class="art-img" draggable="false" />
         </div>
+        <!-- 빗방울 파문 — 표면에 고리가 퍼진다 -->
+        <template v-if="rain && melt < 0.7">
+          <span
+            v-for="(rg, i) in rainRings"
+            :key="'rg' + i"
+            class="rain-ring"
+            :style="{ left: rg.left, top: rg.top, animationDuration: rg.dur, animationDelay: rg.delay }"
+          ></span>
+        </template>
         <!-- 먹물 방울 — 비에 섞여 떨어지며 화폭을 적신다 -->
         <div v-if="!inkDropsDone" class="ink-drops">
           <span class="wd wd1"></span>
           <span class="wd wd2"></span>
           <span class="wd wd3"></span>
           <span class="wd wd4"></span>
-        </div>
-        <div class="w-line"></div>
-        <div class="w-refl" :style="reflStyle">
-          <svg class="w-svg" preserveAspectRatio="xMidYMin slice">
-            <defs>
-              <filter id="wob" x="-20%" y="-20%" width="140%" height="140%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.011 0.09" numOctaves="2" seed="4" result="n">
-                  <animate attributeName="baseFrequency" values="0.011 0.09;0.014 0.11;0.011 0.09" dur="7s" repeatCount="indefinite" />
-                </feTurbulence>
-                <feDisplacementMap in="SourceGraphic" in2="n" :scale="wobble" xChannelSelector="R" yChannelSelector="G" />
-              </filter>
-            </defs>
-            <image :href="img" x="0" y="0" width="100%" height="100%" preserveAspectRatio="xMidYMin slice" filter="url(#wob)" transform="scale(1,-1)" transform-origin="center" />
-          </svg>
-          <div class="w-sheen"></div>
         </div>
       </template>
 
@@ -351,48 +356,36 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   to { transform: translateY(-8px) rotate(0.6deg); }
 }
 
-/* ── 수면 반영 ── */
+/* ── 물 위의 그림 (부감) ── */
 .w-main {
   position: absolute;
-  inset: 0 0 44% 0;
+  inset: 0;
+  will-change: transform, opacity, filter;
 }
-.w-main .art-img {
-  object-position: bottom center;
-}
-.w-line {
-  position: absolute;
-  left: 4%;
-  right: 4%;
-  top: 56%;
-  height: 1.5px;
-  background: linear-gradient(90deg, transparent, rgba(47, 86, 122, 0.5), transparent);
-}
-.w-refl {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 56.2%;
-  bottom: 0;
-  overflow: hidden;
-}
-.w-svg {
-  width: 100%;
-  height: 240%;
-  display: block;
-  mix-blend-mode: multiply;
-  opacity: 0.8;
-}
-.w-sheen {
+/* 그림이 부서진 자리에 드러나는 물 */
+.w-under {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(241, 231, 208, 0.15), rgba(47, 86, 122, 0.22)),
-    repeating-linear-gradient(180deg, transparent 0 7px, rgba(251, 246, 234, 0.05) 7px 9px);
-  animation: sheen 6s ease-in-out infinite alternate;
+    radial-gradient(ellipse 120% 90% at 50% 40%, rgba(61, 106, 148, 0.9), rgba(36, 67, 95, 0.98)),
+    #24435f;
 }
-@keyframes sheen {
-  from { transform: translateY(0); }
-  to { transform: translateY(4px); }
+/* 빗방울이 수면(그림 표면)에 만드는 파문 고리 */
+.rain-ring {
+  position: absolute;
+  width: 46px;
+  height: 30px;
+  margin: -15px 0 0 -23px;
+  border: 1.5px solid rgba(251, 246, 234, 0.55);
+  border-radius: 50%;
+  opacity: 0;
+  animation: ringSpread ease-out infinite;
+  pointer-events: none;
+}
+@keyframes ringSpread {
+  0% { opacity: 0; transform: scale(0.15); }
+  12% { opacity: 0.8; }
+  100% { opacity: 0; transform: scale(1.6); }
 }
 
 /* ── 먹물 낙하 (인왕 도입) ── */
