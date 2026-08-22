@@ -2,6 +2,8 @@
 // ScrollSheet — 두루마리(卷軸) 날씨첩.
 // 고을을 누르면 옻칠 축 사이로 시전지(詩箋紙)가 펼쳐지고, 그 고을의 하늘을 세로 기문으로 적는다.
 import { computed, watch, onBeforeUnmount, nextTick, ref } from 'vue'
+import axios from 'axios'
+import { cityCoords, codeToStatus } from '@/composables/useWeather.js'
 import hanjiImg from '@/assets/minhwa-art/bg/mudong.jpg'
 import rodImg from '@/assets/minhwa-art/rod.png'
 import silkImg from '@/assets/minhwa-art/silk.jpg'
@@ -49,6 +51,41 @@ const windWord = computed(() => {
   if (w >= 1.5) return '실바람'
   return '바람 고요'
 })
+
+// 앞날 — Open-Meteo 일별 예보 (내일·모레·글피)
+const forecast = ref([])
+const DAY = ['내일', '모레', '글피']
+watch(
+  () => props.city,
+  async (c) => {
+    forecast.value = []
+    if (!c) return
+    const co = cityCoords[c.id] ?? { lat: c.lat, lon: c.lon }
+    if (co.lat === undefined || co.lat === null) return
+    try {
+      const { data } = await axios.get('https://api.open-meteo.com/v1/forecast', {
+        params: {
+          latitude: co.lat,
+          longitude: co.lon,
+          daily: 'weather_code,temperature_2m_max,temperature_2m_min',
+          forecast_days: 4,
+          timezone: 'auto',
+        },
+      })
+      const d = data.daily
+      forecast.value = [1, 2, 3].map((i) => ({
+        label: DAY[i - 1],
+        status: codeToStatus(d.weather_code[i]),
+        hi: Math.round(d.temperature_2m_max[i]),
+        lo: Math.round(d.temperature_2m_min[i]),
+      }))
+    } catch {
+      forecast.value = []
+    }
+  },
+  { immediate: true },
+)
+const deg = (n) => (hanjaMode.value ? toHanja(n) + '度' : `${n}°`)
 
 const closeBtn = ref(null)
 let lastFocus = null
@@ -100,6 +137,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               <p class="col"><span class="k">습도</span><b>{{ humTxt }}</b></p>
               <p class="col"><span class="k">바람</span><b>{{ windTxt }}</b><span class="sub">{{ windWord }}</span></p>
               <p class="col date">{{ today }} · {{ city.live ? '실측' : '표본' }}</p>
+              <template v-if="forecast.length">
+                <span class="col divider" aria-hidden="true"></span>
+                <p v-for="f in forecast" :key="f.label" class="col fc">
+                  <span class="k">{{ f.label }}</span>
+                  <i class="fc-h">{{ HANJA[f.status] ?? '天' }}</i>{{ f.status }}
+                  <span class="sub">{{ deg(f.hi) }} / {{ deg(f.lo) }}</span>
+                </p>
+              </template>
             </div>
 
             <!-- 낙관 = 숫자 표기 전환 버튼 -->
@@ -300,6 +345,22 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   color: var(--ink-soft);
   letter-spacing: 0.3em;
 }
+.col.divider {
+  width: 1px;
+  margin: 6px 4px;
+  background: rgba(178, 58, 44, 0.5);
+}
+.col.fc {
+  font-size: clamp(15px, 1.8vw, 19px);
+}
+.fc-h {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-style: normal;
+  font-size: 1.3em;
+  color: var(--jeok);
+  text-orientation: upright;
+}
 .col .sub {
   display: inline-block;
   margin-top: 12px;
@@ -358,6 +419,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   transform: rotate(-3deg);
   box-shadow: inset 0 0 0 2px rgba(251, 246, 234, 0.45), 0 4px 10px rgba(34, 28, 22, 0.35);
   transition: transform 0.2s, box-shadow 0.2s;
+  animation: stampIn 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) 1.35s both;
+}
+/* 낙관 — 두루마리가 다 펼쳐진 뒤 쿵, 찍힌다 */
+@keyframes stampIn {
+  0% { transform: rotate(-12deg) scale(1.9); opacity: 0; filter: blur(2px); }
+  60% { transform: rotate(-2deg) scale(0.94); opacity: 1; filter: blur(0); }
+  100% { transform: rotate(-3deg) scale(1); opacity: 1; }
 }
 .seal:hover,
 .seal:focus-visible {
@@ -454,6 +522,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .rules { inset: 12px 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .silk, .paper, .rod { animation: none !important; }
+  .silk, .paper, .rod, .seal { animation: none !important; }
 }
 </style>
