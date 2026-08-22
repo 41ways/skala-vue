@@ -1,0 +1,1 @@
+var e=`/skala-vue/assets/hero-CRs-FfCC.jpg`;export{e as t};
