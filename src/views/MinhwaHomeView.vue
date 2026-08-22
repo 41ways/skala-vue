@@ -651,7 +651,7 @@ function jumpTo(r) {
 /* ── 초대형 화제 — 그림과 겹치는 헤드라인 (세계화폭과 같은 문법) ── */
 .mega {
   position: absolute;
-  left: 5%;
+  left: max(5%, 104px);
   right: 5%;
   top: 30%;
   z-index: 2;
@@ -663,8 +663,10 @@ function jumpTo(r) {
   letter-spacing: 0.08em;
   color: var(--ink);
   text-shadow:
-    0 0 26px rgba(241, 231, 208, 0.95),
-    0 0 60px rgba(241, 231, 208, 0.7);
+    0 0 6px rgba(241, 231, 208, 1),
+    0 0 18px rgba(241, 231, 208, 1),
+    0 0 40px rgba(241, 231, 208, 0.95),
+    0 0 80px rgba(241, 231, 208, 0.8);
   will-change: transform, opacity;
   pointer-events: none;
 }
@@ -673,21 +675,29 @@ function jumpTo(r) {
   font-size: clamp(12px, 1.5vw, 18px);
   letter-spacing: 0.42em;
   margin-top: 14px;
-  color: var(--ink-soft);
-  text-shadow: 0 0 18px rgba(241, 231, 208, 0.95);
+  color: var(--ink);
+  text-shadow:
+    0 0 4px rgba(241, 231, 208, 1),
+    0 0 10px rgba(241, 231, 208, 1),
+    0 0 22px rgba(241, 231, 208, 0.95);
 }
 .mega.light {
   color: var(--baek);
-  text-shadow: 0 4px 44px rgba(0, 0, 0, 0.6);
+  text-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.85),
+    0 4px 20px rgba(0, 0, 0, 0.7),
+    0 4px 44px rgba(0, 0, 0, 0.6);
 }
 .mega.light small {
-  color: rgba(251, 246, 234, 0.8);
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
+  color: rgba(251, 246, 234, 0.95);
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.9),
+    0 2px 12px rgba(0, 0, 0, 0.75);
 }
 
 .foot {
   position: absolute;
-  left: 5%;
+  left: max(5%, 118px);
   right: 5%;
   bottom: 6%;
   z-index: 5;
@@ -826,11 +836,14 @@ function jumpTo(r) {
   border: 0;
   padding: 4px 0;
   cursor: pointer;
-  color: var(--ink-soft);
+  color: var(--ink);
   font-size: 17px;
   font-weight: 600;
   letter-spacing: 0.06em;
-  text-shadow: 0 0 12px rgba(241, 231, 208, 0.95);
+  text-shadow:
+    0 0 4px rgba(241, 231, 208, 1),
+    0 0 10px rgba(241, 231, 208, 1),
+    0 0 20px rgba(241, 231, 208, 0.9);
   transition: color 0.25s, transform 0.25s;
 }
 .rail-item:hover,
@@ -839,8 +852,11 @@ function jumpTo(r) {
   transform: translateX(3px);
 }
 .rail.light .rail-item {
-  color: rgba(251, 246, 234, 0.7);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  color: rgba(251, 246, 234, 0.9);
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.9),
+    0 0 10px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(0, 0, 0, 0.6);
 }
 .rail.light .rail-item:hover,
 .rail.light .rail-item.on {
@@ -870,8 +886,11 @@ function jumpTo(r) {
   cursor: pointer;
   font-size: 12.5px;
   letter-spacing: 0.22em;
-  color: var(--ink-soft);
-  text-shadow: 0 0 12px rgba(241, 231, 208, 0.95), 0 0 22px rgba(241, 231, 208, 0.85);
+  color: var(--ink);
+  text-shadow:
+    0 0 4px rgba(241, 231, 208, 1),
+    0 0 10px rgba(241, 231, 208, 1),
+    0 0 20px rgba(241, 231, 208, 0.9);
   transition: color 0.25s;
 }
 .next-fab span {
@@ -896,8 +915,8 @@ function jumpTo(r) {
 /* ── 좌측 여백 세로 표제 — 두루마리 제첨(題簽)과 낙관 ── */
 .side-title {
   position: fixed;
-  left: 22px;
-  top: 92px;
+  left: 18px;
+  top: 90px;
   z-index: 30;
   margin: 0;
   writing-mode: vertical-rl;
@@ -907,7 +926,13 @@ function jumpTo(r) {
   font-weight: 700;
   letter-spacing: 0.3em;
   color: var(--ink);
-  text-shadow: 0 0 16px rgba(241, 231, 208, 0.95), 0 0 30px rgba(241, 231, 208, 0.8);
+  /* 제첨 띠 — 반투명 한지 판이 표제만의 자리를 만든다 */
+  padding: 18px 9px 14px;
+  background: linear-gradient(180deg, rgba(251, 246, 234, 0.95), rgba(241, 231, 208, 0.93));
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  box-shadow: 0 10px 26px rgba(34, 28, 22, 0.2);
+  text-shadow: none;
 }
 .st-hanja {
   margin-top: 16px;
@@ -934,7 +959,9 @@ function jumpTo(r) {
 }
 .side-title.light {
   color: var(--baek);
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+  background: linear-gradient(180deg, rgba(24, 22, 30, 0.82), rgba(14, 13, 20, 0.82));
+  border-color: rgba(251, 246, 234, 0.3);
+  text-shadow: none;
 }
 .side-title.light .st-hanja {
   color: rgba(251, 246, 234, 0.6);
@@ -1010,14 +1037,15 @@ function jumpTo(r) {
   .side-cities {
     position: absolute;
     right: 5%;
-    left: 5%;
+    left: auto;
     top: auto;
     bottom: 3%;
     transform: none;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    max-width: none;
+    justify-content: flex-end;
+    max-width: 58%;
     z-index: 5;
   }
   .side-cap {
@@ -1035,6 +1063,15 @@ function jumpTo(r) {
   }
   .mega {
     top: 22%;
+    left: 5%;
+  }
+  .foot {
+    left: 5%;
+  }
+  .side-cities {
+    left: 5%;
+    max-width: none;
+    justify-content: flex-start;
   }
   .next-fab {
     bottom: 1.6%;
