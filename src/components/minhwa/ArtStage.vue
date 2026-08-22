@@ -145,7 +145,7 @@ function celestialStyle(c) {
     top: (c.iy * 100).toFixed(2) + '%',
     width: c.dvh + 'vh',
     opacity: (riseT.value * (1 - land)).toFixed(3),
-    transform: `translate(-50%, -50%) translateY(${((1 - riseT.value) * 52).toFixed(2)}vh) translate3d(${(props.mx * (c.depth ?? 10) * 0.4).toFixed(1)}px, ${(props.my * 5).toFixed(1)}px, 0)`,
+    transform: `translate(-50%, -50%) translateY(${((1 - riseT.value) * 52).toFixed(2)}vh) translate3d(${(props.mx * (c.depth ?? 10) * 0.4).toFixed(1)}px, ${(props.my * 5).toFixed(1)}px, 0) scaleY(${(0.82 + Math.min(1, riseT.value * 1.6) * 0.18).toFixed(3)})`,
   }
 }
 
@@ -153,7 +153,10 @@ function celestialStyle(c) {
 // 물 위에 떠 있는 그림을 내려다본다 — 항상 잔물결, 말미엔 배경만 남기고 일렁이며 사라진다
 const melt = computed(() => clamp01((wprog.value - 0.6) / 0.32))
 // 물 파동만 남은 뒤에야 시점이 눕는다
-const tiltT = computed(() => easeOut(clamp01((wprog.value - 0.92) / 0.08)))
+const tiltT = computed(() => {
+  const t = clamp01((wprog.value - 0.84) / 0.16)
+  return t * t * (3 - 2 * t) // smoothstep — 서서히 눕기 시작해 서서히 멎는다
+})
 const mainWobble = computed(() => (7 + melt.value * 85).toFixed(1))
 // 시선 이동 — 호수를 내려다보다가, 스크롤하면 수면을 수평선 보듯 기울어진다
 const tiltStyle = computed(() => ({
@@ -307,6 +310,9 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
               <span class="cel-drip d1"></span>
               <span class="cel-drip d2"></span>
               <span class="cel-drip d3"></span>
+              <span class="cel-ring r1"></span>
+              <span class="cel-ring r2"></span>
+              <span class="cel-ring r3"></span>
             </template>
           </span>
           <div v-if="effect !== 'sunrise'" class="intro-water" :style="introWaterStyle">
@@ -621,6 +627,27 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   background: rgba(210, 216, 220, 0.85);
   animation: dripFall 1.5s cubic-bezier(0.4, 0, 0.9, 0.5) infinite;
   pointer-events: none;
+}
+/* 수면 돌파 파문 — 디스크 발치에서 퍼지는 동심 타원 */
+.cel-ring {
+  position: absolute;
+  left: 50%;
+  top: 86%;
+  width: 120%;
+  height: 26%;
+  border: 1.5px solid rgba(120, 110, 96, 0.55);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.3);
+  opacity: 0;
+  animation: celRing 2.6s ease-out infinite;
+  pointer-events: none;
+}
+.cel-ring.r2 { animation-delay: 0.85s; }
+.cel-ring.r3 { animation-delay: 1.7s; }
+@keyframes celRing {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+  14% { opacity: 0.75; }
+  100% { transform: translate(-50%, -50%) scale(1.65); opacity: 0; }
 }
 .cel-drip.d1 { margin-left: -26%; animation-delay: 0s; }
 .cel-drip.d2 { margin-left: 14%; animation-delay: 0.55s; }
