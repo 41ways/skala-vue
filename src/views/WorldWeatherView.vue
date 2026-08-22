@@ -345,13 +345,13 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
         </template>
 
         <!-- 유령 숫자 — 화폭 뒤 거대한 차례 -->
-        <span class="ghost-num" :style="ghostStyle(i)">{{ numerals[i] }}</span>
+        <span class="ghost-num" aria-hidden="true" :style="ghostStyle(i)">{{ numerals[i] }}</span>
         <!-- 빛 입자 -->
         <span v-for="(m, k) in motes" :key="'mo' + k" class="mote" :style="m"></span>
         <!-- 초대형 헤드라인 -->
         <h2 class="mega" :style="headStyle(i)">
           <button class="mega-btn" @click="sheetCity = c">{{ c.name }}</button>
-          <small>{{ c.hanja }} · {{ c.country }} · <u @click="sheetCity = c">날씨첩 펼치기</u></small>
+          <small>{{ c.hanja }} · {{ c.country }} · <button class="open-sheet" @click="sheetCity = c">날씨첩 펼치기</button></small>
         </h2>
 
         <!-- 드롭캡 + 간이 독법 + 그림 캡션 -->
@@ -726,11 +726,17 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 .mega-btn:focus-visible {
   color: #ffd9a3;
 }
-.mega small u {
+.open-sheet {
+  all: unset;
   text-decoration: underline;
   text-underline-offset: 4px;
   pointer-events: auto;
   cursor: pointer;
+}
+.open-sheet:focus-visible,
+.mega-btn:focus-visible {
+  outline: 2px solid #ffd9a3;
+  outline-offset: 4px;
 }
 .paint-shade {
   position: absolute;
