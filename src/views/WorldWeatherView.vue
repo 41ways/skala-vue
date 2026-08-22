@@ -5,7 +5,7 @@
 //  · 챕터: 도시마다 "그 나라의 명화"가 한 폭씩 (도쿄=호쿠사이, 베이징=왕희맹,
 //    파리=모네, 런던=터너, 뉴욕=비어슈타트, 시드니=폰 게라르)
 //  · 설명 블록 없음 — 그림 전환 연출 중심. 민화는 국내 화폭 전용.
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import InkRipple from '@/components/minhwa/InkRipple.vue'
 import ScrollHint from '@/components/minhwa/ScrollHint.vue'
 import ScrollSheet from '@/components/minhwa/ScrollSheet.vue'
@@ -18,7 +18,6 @@ import parisImg from '@/assets/world-art/paris.jpg'
 import londonImg from '@/assets/world-art/london.jpg'
 import newyorkImg from '@/assets/world-art/newyork.jpg'
 import sydneyImg from '@/assets/world-art/sydney.jpg'
-import waveVideo from '@/assets/world-art/wave.webm' // 퍼블릭 도메인 실사 파도 (Commons, San Juan Islands)
 
 const { cities, loading, error, fetchLive } = useWorldWeather()
 
@@ -194,23 +193,12 @@ const rainDrops = Array.from({ length: 26 }, (_, i) => ({
   delay: -((i * 7) % 20) / 10 + 's',
   opacity: 0.2 + ((i * 11) % 10) / 26,
 }))
-// 도쿄 파도 영상 — 챕터가 화면에 있을 때만 재생(데이터·배터리 절약)
-const waveEl = ref(null)
-watch(activeIdx, (idx) => {
-  const vids = document.querySelectorAll('.wave-video')
-  const on = cities.value[idx]?.id === 'w_tokyo'
-  vids.forEach((v) => {
-    if (on) v.play().catch(() => {})
-    else v.pause()
-  })
-})
 // 도시별 효과 — 어느 부위를 오려 어떻게 흔들지
 const fxMap = {
   w_beijing: { kind: 'sky', clip: 'polygon(0 0, 100% 0, 100% 62%, 0 62%)', mist: true, mistTop: 28 },
   w_paris: { kind: 'water', clip: 'polygon(0 48%, 100% 48%, 100% 100%, 0 100%)', sun: { left: '49%', top: '34%' } },
   w_london: { kind: 'sky', clip: 'polygon(0 0, 100% 0, 100% 70%, 0 70%)', mist: true, mistTop: 22 },
   w_newyork: { kind: 'sky', clip: 'polygon(0 0, 100% 0, 100% 58%, 0 58%)', lightning: true },
-  w_sydney: { kind: 'water', clip: 'polygon(0 52%, 100% 52%, 100% 100%, 0 100%)' },
 }
 // 안개 띠 — 산허리·강물 위로 천천히 흐른다
 const mists = Array.from({ length: 4 }, (_, i) => ({
@@ -218,15 +206,6 @@ const mists = Array.from({ length: 4 }, (_, i) => ({
   animationDuration: (22 + i * 6) + 's',
   animationDelay: -(i * 7) + 's',
   opacity: 0.55 - i * 0.08,
-}))
-// 도쿄 파도 물보라 — 물마루 언저리에서 튀어 오르는 포말
-const spray = Array.from({ length: 16 }, (_, i) => ({
-  left: 40 + ((i * 53) % 24) + '%',
-  top: 14 + ((i * 37) % 16) + '%',
-  width: 3 + ((i * 7) % 5) + 'px',
-  height: 3 + ((i * 7) % 5) + 'px',
-  animationDuration: (1.6 + ((i * 11) % 10) / 8).toFixed(2) + 's',
-  animationDelay: -(((i * 19) % 20) / 8).toFixed(2) + 's',
 }))
 const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   left: ((i * 41) % 100) + '%',
@@ -334,33 +313,6 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
         <div class="paint" :style="paintStyle(i, artMap[c.id])">
           <img :src="artMap[c.id].img" :alt="artMap[c.id].caption" loading="lazy" decoding="async" draggable="false" />
         </div>
-        <!-- 도쿄 — 살아 움직이는 파도 -->
-        <template v-if="c.id === 'w_tokyo'">
-          <!-- 실사 파도 영상을 그림의 파도 부위에만 오려 합성 — 물결의 실제 움직임이 판화 위를 흐른다 -->
-          <div class="wave" :style="paintStyle(i, artMap[c.id])">
-            <video
-              ref="waveEl"
-              class="wave-video"
-              :src="waveVideo"
-              muted
-              loop
-              playsinline
-              preload="none"
-              aria-hidden="true"
-            ></video>
-            <video
-              class="wave-video foam"
-              :src="waveVideo"
-              muted
-              loop
-              playsinline
-              preload="none"
-              aria-hidden="true"
-            ></video>
-          </div>
-          <span v-for="(sp, j) in spray" :key="'sp' + j" class="spray" :style="sp"></span>
-          <span class="mist"></span>
-        </template>
         <!-- 도시별 — 구름·물결·안개·번개 -->
         <template v-if="fxMap[c.id]">
           <div class="fx" :class="fxMap[c.id].kind" :style="[paintStyle(i, artMap[c.id]), { clipPath: fxMap[c.id].clip }]">
@@ -670,71 +622,6 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   object-fit: cover;
   user-select: none;
 }
-/* ── 도쿄 파도 ── */
-.wave {
-  position: absolute;
-  inset: -3%;
-  z-index: 1;
-  pointer-events: none;
-  will-change: transform, opacity, filter;
-  /* 큰 파도 부분만 오려낸다 (cover 크롭 기준 근사) */
-  clip-path: polygon(0% 4%, 26% 2%, 46% 9%, 60% 24%, 66% 44%, 60% 64%, 44% 76%, 22% 80%, 0% 72%);
-  animation: waveHeave 5.2s ease-in-out infinite;
-  transform-origin: 10% 90%;
-}
-.wave-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 40%;
-  /* 실사 물결의 명암만 빌려온다 — 그림 색은 그대로 */
-  mix-blend-mode: soft-light;
-  opacity: 0.95;
-  filter: contrast(1.35) saturate(0.2) brightness(1.05);
-}
-.wave-video.foam {
-  mix-blend-mode: screen;
-  opacity: 0.32;
-  filter: contrast(1.8) saturate(0) brightness(0.9);
-}
-@keyframes waveHeave {
-  0%, 100% { translate: 0 0; rotate: 0deg; }
-  50% { translate: 6px -10px; rotate: 0.7deg; }
-}
-.spray {
-  position: absolute;
-  z-index: 2;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.55);
-  filter: blur(0.4px);
-  animation: sprayFly ease-out infinite;
-  pointer-events: none;
-}
-@keyframes sprayFly {
-  0% { opacity: 0; transform: translate(0, 0) scale(0.6); }
-  12% { opacity: 1; }
-  100% { opacity: 0; transform: translate(46px, -70px) scale(1.3); }
-}
-.mist {
-  position: absolute;
-  z-index: 2;
-  left: 34%;
-  top: 8%;
-  width: 34%;
-  height: 30%;
-  pointer-events: none;
-  background: radial-gradient(ellipse at 55% 60%, rgba(255, 255, 255, 0.28), transparent 60%);
-  filter: blur(10px);
-  animation: mistPulse 5.2s ease-in-out infinite;
-}
-@keyframes mistPulse {
-  0%, 100% { opacity: 0.35; transform: translate(0, 0); }
-  50% { opacity: 0.8; transform: translate(10px, -12px); }
-}
-
 /* ── 도시별 효과 레이어 ── */
 .fx {
   position: absolute;
@@ -1062,6 +949,6 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
     fill-opacity: 1;
     stroke-dashoffset: 0;
   }
-  .spark, .w-drop, .w-flake, .wave, .spray, .mist, .fx, .mistband, .sunglow, .lightning { animation: none !important; }
+  .spark, .w-drop, .w-flake, .fx, .mistband, .sunglow, .lightning { animation: none !important; }
 }
 </style>
