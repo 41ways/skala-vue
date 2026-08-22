@@ -42,10 +42,10 @@ const washStyle = computed(() => ({
   opacity: clamp01((props.p - 0.87) / 0.12).toFixed(3),
 }))
 
-// 흐린 원화 색면 배경 — 빠져들수록 살짝 커지고 어두워진다
+// 원화 배경 — 너무 날아가지 않게 또렷함을 유지한 채 뒤로 물러난다
 const backdropStyle = computed(() => ({
-  transform: `scale(${(1.35 + dive.value * 0.2).toFixed(3)}) translate3d(${(-props.mx * 8).toFixed(1)}px, ${(-props.my * 6).toFixed(1)}px, 0)`,
-  opacity: (0.5 - dive.value * 0.12).toFixed(3),
+  transform: `scale(${(1.32 + dive.value * 0.18).toFixed(3)}) translate3d(${(-props.mx * 8).toFixed(1)}px, ${(-props.my * 6).toFixed(1)}px, 0)`,
+  opacity: (0.78 - dive.value * 0.1).toFixed(3),
 }))
 
 // 누끼 인물 — 깊이별 시차 + 빠져들 때 분리
@@ -65,13 +65,17 @@ function cutStyle(c) {
 
 // ── inkfill ──
 // waterIntro면 해·달이 물에서 떠오른 뒤(p~0.24)에야 물감이 번지기 시작한다
-const fillStart = computed(() => (props.waterIntro ? 0.24 : 0.05))
+const fillStart = computed(() => (props.waterIntro ? 0.34 : 0.05))
 const fillR = computed(() => easeOut(clamp01((props.p - fillStart.value) / 0.36)) * 165)
 const fillStyle = computed(() => {
   const g = `radial-gradient(ellipse 85% 90% at 46% 38%, #000 ${Math.max(0, fillR.value - 34)}%, transparent ${fillR.value}%)`
   return { maskImage: g, WebkitMaskImage: g }
 })
 const dropsDone = computed(() => fillR.value > 150)
+// 수면 도입이면 해·달이 다 떠오른 뒤에야 수묵 밑그림이 배어난다
+const grayStyle = computed(() => ({
+  opacity: props.waterIntro ? clamp01((props.p - 0.28) / 0.12).toFixed(3) : '1',
+}))
 
 // 수면 도입 — 해·달이 물에서 떠오르고, 물은 서서히 걷힌다
 const riseT = computed(() => easeOut(clamp01((props.p - 0.02) / 0.26)))
@@ -162,7 +166,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
 
       <!-- ══ 물감 낙하 수묵 채색 (+ 해·달 누끼 부유) ══ -->
       <template v-else-if="effect === 'inkfill'">
-        <img :src="img" alt="" class="art-img gray" draggable="false" />
+        <img :src="img" alt="" class="art-img gray" draggable="false" :style="grayStyle" />
         <img :src="img" alt="" class="art-img colorized" draggable="false" :style="fillStyle" />
         <!-- 수면 도입: 해·달이 물에서 떠오르고, 화폭이 차면 제 자리에 스며든다 -->
         <template v-if="waterIntro">
@@ -192,7 +196,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
           <img :src="img" alt="" draggable="false" />
         </div>
         <span v-for="(c, i) in cuts" :key="'k' + i" class="cut-wrap" :style="cutStyle(c)">
-          <MinhwaCut :src="c.src" :parts="c.parts ?? []" :idle="c.idle" />
+          <MinhwaCut :src="c.src" :parts="c.parts ?? []" :idle="c.idle" silhouette />
         </span>
       </template>
     </div>
@@ -254,7 +258,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(30px) saturate(0.85);
+  filter: blur(12px) saturate(0.95);
 }
 .cut-wrap {
   position: absolute;

@@ -1,5 +1,26 @@
 <script setup>
+import { onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
+import Lenis from 'lenis'
+
+// 레퍼런스와 동일한 관성 스무스 스크롤 — 화폭이 물 흐르듯 넘어간다
+let lenis = null
+let rafId = 0
+onMounted(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  lenis = new Lenis({ lerp: 0.09, smoothWheel: true })
+  window.__lenis = lenis
+  const raf = (t) => {
+    lenis.raf(t)
+    rafId = requestAnimationFrame(raf)
+  }
+  rafId = requestAnimationFrame(raf)
+})
+onBeforeUnmount(() => {
+  cancelAnimationFrame(rafId)
+  lenis?.destroy()
+  window.__lenis = null
+})
 </script>
 
 <template>

@@ -66,9 +66,40 @@ function onMove(e) {
   tx = (e.clientX / window.innerWidth) * 2 - 1
   ty = (e.clientY / window.innerHeight) * 2 - 1
 }
+
+// 자석 스냅 — 스크롤이 멈췄을 때 어중간한 지점이면 정착점으로 스르륵
+function magnetSnap() {
+  const i = activeIdx.value
+  if (i < 0) return
+  const el = chapterEls.value[i]
+  if (!el) return
+  const vh = window.innerHeight
+  const p = progress.value[i] ?? 0
+  let target = null
+  if (p > 0.9) {
+    const next = chapterEls.value[i + 1]
+    if (next) target = next.getBoundingClientRect().top + window.scrollY + (next.offsetHeight - vh) * 0.42
+  } else if (p > 0.008 && p < 0.1) {
+    target = el.getBoundingClientRect().top + window.scrollY + (el.offsetHeight - vh) * 0.42
+  }
+  if (target !== null) {
+    if (window.__lenis) window.__lenis.scrollTo(target, { duration: 1.7 })
+    else window.scrollTo({ top: target, behavior: 'smooth' })
+  }
+}
+let still = 0
+let magnetArmed = true
 function loop() {
   const y = window.scrollY
-  if (y !== lastY) { lastY = y; measure() }
+  if (y !== lastY) {
+    lastY = y
+    measure()
+    still = 0
+    magnetArmed = true
+  } else if (magnetArmed && ++still > 20) {
+    magnetArmed = false
+    magnetSnap()
+  }
   mx.value += (tx - mx.value) * 0.06
   my.value += (ty - my.value) * 0.06
   rafId = requestAnimationFrame(loop)

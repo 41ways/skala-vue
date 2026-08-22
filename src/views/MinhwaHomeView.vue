@@ -57,8 +57,8 @@ const chapters = [
     tone: 'light',
     cuts: [
       // ix/iy = 원화(2560x1106) 속 해·달의 좌표 비율, dvh = 지름(vh)
-      { src: cut('obongdo_moon'), ix: 0.263, iy: 0.121, dvh: 17.7, depth: 10 },
-      { src: cut('obongdo_sun'), ix: 0.703, iy: 0.113, dvh: 16.6, depth: 14 },
+      { src: cut('obongdo_moon'), ix: 0.277, iy: 0.1293, dvh: 10.3, depth: 10 },
+      { src: cut('obongdo_sun'), ix: 0.7172, iy: 0.1212, dvh: 12.7, depth: 14 },
     ],
     line: '비 갠 물 위로 해와 달이 떠오릅니다 — 볕이 좋은 고을들입니다.',
     empty: '오늘은 맑게 갠 고을이 없습니다.',
@@ -206,13 +206,40 @@ function onMove(e) {
   tx = (e.clientX / window.innerWidth) * 2 - 1
   ty = (e.clientY / window.innerHeight) * 2 - 1
 }
+
+// 자석 스냅 — 스크롤이 멈췄을 때 어중간한 지점이면 정착점으로 스르륵
+function magnetSnap() {
+  const i = activeIdx.value
+  if (i < 0) return
+  const el = chapterEls.value[i]
+  if (!el) return
+  const vh = window.innerHeight
+  const p = progress.value[i] ?? 0
+  let target = null
+  if (p > 0.9) {
+    const next = chapterEls.value[i + 1]
+    if (next) target = next.getBoundingClientRect().top + window.scrollY + (next.offsetHeight - vh) * 0.42
+  } else if (p > 0.008 && p < 0.1) {
+    target = el.getBoundingClientRect().top + window.scrollY + (el.offsetHeight - vh) * 0.42
+  }
+  if (target !== null) {
+    if (window.__lenis) window.__lenis.scrollTo(target, { duration: 1.7 })
+    else window.scrollTo({ top: target, behavior: 'smooth' })
+  }
+}
+let still = 0
+let magnetArmed = true
 function loop() {
   const y = window.scrollY
   if (y !== lastY) {
     lastY = y
     measure()
+    still = 0
+    magnetArmed = true
+  } else if (magnetArmed && ++still > 20) {
+    magnetArmed = false
+    magnetSnap()
   }
-  // 마우스 시차는 lerp로 부드럽게
   mx.value += (tx - mx.value) * 0.06
   my.value += (ty - my.value) * 0.06
   rafId = requestAnimationFrame(loop)
