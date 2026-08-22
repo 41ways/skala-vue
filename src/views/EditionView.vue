@@ -121,12 +121,25 @@ function ghostStyle(i) {
     transform: `translateY(${((0.5 - p) * 12).toFixed(1)}vh)`,
   }
 }
-const heroStyle = computed(() => ({
-  transform: `translateY(${(heroP.value * -10).toFixed(2)}%)`,
-  opacity: clamp01((1 - heroP.value) / 0.4).toFixed(3),
+// 히어로 3막: 먹빛 선묘 -> 에칭 그림 -> 양피지 차례
+const geomStyle = computed(() => ({
+  opacity: (0.85 * (1 - clamp01((heroP.value - 0.3) / 0.25))).toFixed(3),
+  transform: `translate3d(${(mx.value * 10).toFixed(1)}px, ${(my.value * 7).toFixed(1)}px, 0) rotate(${(heroP.value * 8).toFixed(2)}deg)`,
 }))
-const heroArtStyle = computed(() => ({
-  transform: `translate3d(${(mx.value * 12).toFixed(1)}px, ${(my.value * 8).toFixed(1)}px, 0)`,
+const bigTitleStyle = computed(() => ({
+  opacity: (1 - clamp01((heroP.value - 0.42) / 0.16)).toFixed(3),
+  transform: `translateY(${(heroP.value * -6).toFixed(2)}vh)`,
+}))
+const sketchStyle = computed(() => ({
+  opacity: (easeOut(clamp01((heroP.value - 0.12) / 0.22)) * (1 - clamp01((heroP.value - 0.66) / 0.14))).toFixed(3),
+  transform: `scale(${(1.12 - clamp01(heroP.value / 0.7) * 0.1).toFixed(4)}) translate3d(${(mx.value * -12).toFixed(1)}px, ${(my.value * -8).toFixed(1)}px, 0)`,
+}))
+const colorStyle = computed(() => ({
+  opacity: (easeOut(clamp01((heroP.value - 0.42) / 0.18)) * (1 - clamp01((heroP.value - 0.72) / 0.12))).toFixed(3),
+  transform: `scale(${(1.1 - clamp01(heroP.value / 0.8) * 0.08).toFixed(4)}) translate3d(${(mx.value * -12).toFixed(1)}px, ${(my.value * -8).toFixed(1)}px, 0)`,
+}))
+const parchStyle = computed(() => ({
+  transform: `translateY(${((1 - easeOut(clamp01((heroP.value - 0.62) / 0.3))) * 104).toFixed(2)}%)`,
 }))
 
 function jump(i) {
@@ -159,28 +172,71 @@ const restChars = (s) => s.slice(1)
       </button>
     </nav>
 
-    <!-- ══ 히어로 — 다빈치 소묘 위 표제 ══ -->
+    <!-- ══ 히어로 — 3막: 먹빛 선묘 → 에칭 → 양피지 차례 ══ -->
     <section ref="heroEl" class="hero-wrap">
       <div class="hero-stage">
-        <div class="hero-art" :style="heroArtStyle">
-          <img :src="vitruvianImg" alt="" draggable="false" />
-        </div>
-        <div class="hero-shade"></div>
+        <!-- 에칭용 엣지 필터 -->
+        <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+          <filter id="edgeSketch">
+            <feColorMatrix type="saturate" values="0" />
+            <feConvolveMatrix order="3" kernelMatrix="-1 -1 -1 -1 8 -1 -1 -1 -1" preserveAlpha="true" />
+            <feComponentTransfer>
+              <feFuncR type="linear" slope="2.4" /><feFuncG type="linear" slope="2.4" /><feFuncB type="linear" slope="2.4" />
+            </feComponentTransfer>
+          </filter>
+        </svg>
 
-        <div class="hero-inner" :style="heroStyle">
-          <h1 class="ed-title"><span class="sketch">The</span> Renaissance <span class="sketch">Edition</span></h1>
-          <p class="ed-sub util">A new world of commerce · 150+ product updates</p>
+        <!-- 1막: 다빈치식 기하 선 -->
+        <svg class="geom" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" :style="geomStyle" aria-hidden="true">
+          <g fill="none" stroke="rgba(244,241,234,0.11)" stroke-width="1">
+            <circle cx="600" cy="410" r="330" />
+            <circle cx="600" cy="410" r="205" />
+            <rect x="330" y="140" width="540" height="540" />
+            <line x1="0" y1="800" x2="1200" y2="0" />
+            <line x1="0" y1="0" x2="1200" y2="800" />
+            <line x1="600" y1="0" x2="600" y2="800" />
+            <line x1="0" y1="410" x2="1200" y2="410" />
+            <path d="M330 680 A 380 380 0 0 1 870 680" />
+          </g>
+          <g fill="none" stroke="rgba(244,241,234,0.06)" stroke-width="1">
+            <line x1="300" y1="0" x2="300" y2="800" />
+            <line x1="900" y1="0" x2="900" y2="800" />
+          </g>
+        </svg>
 
-          <ol class="menu util">
-            <li v-for="(ch, i) in chapters" :key="ch.id" :style="{ animationDelay: (1.1 + i * 0.09).toFixed(2) + 's' }">
-              <button class="menu-item" @click="jump(i)">
-                <span class="m-name">{{ ch.name }}</span>
-                <span class="m-num">{{ numerals[i] }}</span>
-              </button>
-            </li>
-          </ol>
+        <!-- 2막: 백색 선묘 에칭 → 원색 -->
+        <div class="etch" :style="sketchStyle">
+          <img :src="heroImg" alt="" draggable="false" />
         </div>
-        <div class="hero-hint"><ScrollHint label="Scroll" /></div>
+        <div class="etch-color" :style="colorStyle">
+          <img :src="heroImg" alt="미켈란젤로, 아담의 창조" draggable="false" />
+        </div>
+
+        <!-- 표제 — ai만 세리프 이탤릭 (레퍼런스의 말장난) -->
+        <h1 class="big-title" :style="bigTitleStyle">
+          The<br />Ren<em>ai</em>ssance<br />Edition
+        </h1>
+
+        <!-- 3막: 찢긴 양피지 — 차례 -->
+        <div class="parchment" :style="parchStyle">
+          <div class="parch-inner">
+            <p class="parch-title">The Ren<em>ai</em>ssance<br />Edition</p>
+            <ol class="menu">
+              <li v-for="(ch, i) in chapters" :key="ch.id">
+                <button class="menu-item" @click="jump(i)">
+                  <span class="m-name">{{ ch.name }}</span>
+                  <span class="m-dots"></span>
+                  <span class="m-num">{{ numerals[i] }}</span>
+                </button>
+              </li>
+            </ol>
+            <p class="parch-narrative">
+              <span class="pn-cap">A</span> new world of commerce — twelve chapters, painted anew.
+            </p>
+          </div>
+        </div>
+
+        <div class="hero-hint" :style="bigTitleStyle"><ScrollHint label="Scroll" /></div>
       </div>
     </section>
 
@@ -264,9 +320,9 @@ const restChars = (s) => s.slice(1)
   transform: translateX(3px);
 }
 
-/* ── 히어로 ── */
+/* ── 히어로 3막 ── */
 .hero-wrap {
-  height: 190vh;
+  height: 420vh;
 }
 .hero-stage {
   position: sticky;
@@ -275,118 +331,145 @@ const restChars = (s) => s.slice(1)
   overflow: hidden;
   background: #0a0a0a;
 }
-.hero-art {
+.geom {
+  position: absolute;
+  inset: -4%;
+  width: 108%;
+  height: 108%;
+  will-change: transform, opacity;
+}
+/* 에칭 — 엣지 추출로 백색 선묘가 어둠 속에 떠오른다 */
+.etch,
+.etch-color {
   position: absolute;
   inset: -3%;
-  opacity: 0.22;
-  filter: grayscale(0.4) contrast(1.05);
-  animation: edZoom 40s ease-in-out infinite alternate;
+  will-change: transform, opacity;
 }
-@keyframes edZoom {
-  from { scale: 1; }
-  to { scale: 1.05; }
-}
-.hero-art img {
+.etch img,
+.etch-color img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 30%;
+  object-position: 50% 36%;
   user-select: none;
 }
-.hero-shade {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 75% 62% at 50% 44%, transparent 30%, rgba(10, 10, 10, 0.8) 90%),
-    linear-gradient(180deg, rgba(10, 10, 10, 0.5), transparent 30%, transparent 62%, rgba(10, 10, 10, 0.86));
+.etch img {
+  filter: url(#edgeSketch) brightness(1.15);
+  mix-blend-mode: screen;
 }
-.hero-inner {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0 5vw;
-  will-change: transform, opacity;
+.etch-color img {
+  filter: saturate(0.92) brightness(0.9);
 }
-/* 표제 — 소묘 선이 채워지듯 */
-.ed-title {
+.big-title {
+  position: absolute;
+  left: 33%;
+  top: 58%;
+  transform: translateY(-50%);
   margin: 0;
   font-family: 'Helvetica Neue', Helvetica, Arial, var(--font-util);
   font-weight: 800;
-  font-size: clamp(40px, 7.4vw, 104px);
-  line-height: 0.95;
-  letter-spacing: -0.03em;
-  text-align: center;
+  font-size: clamp(34px, 4.6vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.015em;
   color: #fff;
-  animation: titleFill 2.2s ease-out both;
+  will-change: transform, opacity;
+  animation: titleFill 1.8s ease-out both;
 }
-.ed-title .sketch {
-  font-family: 'Imperial Script', var(--font-display), cursive;
+.big-title em,
+.parch-title em {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
   font-weight: 400;
-  font-size: 0.92em;
   letter-spacing: 0;
-  color: #d9d3c6;
-  vertical-align: -0.06em;
-  padding: 0 0.06em;
 }
 @keyframes titleFill {
-  0% { opacity: 0; filter: blur(5px); letter-spacing: 0.02em; }
-  100% { opacity: 1; filter: blur(0); letter-spacing: -0.03em; }
+  0% { opacity: 0; filter: blur(5px); }
+  100% { opacity: 1; filter: blur(0); }
 }
-.ed-sub {
-  margin: 18px 0 4vh;
-  font-size: 12px;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
-  animation: menuIn 0.9s ease-out 0.7s both;
+/* 양피지 — 찢긴 윗단으로 밀고 올라온다 */
+.parchment {
+  position: absolute;
+  inset: 0;
+  background: #ece9dc;
+  color: #14130f;
+  will-change: transform;
+  box-shadow: 0 -30px 60px rgba(0, 0, 0, 0.5);
 }
-
-/* 12항 차례 — 레퍼런스처럼 굵은 항목 낙하 등장 */
+.parchment::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -22px;
+  height: 23px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='24' preserveAspectRatio='none'%3E%3Cpath d='M0 24 L0 16 Q13 7 28 14 T60 10 T92 15 T124 8 T156 14 T188 9 T220 15 T252 10 T284 16 T316 9 T348 13 T380 10 L400 15 L400 24 Z' fill='%23ece9dc'/%3E%3C/svg%3E");
+  background-size: 400px 24px;
+  background-repeat: repeat-x;
+}
+.parch-inner {
+  max-width: 560px;
+  padding: clamp(28px, 7vh, 72px) 8vw 40px;
+}
+.parch-title {
+  margin: 0 0 5vh;
+  font-family: 'Helvetica Neue', Helvetica, Arial, var(--font-util);
+  font-weight: 800;
+  font-size: clamp(22px, 2.4vw, 32px);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  color: #14130f;
+}
 .menu {
   list-style: none;
-  margin: 0;
+  margin: 0 0 5vh;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 220px));
-  gap: 0 6vw;
-}
-.menu li {
-  opacity: 0;
-  animation: menuIn 0.65s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
-}
-@keyframes menuIn {
-  from { opacity: 0; transform: translateY(-14px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 .menu-item {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
   background: none;
   border: 0;
-  padding: 4px 2px;
+  padding: 3.5px 0;
   cursor: pointer;
-  color: #fff;
+  color: #a09d92;
   font-family: 'Helvetica Neue', Helvetica, Arial, var(--font-util);
-  font-size: clamp(15px, 1.8vw, 19px);
+  font-size: clamp(17px, 1.9vw, 24px);
   font-weight: 800;
-  letter-spacing: 0.02em;
-  transition: transform 0.2s, color 0.2s;
+  letter-spacing: 0.01em;
+  transition: color 0.2s;
 }
 .menu-item:hover {
-  transform: translateX(4px);
-  color: #d9d3c6;
+  color: #14130f;
+}
+.menu li:first-child .menu-item {
+  color: #14130f;
+}
+.m-dots {
+  flex: 1;
+  border-bottom: 1.5px dotted #b9b5a6;
+  transform: translateY(-4px);
 }
 .m-num {
-  font-family: var(--font-util);
+  font-family: Georgia, serif;
   font-weight: 400;
-  font-size: 0.6em;
-  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.58em;
+  color: #7c7970;
+}
+.parch-narrative {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(17px, 1.9vw, 23px);
+  line-height: 1.6;
+  color: #14130f;
+}
+.pn-cap {
+  float: left;
+  font-family: 'Imperial Script', cursive;
+  font-size: 4.6em;
+  line-height: 0.66;
+  margin: 0.05em 0.1em 0 0;
 }
 .hero-hint {
   position: absolute;
