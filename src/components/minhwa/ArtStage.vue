@@ -20,6 +20,7 @@ const props = defineProps({
   rain: { type: Boolean, default: false },
   snow: { type: Boolean, default: false },
   waterIntro: { type: Boolean, default: false }, // inkfill: 수면에서 해·달이 떠오르는 도입부
+  introWaterImg: { type: String, default: '' }, // 앞 폭(인왕제색도)이 풀어진 물 — 그 반영이 남아 일렁인다
 })
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v))
@@ -87,7 +88,12 @@ const riseT = computed(() => {
   return t * t * (3 - 2 * t) // smoothstep
 })
 const introWaterStyle = computed(() => ({
-  opacity: (0.95 * (1 - clamp01((props.p - 0.34) / 0.24))).toFixed(3),
+  height: (44 - riseT.value * 20).toFixed(1) + '%', // 앞 폭(인왕)의 수면 높이에서 시작해 낮아진다
+  opacity: (0.96 * (1 - clamp01((props.p - 0.36) / 0.24))).toFixed(3),
+}))
+// 물에 남은 앞 폭의 잔영 — 해가 떠오를수록 스러진다
+const introReflStyle = computed(() => ({
+  opacity: ((1 - riseT.value) * 0.55).toFixed(3),
 }))
 function celestialStyle(c) {
   const land = clamp01((props.p - 0.58) / 0.18) // 화폭이 다 차면 원화의 해·달 위에서 스러진다
@@ -182,6 +188,18 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
             <span class="cel-glow"></span>
           </span>
           <div class="intro-water" :style="introWaterStyle">
+            <!-- 앞 폭이 풀어진 물의 잔영 — 같은 물결로 일렁인다 -->
+            <svg v-if="introWaterImg" class="iw-svg" preserveAspectRatio="xMidYMin slice" :style="introReflStyle">
+              <defs>
+                <filter id="wobintro" x="-15%" y="-15%" width="130%" height="130%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.011 0.09" numOctaves="2" seed="4" result="ni">
+                    <animate attributeName="baseFrequency" values="0.011 0.09;0.014 0.11;0.011 0.09" dur="7s" repeatCount="indefinite" />
+                  </feTurbulence>
+                  <feDisplacementMap in="SourceGraphic" in2="ni" scale="60" xChannelSelector="R" yChannelSelector="G" />
+                </filter>
+              </defs>
+              <image :href="introWaterImg" x="0" y="0" width="100%" height="100%" preserveAspectRatio="xMidYMin slice" filter="url(#wobintro)" transform="scale(1,-1)" transform-origin="center" />
+            </svg>
             <div class="iw-shimmer"></div>
           </div>
         </template>
@@ -424,9 +442,9 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   left: 0;
   right: 0;
   bottom: 0;
-  height: 26%;
   z-index: 3;
   pointer-events: none;
+  overflow: hidden;
   /* 수면 위쪽부터 진하게 — 뒤에서 올라오는 해·달이 물속에서 어른거리다 떠오른다 */
   background: linear-gradient(
     180deg,
@@ -435,6 +453,13 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
     rgba(36, 67, 95, 0.96)
   );
   box-shadow: 0 -6px 22px rgba(47, 86, 122, 0.35);
+}
+.iw-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 160%;
+  mix-blend-mode: multiply;
 }
 .iw-shimmer {
   position: absolute;

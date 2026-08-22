@@ -59,7 +59,8 @@ const chapters = [
     weather: ['맑음'],
     wHanja: '晴',
     effect: 'inkfill',
-    waterIntro: true, // 앞 폭의 물 위로 해와 달이 떠오른다
+    waterIntro: true, // 앞 폭(인왕제색도)이 풀어진 물 위로 해와 달이 떠오른다
+    waterImg: inwangImg,
     focal: '50% 44%',
     tone: 'light',
     cuts: [
@@ -346,6 +347,7 @@ function jump(i) {
           :rain="!!ch.rain"
           :snow="!!ch.snow"
           :water-intro="!!ch.waterIntro"
+          :intro-water-img="ch.waterImg ?? ''"
         />
 
         <!-- 초대형 화제(畫題) — 그림과 겹친다 -->
