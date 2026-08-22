@@ -152,6 +152,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               class="seal"
               type="button"
               :aria-pressed="hanjaMode"
+              aria-label="숫자 표기 전환 (한자 ⇄ 아라비아)"
               :title="hanjaMode ? '아라비아 숫자로 보기' : '한자 숫자로 보기'"
               @click="hanjaMode = !hanjaMode"
             >
