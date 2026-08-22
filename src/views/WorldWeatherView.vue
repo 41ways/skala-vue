@@ -546,7 +546,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   transform: translate(-50%, -50%);
   width: min(500px, 86vw);
   padding: clamp(22px, 4vh, 40px) clamp(20px, 3.5vw, 44px);
-  border: 1px solid rgba(251, 246, 234, 0.55);
+  border: 1.5px solid rgba(251, 246, 234, 0.88);
   background: rgba(11, 15, 24, 0.32);
   backdrop-filter: blur(2.5px);
 }
