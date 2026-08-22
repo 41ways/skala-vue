@@ -77,9 +77,26 @@ watch(
 const deg = (n) => (hanjaMode.value ? toHanja(n) + '度' : `${n}°`)
 
 const closeBtn = ref(null)
+const sheetEl = ref(null)
 let lastFocus = null
 function onKey(e) {
-  if (e.key === 'Escape') emit('close')
+  if (e.key === 'Escape') return emit('close')
+  // Tab은 두루마리 안에서만 돈다
+  if (e.key !== 'Tab' || !sheetEl.value) return
+  const items = [...sheetEl.value.querySelectorAll('button, a[href]')].filter((el) => !el.disabled)
+  if (!items.length) return
+  const first = items[0]
+  const last = items[items.length - 1]
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault()
+    last.focus()
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault()
+    first.focus()
+  } else if (!sheetEl.value.contains(document.activeElement)) {
+    e.preventDefault()
+    first.focus()
+  }
 }
 watch(
   () => props.city,
@@ -103,7 +120,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 <template>
   <Transition name="sheet">
     <div v-if="city" class="sheet-veil" @click.self="emit('close')">
-      <div class="scroll" role="dialog" aria-modal="true" :aria-label="city.name + ' 날씨첩'">
+      <div ref="sheetEl" class="scroll" role="dialog" aria-modal="true" :aria-label="city.name + ' 날씨첩'">
         <!-- 옻칠 축 - 옥 축두 -->
         <span class="rod rod-l"><img :src="rodImg" alt="" draggable="false" /></span>
         <span class="rod rod-r"><img :src="rodImg" alt="" draggable="false" /></span>
