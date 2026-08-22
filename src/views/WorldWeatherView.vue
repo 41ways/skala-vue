@@ -5,7 +5,7 @@
 //  · 챕터: 도시마다 "그 나라의 명화"가 한 폭씩 (도쿄=호쿠사이, 베이징=왕희맹,
 //    파리=모네, 런던=터너, 뉴욕=비어슈타트, 시드니=폰 게라르)
 //  · 설명 블록 없음 — 그림 전환 연출 중심. 민화는 국내 화폭 전용.
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import InkRipple from '@/components/minhwa/InkRipple.vue'
 import ScrollHint from '@/components/minhwa/ScrollHint.vue'
 import ScrollSheet from '@/components/minhwa/ScrollSheet.vue'
@@ -18,6 +18,7 @@ import parisImg from '@/assets/world-art/paris.jpg'
 import londonImg from '@/assets/world-art/london.jpg'
 import newyorkImg from '@/assets/world-art/newyork.jpg'
 import sydneyImg from '@/assets/world-art/sydney.jpg'
+import waveVideo from '@/assets/world-art/wave.webm' // 퍼블릭 도메인 실사 파도 (Commons, San Juan Islands)
 
 const { cities, loading, error, fetchLive } = useWorldWeather()
 
@@ -193,6 +194,31 @@ const rainDrops = Array.from({ length: 26 }, (_, i) => ({
   delay: -((i * 7) % 20) / 10 + 's',
   opacity: 0.2 + ((i * 11) % 10) / 26,
 }))
+// 도쿄 파도 영상 — 챕터가 화면에 있을 때만 재생(데이터·배터리 절약)
+const waveEl = ref(null)
+watch(activeIdx, (idx) => {
+  const vids = document.querySelectorAll('.wave-video')
+  const on = cities.value[idx]?.id === 'w_tokyo'
+  vids.forEach((v) => {
+    if (on) v.play().catch(() => {})
+    else v.pause()
+  })
+})
+// 도시별 효과 — 어느 부위를 오려 어떻게 흔들지
+const fxMap = {
+  w_beijing: { kind: 'sky', clip: 'polygon(0 0, 100% 0, 100% 62%, 0 62%)', mist: true, mistTop: 28 },
+  w_paris: { kind: 'water', clip: 'polygon(0 48%, 100% 48%, 100% 100%, 0 100%)', sun: { left: '49%', top: '34%' } },
+  w_london: { kind: 'sky', clip: 'polygon(0 0, 100% 0, 100% 70%, 0 70%)', mist: true, mistTop: 22 },
+  w_newyork: { kind: 'sky', clip: 'polygon(0 0, 100% 0, 100% 58%, 0 58%)', lightning: true },
+  w_sydney: { kind: 'water', clip: 'polygon(0 52%, 100% 52%, 100% 100%, 0 100%)' },
+}
+// 안개 띠 — 산허리·강물 위로 천천히 흐른다
+const mists = Array.from({ length: 4 }, (_, i) => ({
+  height: 7 + (i % 2) * 4 + '%',
+  animationDuration: (22 + i * 6) + 's',
+  animationDelay: -(i * 7) + 's',
+  opacity: 0.55 - i * 0.08,
+}))
 // 도쿄 파도 물보라 — 물마루 언저리에서 튀어 오르는 포말
 const spray = Array.from({ length: 16 }, (_, i) => ({
   left: 40 + ((i * 53) % 24) + '%',
@@ -234,14 +260,21 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
     </nav>
 
     <svg width="0" height="0" style="position: absolute" aria-hidden="true">
-      <!-- 도쿄 — 파도 너울: 저주파 난류가 물마루를 밀어 올리고 끌어내린다 -->
-      <filter id="waveSwell" x="-10%" y="-10%" width="120%" height="120%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.004 0.012" numOctaves="2" seed="4" result="n">
-          <animate attributeName="baseFrequency" values="0.004 0.012;0.006 0.016;0.004 0.012" dur="6.5s" repeatCount="indefinite" />
+      <!-- 물결 — 가로로 긴 잔물결이 흐른다 -->
+      <filter id="fxWater" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.008 0.04" numOctaves="2" seed="8" result="n">
+          <animate attributeName="baseFrequency" values="0.008 0.04;0.011 0.05;0.008 0.04" dur="7s" repeatCount="indefinite" />
         </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="22" xChannelSelector="R" yChannelSelector="G">
-          <animate attributeName="scale" values="14;26;14" dur="5.2s" repeatCount="indefinite" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G">
+          <animate attributeName="scale" values="6;12;6" dur="4.6s" repeatCount="indefinite" />
         </feDisplacementMap>
+      </filter>
+      <!-- 구름 — 아주 느린 저주파 일렁임 -->
+      <filter id="fxSky" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.003 0.006" numOctaves="2" seed="2" result="n">
+          <animate attributeName="baseFrequency" values="0.003 0.006;0.004 0.008;0.003 0.006" dur="14s" repeatCount="indefinite" />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G" />
       </filter>
       <filter id="wEdge">
         <feColorMatrix type="saturate" values="0" />
@@ -303,11 +336,41 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
         </div>
         <!-- 도쿄 — 살아 움직이는 파도 -->
         <template v-if="c.id === 'w_tokyo'">
+          <!-- 실사 파도 영상을 그림의 파도 부위에만 오려 합성 — 물결의 실제 움직임이 판화 위를 흐른다 -->
           <div class="wave" :style="paintStyle(i, artMap[c.id])">
-            <img :src="artMap[c.id].img" alt="" loading="lazy" decoding="async" draggable="false" />
+            <video
+              ref="waveEl"
+              class="wave-video"
+              :src="waveVideo"
+              muted
+              loop
+              playsinline
+              preload="none"
+              aria-hidden="true"
+            ></video>
+            <video
+              class="wave-video foam"
+              :src="waveVideo"
+              muted
+              loop
+              playsinline
+              preload="none"
+              aria-hidden="true"
+            ></video>
           </div>
           <span v-for="(sp, j) in spray" :key="'sp' + j" class="spray" :style="sp"></span>
           <span class="mist"></span>
+        </template>
+        <!-- 도시별 — 구름·물결·안개·번개 -->
+        <template v-if="fxMap[c.id]">
+          <div class="fx" :class="fxMap[c.id].kind" :style="[paintStyle(i, artMap[c.id]), { clipPath: fxMap[c.id].clip }]">
+            <img :src="artMap[c.id].img" alt="" loading="lazy" decoding="async" draggable="false" />
+          </div>
+          <template v-if="fxMap[c.id].mist">
+            <span v-for="(m, j) in mists" :key="'m' + j" class="mistband" :style="[m, { top: fxMap[c.id].mistTop + j * 9 + '%' }]"></span>
+          </template>
+          <span v-if="fxMap[c.id].sun" class="sunglow" :style="fxMap[c.id].sun"></span>
+          <span v-if="fxMap[c.id].lightning" class="lightning"></span>
         </template>
         <div class="paint-shade"></div>
 
@@ -619,12 +682,22 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   animation: waveHeave 5.2s ease-in-out infinite;
   transform-origin: 10% 90%;
 }
-.wave img {
+.wave-video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: url(#waveSwell);
-  user-select: none;
+  object-position: 50% 40%;
+  /* 실사 물결의 명암만 빌려온다 — 그림 색은 그대로 */
+  mix-blend-mode: soft-light;
+  opacity: 0.95;
+  filter: contrast(1.35) saturate(0.2) brightness(1.05);
+}
+.wave-video.foam {
+  mix-blend-mode: screen;
+  opacity: 0.32;
+  filter: contrast(1.8) saturate(0) brightness(0.9);
 }
 @keyframes waveHeave {
   0%, 100% { translate: 0 0; rotate: 0deg; }
@@ -660,6 +733,79 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 @keyframes mistPulse {
   0%, 100% { opacity: 0.35; transform: translate(0, 0); }
   50% { opacity: 0.8; transform: translate(10px, -12px); }
+}
+
+/* ── 도시별 효과 레이어 ── */
+.fx {
+  position: absolute;
+  inset: -3%;
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform, opacity, filter;
+}
+.fx img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+}
+.fx.water img { filter: url(#fxWater); }
+.fx.sky img { filter: url(#fxSky); }
+.fx.sky { animation: skyDrift 40s ease-in-out infinite alternate; }
+@keyframes skyDrift {
+  from { translate: 0 0; }
+  to { translate: -18px 4px; }
+}
+.mistband {
+  position: absolute;
+  z-index: 2;
+  left: -30%;
+  width: 60%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55) 40%, rgba(255, 255, 255, 0.5) 60%, transparent);
+  filter: blur(14px);
+  animation: mistDrift linear infinite;
+}
+@keyframes mistDrift {
+  from { transform: translateX(0); }
+  to { transform: translateX(230%); }
+}
+.sunglow {
+  position: absolute;
+  z-index: 2;
+  width: 26vmin;
+  height: 26vmin;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 190, 120, 0.55), rgba(255, 150, 90, 0.22) 40%, transparent 70%);
+  filter: blur(6px);
+  mix-blend-mode: screen;
+  animation: sunPulse 4.8s ease-in-out infinite;
+}
+@keyframes sunPulse {
+  0%, 100% { opacity: 0.6; scale: 1; }
+  50% { opacity: 1; scale: 1.18; }
+}
+.lightning {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 62% 18%, rgba(255, 255, 255, 0.95), rgba(220, 230, 255, 0.4) 30%, transparent 65%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: flash 11s linear infinite;
+}
+@keyframes flash {
+  0%, 38%, 100% { opacity: 0; }
+  39% { opacity: 0.9; }
+  40% { opacity: 0.15; }
+  41.5% { opacity: 1; }
+  43% { opacity: 0; }
+  74% { opacity: 0; }
+  74.6% { opacity: 0.7; }
+  75.5% { opacity: 0; }
 }
 
 /* 선묘 에칭 — 엣지 추출 백선 */
@@ -916,6 +1062,6 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
     fill-opacity: 1;
     stroke-dashoffset: 0;
   }
-  .spark, .w-drop, .w-flake, .wave, .spray, .mist { animation: none !important; }
+  .spark, .w-drop, .w-flake, .wave, .spray, .mist, .fx, .mistband, .sunglow, .lightning { animation: none !important; }
 }
 </style>
