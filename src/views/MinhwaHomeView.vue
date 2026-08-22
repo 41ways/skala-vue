@@ -309,6 +309,14 @@ onBeforeUnmount(() => {
 })
 
 // 정보 오버레이 : 그림이 자리잡은 뒤 순차 등장
+const activeToneLight = computed(() => {
+  const i = activeIdx.value
+  if (i < 0) return false
+  return fld(chapters[i], i, 'tone') === 'light'
+})
+function sideStyle(i) {
+  return { opacity: infoStyle(i, 1).opacity }
+}
 function infoStyle(i, order = 0) {
   const p = progress.value[i] ?? 0
   if (chapters[i]?.phase2) {
@@ -316,7 +324,7 @@ function infoStyle(i, order = 0) {
     // 2막(일월오봉도) 문구는 화폭이 다 차오른 뒤에야 든다
     const in1 = easeOut(clamp01((p - 0.08 - order * 0.04) / 0.12))
     const out1 = clamp01((p - 0.36 - order * 0.02) / 0.06)
-    const in2 = easeOut(clamp01((p - 0.9 - order * 0.03) / 0.07))
+    const in2 = easeOut(clamp01((p - 0.87 - order * 0.02) / 0.05))
     const t = Math.max(in1 * (1 - out1), in2)
     return {
       opacity: t.toFixed(3),
@@ -439,21 +447,35 @@ function jumpTo(r) {
           <p class="narrative">
             <span class="dcap">{{ fld(ch, i, 'line').slice(0, 1) }}</span>{{ fld(ch, i, 'line').slice(1) }}
           </p>
-          <div class="city-chips">
-            <template v-if="citiesFor(ch, i).length">
-              <router-link
-                v-for="c in citiesFor(ch, i)"
-                :key="c.id"
-                class="chip util"
-                :to="`/weather/${c.id}`"
-              >
-                <span class="chip-hanja">{{ fld(ch, i, 'wHanja') }}</span>
-                <b>{{ c.name }}</b> {{ c.temp }}° · {{ c.status }}
-              </router-link>
-            </template>
-            <p v-else class="chip-empty util">{{ fld(ch, i, 'empty') }}</p>
-          </div>
         </div>
+
+        <!-- 우측 — 그림 곁에 띄운 도시 정보 -->
+        <aside class="side-cities" :class="{ light: fld(ch, i, 'tone') === 'light' }" :style="sideStyle(i)">
+          <p class="side-cap util">{{ fld(ch, i, 'wHanja') }} — 이 화폭의 고을</p>
+          <template v-if="citiesFor(ch, i).length">
+            <router-link
+              v-for="c in citiesFor(ch, i)"
+              :key="c.id"
+              class="chip util"
+              :to="`/weather/${c.id}`"
+            >
+              <span class="chip-hanja">{{ fld(ch, i, 'wHanja') }}</span>
+              <b>{{ c.name }}</b> {{ c.temp }}° · {{ c.status }}
+            </router-link>
+          </template>
+          <p v-else class="chip-empty util">{{ fld(ch, i, 'empty') }}</p>
+        </aside>
+
+        <!-- 다음 폭으로 — 하단의 작은 손짓 -->
+        <button
+          v-if="i < chapters.length - 1"
+          class="next-fab util"
+          :class="{ light: fld(ch, i, 'tone') === 'light' }"
+          :style="{ opacity: infoStyle(i, 1).opacity }"
+          @click="jumpTo({ i: i + 1, f: 0.42 })"
+        >
+          다음 폭 <span>↓</span>
+        </button>
       </div>
     </section>
 
@@ -474,8 +496,11 @@ function jumpTo(r) {
       <p v-if="error" class="err util">실시간 조회 실패 — 표본 자료로 표시 중입니다.</p>
     </section>
 
+    <!-- ══ 좌측 여백 — 세로 표제 ══ -->
+    <p v-show="activeIdx >= 0" class="side-title" :class="{ light: activeToneLight }">팔도청우록<span>八道晴雨錄</span></p>
+
     <!-- ══ 좌측 차례 레일 (챕터 진입 후) ══ -->
-    <nav v-show="activeIdx >= 0" class="rail util" aria-label="화폭 차례">
+    <nav v-show="activeIdx >= 0" class="rail util" :class="{ light: activeToneLight }" aria-label="화폭 차례">
       <button
         v-for="(r, k) in railItems"
         :key="k"
@@ -666,15 +691,22 @@ function jumpTo(r) {
   will-change: transform, opacity;
 }
 .narrative {
+  display: inline-block;
   margin: 0;
+  padding: 10px 16px;
   font-size: clamp(16px, 2.2vw, 24px);
   line-height: 1.7;
   color: var(--ink);
-  text-shadow: 0 0 16px rgba(241, 231, 208, 0.95), 0 0 34px rgba(241, 231, 208, 0.8);
+  background: rgba(241, 231, 208, 0.82);
+  border-radius: 5px;
+  box-shadow: 0 0 20px 14px rgba(241, 231, 208, 0.82);
+  text-shadow: 0 0 12px rgba(241, 231, 208, 0.9);
 }
 .foot.light .narrative {
   color: var(--baek);
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
+  background: rgba(18, 16, 24, 0.42);
+  box-shadow: 0 0 20px 14px rgba(18, 16, 24, 0.42);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
 }
 .dcap {
   float: left;
@@ -785,14 +817,14 @@ function jumpTo(r) {
 .rail-item {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 12px;
   background: none;
   border: 0;
-  padding: 2px 0;
+  padding: 4px 0;
   cursor: pointer;
   color: var(--ink-soft);
-  font-size: 13.5px;
-  font-weight: 500;
+  font-size: 17px;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-shadow: 0 0 12px rgba(241, 231, 208, 0.95);
   transition: color 0.25s, transform 0.25s;
@@ -802,21 +834,153 @@ function jumpTo(r) {
   color: var(--ink);
   transform: translateX(3px);
 }
+.rail.light .rail-item {
+  color: rgba(251, 246, 234, 0.7);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+.rail.light .rail-item:hover,
+.rail.light .rail-item.on {
+  color: var(--baek);
+}
+.rail.light .rail-num {
+  color: rgba(251, 246, 234, 0.45);
+}
 .rail-item.on .rail-num {
   color: var(--jeok);
 }
 .rail-num {
   font-family: var(--font-display);
-  font-size: 11px;
+  font-size: 13px;
   color: rgba(34, 28, 22, 0.4);
 }
 
+/* ── 다음 폭 버튼 ── */
+.next-fab {
+  position: absolute;
+  left: 50%;
+  bottom: 2.6%;
+  transform: translateX(-50%);
+  z-index: 6;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-size: 12.5px;
+  letter-spacing: 0.22em;
+  color: var(--ink-soft);
+  text-shadow: 0 0 12px rgba(241, 231, 208, 0.95), 0 0 22px rgba(241, 231, 208, 0.85);
+  transition: color 0.25s;
+}
+.next-fab span {
+  display: inline-block;
+  animation: nextNudge 2.2s ease-in-out infinite;
+}
+@keyframes nextNudge {
+  0%, 100% { transform: translateY(0); }
+  55% { transform: translateY(4px); }
+}
+.next-fab:hover {
+  color: var(--jeok);
+}
+.next-fab.light {
+  color: rgba(251, 246, 234, 0.85);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+.next-fab.light:hover {
+  color: #e8a5b0;
+}
+
+/* ── 좌측 여백 세로 표제 — 두루마리 낙관처럼 ── */
+.side-title {
+  position: fixed;
+  left: 26px;
+  top: 96px;
+  z-index: 30;
+  margin: 0;
+  writing-mode: vertical-rl;
+  font-family: var(--font-display);
+  font-size: 24px;
+  letter-spacing: 0.34em;
+  color: var(--ink);
+  text-shadow: 0 0 14px rgba(241, 231, 208, 0.95);
+}
+.side-title span {
+  display: block;
+  margin-top: 14px;
+  font-size: 12px;
+  letter-spacing: 0.5em;
+  color: var(--ink-soft);
+}
+.side-title.light {
+  color: var(--baek);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+.side-title.light span {
+  color: rgba(251, 246, 234, 0.6);
+}
+
+/* ── 우측 도시 정보 패널 ── */
+.side-cities {
+  position: absolute;
+  right: 4%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 9px;
+  max-width: 250px;
+  will-change: opacity;
+}
+.side-cap {
+  margin: 0 0 3px;
+  font-size: 11.5px;
+  letter-spacing: 0.18em;
+  color: var(--ink-soft);
+  text-shadow: 0 0 12px rgba(241, 231, 208, 0.95);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 5px;
+  background: rgba(241, 231, 208, 0.75);
+  box-shadow: 0 0 14px 8px rgba(241, 231, 208, 0.75);
+}
+.side-cities .chip-empty {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(251, 246, 234, 0.92);
+  box-shadow: 0 10px 26px rgba(34, 28, 22, 0.14);
+  text-shadow: none;
+}
+.side-cities.light .side-cap {
+  color: rgba(251, 246, 234, 0.85);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
+  border-bottom-color: rgba(251, 246, 234, 0.3);
+}
+
 @media (max-width: 760px) {
-  .rail {
+  .rail,
+  .side-title {
     display: none;
   }
   .mega {
     top: 22%;
+  }
+  .side-cities {
+    right: 5%;
+    left: 5%;
+    top: auto;
+    bottom: 3%;
+    transform: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    max-width: none;
+  }
+  .side-cap {
+    display: none;
+  }
+  .foot {
+    bottom: 14%;
   }
 }
 
