@@ -306,10 +306,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .head {
   position: absolute;
-  right: 40px;
+  right: 92px;
   top: 24px;
   margin: 0;
-  writing-mode: vertical-rl;
+  writing-mode: vertical-lr;
   font-family: var(--font-display);
   font-size: 12.5px;
   letter-spacing: 0.36em;
@@ -319,13 +319,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   position: relative;
   z-index: 1;
   height: 100%;
-  writing-mode: vertical-rl;
+  writing-mode: vertical-lr; /* 왼쪽에서 오른쪽으로 읽는다 */
   text-orientation: mixed;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding-right: 52px;
-  padding-left: 78px; /* 낙관·거두기 자리 확보 */
+  padding-left: 8px;
+  padding-right: 84px; /* 오른쪽 낙관·거두기 자리 확보 */
   color: var(--ink);
   font-family: var(--font-display);
 }
@@ -406,7 +406,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .seal {
   position: absolute;
   z-index: 4; /* 세로글 영역 위 — 실제 클릭이 닿아야 한다 */
-  left: 36px;
+  right: 36px;
   bottom: 30px;
   width: 64px;
   height: 72px;
@@ -461,7 +461,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .close {
   position: absolute;
-  left: 34px;
+  right: 34px;
   top: 26px;
   z-index: 2;
   writing-mode: vertical-rl;
@@ -510,14 +510,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .rod { flex-basis: 30px; }
   .silk { padding: 14px 24px; margin: 0 -12px; }
   .paper { padding: 20px 18px 20px 16px; overflow-x: auto; }
-  .columns { gap: 12px; padding-right: 16px; padding-left: 64px; }
+  .columns { gap: 12px; padding-left: 4px; padding-right: 64px; }
   .col { font-size: 15px; letter-spacing: 0.14em; }
   .col.title { font-size: 30px; letter-spacing: 0.2em; }
   .col.sky { font-size: 18px; }
   .head { display: none; }
-  .seal { left: 18px; bottom: 18px; width: 52px; height: 62px; }
+  .seal { right: 18px; bottom: 18px; width: 52px; height: 62px; }
   .seal-face { font-size: 16px; }
-  .close { left: 18px; top: 18px; }
+  .close { right: 18px; top: 18px; }
   .rules { inset: 12px 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
