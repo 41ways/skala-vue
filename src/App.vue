@@ -11,6 +11,19 @@ let rafId = 0
 
 // 맨 위로 - 한 화면 넘게 내려가면 우하단에 뜬다
 const showTop = ref(false)
+// 첫 로드 프리로더: 원화·폰트가 오기 전 빈 화면 대신 먹 제호를 보여준다
+const booting = ref(true)
+const bootLeaving = ref(false)
+function bootDone() {
+  if (bootLeaving.value) return
+  bootLeaving.value = true
+  setTimeout(() => (booting.value = false), 700) // Transition 대신 타이머: 숨은 탭에서도 확실히 걷힌다
+}
+onMounted(() => {
+  if (document.readyState === 'complete') setTimeout(bootDone, 350)
+  else window.addEventListener('load', () => setTimeout(bootDone, 350), { once: true })
+  setTimeout(bootDone, 2600) // 너무 오래 기다리지 않게
+})
 function onScrollTop() {
   showTop.value = window.scrollY > window.innerHeight * 1.2
 }
@@ -49,6 +62,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <div v-if="booting" class="preload" :class="{ out: bootLeaving }" aria-hidden="true">
+    <p class="pl-title">晴雨錄</p>
+    <p class="pl-sub util">먹을 갈고 있습니다</p>
+  </div>
   <a class="skip util" href="#main">본문으로 건너뛰기</a>
   <header class="top" :class="{ dark: route.path.startsWith('/world') || route.path.startsWith('/edition') }">
     <RouterLink to="/" class="logo">청우<em>록</em><small>晴雨錄</small></RouterLink>
@@ -77,6 +94,49 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+/* 프리로더 */
+.preload {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: var(--paper);
+}
+.pl-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(44px, 9vw, 84px);
+  letter-spacing: 0.3em;
+  color: var(--ink);
+  animation: plInk 1.4s ease-out both;
+}
+.pl-sub {
+  margin: 10px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: var(--ink-soft);
+  animation: plFade 1.2s ease-out 0.4s both;
+}
+@keyframes plInk {
+  0% { opacity: 0; filter: blur(10px); letter-spacing: 0.6em; }
+  100% { opacity: 1; filter: blur(0); letter-spacing: 0.3em; }
+}
+@keyframes plFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.preload {
+  transition: opacity 0.6s ease, filter 0.6s ease;
+}
+.preload.out {
+  opacity: 0;
+  filter: blur(6px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pl-title, .pl-sub { animation: none; }
+}
 .skip {
   position: fixed;
   top: -60px;
