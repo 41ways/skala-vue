@@ -1377,7 +1377,9 @@ function jumpTo(r) {
   .dcap { font-size: 2.2em; }
   .foot { bottom: 17%; }
   .side-cities { bottom: 2.5%; gap: 10px; }
-  .vc { font-size: 18px; }
+  /* 터치 화면: 고을·다음 폭 버튼을 손가락 크기로 */
+  .vc { font-size: 18px; padding: 9px 10px; margin: -9px -10px; min-height: 40px; display: inline-flex; align-items: baseline; }
+  .next-fab { padding: 12px 18px; }
   .vc span { font-size: 0.7em; }
   /* 숫자는 세로글 속에서 가로로 한 덩어리(縦中横) */
 .vc span .n {
