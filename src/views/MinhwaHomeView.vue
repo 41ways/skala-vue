@@ -94,9 +94,9 @@ const chapters = [
         idle: 'sway',
         z: 3,
         parts: [
-          { src: cut('mudong_sleeve_r'), left: '42.3%', top: '3.9%', w: '31%', anim: 'p-flutter', origin: '10% 85%' },
-          { src: cut('mudong_sleeve_l'), left: '4.2%', top: '33%', w: '32.4%', anim: 'p-flutter-b', origin: '85% 20%' },
-          { src: cut('mudong_leg'), left: '46.5%', top: '68%', w: '32.4%', anim: 'p-kick', origin: '50% 8%' },
+          { src: cut('mudong_sleeve_r'), left: '23.9%', top: '1.9%', w: '50.7%', anim: 'p-flutter', origin: '72% 92%' },
+          { src: cut('mudong_sleeve_l'), left: '0%', top: '41.7%', w: '40.8%', anim: 'p-flutter-b', origin: '90% 12%' },
+          { src: cut('mudong_leg'), left: '42.3%', top: '64.1%', w: '39.4%', anim: 'p-kick', origin: '48% 8%' },
         ],
       },
       { src: cut('mudong_buk'), t: 0.1, left: '5%', top: '3%', w: '21%', depth: 8, ox: -8, oy: -10, ds: 0.02, idle: 'bob', z: 1 },
@@ -265,11 +265,8 @@ function magnetSnap() {
   const p = progress.value[i] ?? 0
   const isTall = !!chapters[i]?.phase2
   let target = null
-  // 병합 챕터는 끝(오봉도)에 머무를 수 있어야 한다 — 다음 폭 자동 이동 금지
-  if (p > 0.9 && !isTall) {
-    const next = chapterEls.value[i + 1]
-    if (next) target = next.getBoundingClientRect().top + window.scrollY + (next.offsetHeight - vh) * 0.42
-  } else if (p > 0.008 && p < 0.1) {
+  // 다음 폭 자동 이동은 하지 않는다 — 사용자가 넘길 때만 넘어간다
+  if (p > 0.008 && p < 0.1) {
     target = el.getBoundingClientRect().top + window.scrollY + (el.offsetHeight - vh) * (isTall ? 0.16 : 0.42)
   }
   if (target !== null) {
@@ -1000,7 +997,7 @@ function jumpTo(r) {
 .side-cap {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 16px;
   letter-spacing: 0.34em;
   color: inherit;
   opacity: 0.78;
@@ -1029,7 +1026,7 @@ function jumpTo(r) {
 .vc {
   pointer-events: auto;
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 25px;
   letter-spacing: 0.2em;
   color: inherit;
   text-decoration: none;
@@ -1048,11 +1045,12 @@ function jumpTo(r) {
 }
 .vc span {
   display: inline-block;
-  margin-top: 8px;
+  margin-top: 10px;
   font-family: var(--font-util);
-  font-size: 0.78em;
-  letter-spacing: 0.12em;
-  opacity: 0.82;
+  font-size: 0.62em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  opacity: 0.95;
 }
 .vc-empty {
   margin: 0;
