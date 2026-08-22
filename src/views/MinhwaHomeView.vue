@@ -705,20 +705,21 @@ function jumpTo(r) {
 .narrative {
   display: inline-block;
   margin: 0;
-  padding: 10px 16px;
+  padding: 4px 10px;
   font-size: clamp(16px, 2.2vw, 24px);
   line-height: 1.7;
   color: var(--ink);
-  background: rgba(241, 231, 208, 0.82);
+  /* 한지 바탕은 글자 주변만 옅게 — 그림을 가리지 않게 */
+  background: rgba(241, 231, 208, 0.42);
   border-radius: 5px;
-  box-shadow: 0 0 20px 14px rgba(241, 231, 208, 0.82);
-  text-shadow: 0 0 12px rgba(241, 231, 208, 0.9);
+  box-shadow: 0 0 14px 8px rgba(241, 231, 208, 0.42);
+  text-shadow: 0 0 10px rgba(241, 231, 208, 0.9), 0 0 3px rgba(241, 231, 208, 0.9);
 }
 .foot.light .narrative {
   color: var(--baek);
-  background: rgba(18, 16, 24, 0.42);
-  box-shadow: 0 0 20px 14px rgba(18, 16, 24, 0.42);
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+  background: rgba(18, 16, 24, 0.24);
+  box-shadow: 0 0 14px 8px rgba(18, 16, 24, 0.24);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6), 0 0 3px rgba(0, 0, 0, 0.7);
 }
 .dcap {
   float: left;
