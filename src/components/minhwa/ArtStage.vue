@@ -197,11 +197,11 @@ const mainRise = computed(() => {
   }
 })
 
-const rainDrops = Array.from({ length: 30 }, (_, i) => ({
+const rainDrops = Array.from({ length: 44 }, (_, i) => ({
   left: ((i * 37) % 100) + '%',
   duration: 0.9 + ((i * 13) % 10) / 11 + 's',
   delay: -((i * 7) % 20) / 10 + 's',
-  opacity: 0.25 + ((i * 11) % 10) / 22,
+  opacity: 0.45 + ((i * 11) % 10) / 20,
 }))
 // 눈 — 가까운 송이는 크고 빠르며 조금 흐리고, 먼 송이는 작고 느리다
 const snowFlakes = Array.from({ length: 70 }, (_, i) => {
@@ -750,9 +750,9 @@ const snowFlakes = Array.from({ length: 70 }, (_, i) => {
 .stage-drop {
   position: absolute;
   top: -6%;
-  width: 1.5px;
-  height: 30px;
-  background: linear-gradient(180deg, transparent, rgba(47, 86, 122, 0.65));
+  width: 2px;
+  height: 44px;
+  background: linear-gradient(180deg, transparent, rgba(40, 72, 104, 0.9));
   transform: rotate(7deg);
   animation: stageFall linear infinite;
   pointer-events: none;

@@ -100,7 +100,7 @@ const chapters = [
         z: 3,
         parts: [
           { src: cut('mudong_sleeve_r'), left: '45.4%', top: '1.1%', w: '45.4%', anim: 'p-flutter', origin: '8% 82%' },
-          { src: cut('mudong_sleeve_l'), left: '0%', top: '27.2%', w: '34.8%', anim: 'p-flutter-b', origin: '88% 18%' },
+          { src: cut('mudong_sleeve_l'), left: '0%', top: '27.2%', w: '34.8%', anim: 'p-flutter-s', origin: '88% 18%' },
           { src: cut('mudong_leg'), left: '42.4%', top: '52.2%', w: '27.2%', anim: 'p-kick', origin: '55% 6%' },
         ],
       },
@@ -188,8 +188,17 @@ const chapters = [
         idle: 'bob',
         z: 1,
         parts: [
-          { src: cut('magpie_head'), left: '0%', top: '6.9%', w: '40%', anim: 'p-head', origin: '85% 80%' },
-          { src: cut('magpie_wing'), left: '18.2%', top: '27.6%', w: '47.3%', anim: 'p-flap', origin: '18% 28%' },
+          {
+            src: cut('magpie_head'),
+            left: '0%',
+            top: '6.9%',
+            w: '40%',
+            anim: 'p-head',
+            origin: '85% 80%',
+            // 머리는 가만히 두고 — 날개를 한 번 크게 쳐서 눈을 턴다
+            snow: { vb: '0 0 110 90', d: 'M28 28 C34 16 44 6 60 2 C76 0 90 10 100 26 C92 22 84 16 72 12 C60 8 48 10 38 18 C34 22 30 26 28 28 Z', hi: 'M48 8 C56 4 66 4 74 7 C66 9 56 10 48 8 Z', still: true },
+          },
+          { src: cut('magpie_wing'), left: '18.2%', top: '27.6%', w: '47.3%', anim: 'p-flap', origin: '18% 28%', shed: true },
           { src: cut('magpie_tail'), left: '47.3%', top: '46.6%', w: '52.7%', anim: 'p-tail', origin: '10% 15%' },
         ],
       },
@@ -338,7 +347,7 @@ const dcViewStyle = computed(() => ({
   opacity: ((0.25 + dcFocus.value * 0.75) * (1 - dcOut.value)).toFixed(3),
 }))
 const dcCapStyle = computed(() => ({ opacity: (1 - dcWash.value).toFixed(3) }))
-const heroDrops = Array.from({ length: 36 }, (_, i) => ({
+const heroDrops = Array.from({ length: 48 }, (_, i) => ({
   left: ((i * 37) % 100) + '%',
   animationDuration: 0.85 + ((i * 13) % 10) / 11 + 's',
   animationDelay: -((i * 7) % 20) / 10 + 's',
@@ -567,7 +576,7 @@ function jumpTo(r) {
 
 /* ── 표제 (만국청우록 스타일 이식) ── */
 .hero-wrap {
-  height: 340vh; /* 제목 → 문 열림 → 빈 마당의 비 → 틀이 걷힘 */
+  height: 270vh; /* 제목 → 문 열림 → 빈 마당의 비 → 틀이 걷힘 */
 }
 .hero-stage {
   position: sticky;
@@ -951,9 +960,9 @@ function jumpTo(r) {
 .dc-drop {
   position: absolute;
   top: -6%;
-  width: 1.5px;
-  height: 34px;
-  background: linear-gradient(180deg, transparent, rgba(62, 78, 96, 0.7));
+  width: 2px;
+  height: 48px;
+  background: linear-gradient(180deg, transparent, rgba(52, 68, 88, 0.92));
   transform: rotate(7deg);
   animation: dcFall linear infinite;
 }
@@ -1099,6 +1108,19 @@ function jumpTo(r) {
   text-orientation: upright;
   text-shadow: none;
   box-shadow: 0 2px 8px rgba(34, 28, 22, 0.25), inset 0 0 0 1px rgba(251, 246, 234, 0.35);
+}
+.side-title::before {
+  content: '';
+  position: absolute;
+  inset: -28px -22px;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(245, 238, 222, 0.92) 0%, rgba(245, 238, 222, 0.7) 45%, rgba(245, 238, 222, 0) 72%);
+  filter: blur(4px);
+  pointer-events: none;
+}
+.side-title.light::before {
+  background: radial-gradient(ellipse at 50% 50%, rgba(20, 16, 12, 0.6) 0%, rgba(20, 16, 12, 0.4) 45%, rgba(20, 16, 12, 0) 72%);
 }
 .side-title.light {
   color: var(--baek);

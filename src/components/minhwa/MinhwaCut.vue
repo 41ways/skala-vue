@@ -3,6 +3,13 @@
 // 몸통(base) 위에 머리·꼬리·앞발 같은 부위 누끼(parts)가 정위치에 겹쳐져
 // 각자 다른 리듬으로 움직인다 → 관절 인형(紙人形)의 입체감.
 // silhouette: 어두운 화폭용 한지 실루엣 받침.
+// 기본 눈 더미 — 호랑이 머리(315×350) 윤곽
+const TIGER_SNOW = {
+  vb: '0 0 315 350',
+  d: 'M44 62 C52 40 70 26 96 24 C126 22 150 30 176 38 C198 44 214 40 230 22 C244 10 254 20 258 36 C266 46 272 54 276 70 C268 66 258 60 246 56 C232 52 220 56 204 60 C184 64 164 58 144 50 C120 42 96 40 76 44 C62 48 52 54 44 62 Z',
+  hi: 'M86 28 C100 20 122 22 136 28 C122 32 104 34 86 28 Z M212 32 C224 20 240 18 250 28 C238 30 226 34 212 32 Z',
+}
+const snowOf = (pt) => (pt.snow === true ? TIGER_SNOW : pt.snow)
 defineProps({
   src: { type: String, required: true },
   parts: { type: Array, default: () => [] }, // {src, left, top, w, anim, origin}
@@ -19,20 +26,16 @@ defineProps({
       v-for="(pt, i) in parts"
       :key="i"
       class="part"
-      :class="[pt.anim, { snowy: pt.snow }]"
+      :class="[pt.anim, { snowy: pt.snow && !pt.snow.still, shed: pt.shed }]"
       :style="{ left: pt.left, top: pt.top, width: pt.w, transformOrigin: pt.origin }"
     >
       <span class="part-in">
         <img :src="pt.src" alt="" draggable="false" loading="lazy" decoding="async" />
         <!-- 머리 위에 눈이 쌓이고, 이따금 털어 낸다 -->
         <template v-if="pt.snow">
-          <svg class="snowcap" viewBox="0 0 315 350" aria-hidden="true">
-            <path
-              d="M44 62 C52 40 70 26 96 24 C126 22 150 30 176 38 C198 44 214 40 230 22 C244 10 254 20 258 36 C266 46 272 54 276 70 C268 66 258 60 246 56 C232 52 220 56 204 60 C184 64 164 58 144 50 C120 42 96 40 76 44 C62 48 52 54 44 62 Z"
-              class="sc-main"
-            />
-            <path d="M86 28 C100 20 122 22 136 28 C122 32 104 34 86 28 Z" class="sc-hi" />
-            <path d="M212 32 C224 20 240 18 250 28 C238 30 226 34 212 32 Z" class="sc-hi" />
+          <svg class="snowcap" :viewBox="snowOf(pt).vb" aria-hidden="true">
+            <path :d="snowOf(pt).d" class="sc-main" />
+            <path v-if="snowOf(pt).hi" :d="snowOf(pt).hi" class="sc-hi" />
           </svg>
           <span class="sc-fall f1"></span>
           <span class="sc-fall f2"></span>
@@ -174,6 +177,17 @@ defineProps({
   78% { transform: translateY(-7px) rotate(-3deg); }
   86% { transform: translateY(0) rotate(0deg); }
 }
+/* 털어 내는 날갯짓 — 눈이 떨어지는 순간(84%) 한 번 크게 친다 */
+.part.shed .part-in {
+  animation: scFlapShed 12s ease-in-out infinite;
+  transform-origin: inherit;
+}
+@keyframes scFlapShed {
+  0%, 82%, 91%, 100% { transform: rotate(0deg); }
+  84% { transform: rotate(-9deg) translateY(-3px); }
+  86% { transform: rotate(7deg); }
+  88% { transform: rotate(-6deg) translateY(-2px); }
+}
 /* 소매·팔 — 나부낌 */
 .part.p-flutter {
   animation: pFlutter 2.6s ease-in-out infinite alternate;
@@ -184,6 +198,14 @@ defineProps({
 }
 .part.p-flutter-b {
   animation: pFlutter 2.6s ease-in-out infinite alternate-reverse;
+}
+/* 작은 나부낌 — 왼팔처럼 살짝만 */
+.part.p-flutter-s {
+  animation: pFlutterS 3s ease-in-out infinite alternate-reverse;
+}
+@keyframes pFlutterS {
+  from { transform: rotate(-1.5deg); }
+  to { transform: rotate(2.5deg) translateY(-1px); }
 }
 /* 날개 — 제자리 날갯짓 */
 .part.p-flap {
