@@ -113,12 +113,9 @@ function celestialStyle(c) {
 }
 
 // ── water ──
-// 물 위에 떠 있는 그림을 내려다본다 — 항상 잔물결, 말미엔 전면이 부서진다
+// 물 위에 떠 있는 그림을 내려다본다 — 항상 잔물결, 말미엔 배경만 남기고 일렁이며 사라진다
 const melt = computed(() => clamp01((props.p - 0.62) / 0.28))
 const mainWobble = computed(() => (7 + melt.value * 85).toFixed(1))
-const underStyle = computed(() => ({
-  opacity: (0.2 + melt.value * 0.8).toFixed(3),
-}))
 // 빗방울 파문 고리 위치 (마운트 시 고정)
 const rainRings = Array.from({ length: 7 }, (_, i) => ({
   left: 8 + ((i * 137) % 84) + '%',
@@ -126,25 +123,28 @@ const rainRings = Array.from({ length: 7 }, (_, i) => ({
   dur: (2.2 + ((i * 7) % 10) / 6).toFixed(2) + 's',
   delay: -(((i * 13) % 22) / 10).toFixed(1) + 's',
 }))
-// 진짜 먹방울처럼 — 방울이 닿은 자리마다 얼룩이 생겨 아지랑이같이 번진다
-// (SVG 마스크: 터뷸런스로 가장자리가 일렁이는 원들이 자라난다. 좌표계 0~1000)
+// 먹물 한두 방울 — 닿은 자리에서 튄 자국(위성 방울)과 함께 색이 스며든다
+// 밑선은 처음부터 보이고, 얼룩 마스크는 '색'만 채운다. 좌표계 0~1000
+const mkSat = (seed, n) =>
+  Array.from({ length: n }, (_, k) => {
+    const a = ((seed * 37 + k * 97) % 360) * (Math.PI / 180)
+    const d = 180 + ((seed * 53 + k * 131) % 260)
+    return { dx: Math.cos(a) * d, dy: Math.sin(a) * d * 0.85, r: 10 + ((seed * 11 + k * 41) % 34) }
+  })
 const inkBlots = [
-  { x: 380, y: 400, t: 0.04 },
-  { x: 550, y: 430, t: 0.1 },
-  { x: 460, y: 370, t: 0.16 },
-  { x: 630, y: 420, t: 0.22 },
-  { x: 500, y: 520, t: 0.27 },
+  { x: 430, y: 400, t: 0.05, max: 980, sat: mkSat(3, 10) },
+  { x: 600, y: 500, t: 0.18, max: 860, sat: mkSat(8, 8) },
 ]
-function blotR(i) {
-  const b = inkBlots[i]
-  return (easeOut(clamp01((props.p - b.t) / 0.38)) * 780).toFixed(1)
-}
-const inkDropsDone = computed(() => props.p > 0.5)
+const blotT = (b) => easeOut(clamp01((props.p - b.t) / 0.4))
+const blotR = (b) => (blotT(b) * b.max).toFixed(1)
+const satR = (b, s) => (blotT(b) * s.r * 2.4).toFixed(1)
+const inkDropsDone = computed(() => props.p > 0.42)
 const mainRise = computed(() => {
   const t = easeOut(clamp01((props.p - 0.02) / 0.1))
   return {
-    opacity: (t * (1 - melt.value * 0.94)).toFixed(3),
+    opacity: (t * (1 - melt.value)).toFixed(3),
     transform: `scale(${(1 + melt.value * 0.03).toFixed(3)})`,
+    filter: 'url(#wobmain)', // 그림 전체(밑선 포함)가 물 위에서 일렁인다
   }
 })
 
@@ -170,31 +170,41 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
         <!-- 본화용 물결 필터 — 말미에 그림이 수면처럼 일렁이며 풀어진다 -->
         <svg width="0" height="0" style="position: absolute" aria-hidden="true">
           <filter id="wobmain" x="-15%" y="-15%" width="130%" height="130%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.008 0.045" numOctaves="2" seed="9" result="n2">
-              <animate attributeName="baseFrequency" values="0.008 0.045;0.01 0.055;0.008 0.045" dur="6s" repeatCount="indefinite" />
+            <!-- 등방에 가까운 잔물결 — 가로줄 무늬가 생기지 않게 -->
+            <feTurbulence type="fractalNoise" baseFrequency="0.011 0.017" numOctaves="2" seed="9" result="n2">
+              <animate attributeName="baseFrequency" values="0.011 0.017;0.013 0.02;0.011 0.017" dur="7s" repeatCount="indefinite" />
             </feTurbulence>
             <feDisplacementMap in="SourceGraphic" in2="n2" :scale="mainWobble" xChannelSelector="R" yChannelSelector="G" />
-            <feGaussianBlur :stdDeviation="(melt * 2.2).toFixed(2)" />
+            <feGaussianBlur :stdDeviation="(melt * 2).toFixed(2)" />
           </filter>
         </svg>
-        <!-- 아래의 물 = 제 그림이 풀어진 먹빛 — 부서질수록 드러난다 -->
-        <div class="w-under" :style="underStyle">
-          <img :src="img" alt="" class="w-under-img" draggable="false" />
-        </div>
-        <!-- 물 위에 떠 있는 그림 (부감) — 먹얼룩 마스크가 아지랑이처럼 번지며 채운다 -->
+        <!-- 물 위에 떠 있는 그림 (부감) — 밑선은 보이고, 먹얼룩이 색을 채운다 -->
         <div class="w-main" :style="mainRise">
+          <!-- 밑선: 색이 채워지기 전의 옅은 골격 -->
+          <img :src="img" alt="" class="art-img lines" draggable="false" />
           <svg class="wm-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
             <defs>
-              <filter id="bleed" x="-25%" y="-25%" width="150%" height="150%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.006" numOctaves="3" seed="11" result="bn">
-                  <animate attributeName="baseFrequency" values="0.006;0.0075;0.006" dur="9s" repeatCount="indefinite" />
+              <filter id="bleed" x="-30%" y="-30%" width="160%" height="160%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.013" numOctaves="3" seed="11" result="bn">
+                  <animate attributeName="baseFrequency" values="0.013;0.016;0.013" dur="9s" repeatCount="indefinite" />
                 </feTurbulence>
-                <feDisplacementMap in="SourceGraphic" in2="bn" scale="46" xChannelSelector="R" yChannelSelector="G" />
-                <feGaussianBlur stdDeviation="16" />
+                <feDisplacementMap in="SourceGraphic" in2="bn" scale="70" xChannelSelector="R" yChannelSelector="G" />
+                <feGaussianBlur stdDeviation="7" />
               </filter>
               <mask id="inkmask" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1000">
                 <g filter="url(#bleed)">
-                  <circle v-for="(b, i) in inkBlots" :key="'ib' + i" :cx="b.x" :cy="b.y" :r="blotR(i)" fill="#fff" />
+                  <g v-for="(b, i) in inkBlots" :key="'ib' + i">
+                    <circle :cx="b.x" :cy="b.y" :r="blotR(b)" fill="#fff" />
+                    <!-- 튄 자국 — 본얼룩 둘레의 위성 방울들 -->
+                    <circle
+                      v-for="(s, k) in b.sat"
+                      :key="'sb' + k"
+                      :cx="b.x + s.dx"
+                      :cy="b.y + s.dy"
+                      :r="satR(b, s)"
+                      fill="#fff"
+                    />
+                  </g>
                 </g>
               </mask>
             </defs>
@@ -206,7 +216,6 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
               height="1000"
               preserveAspectRatio="xMidYMid slice"
               mask="url(#inkmask)"
-              filter="url(#wobmain)"
             />
           </svg>
         </div>
@@ -223,8 +232,6 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
         <div v-if="!inkDropsDone" class="ink-drops">
           <span class="wd wd1"></span>
           <span class="wd wd2"></span>
-          <span class="wd wd3"></span>
-          <span class="wd wd4"></span>
         </div>
       </template>
 
@@ -400,19 +407,11 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   inset: 0;
   will-change: transform, opacity, filter;
 }
-/* 그림이 부서진 자리에 드러나는 물 — 제 그림이 풀어진 먹빛 */
-.w-under {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  background: #565c60;
-}
-.w-under-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: blur(18px) saturate(0.5) brightness(0.88);
-  transform: scale(1.06);
+/* 밑선 — 색이 채워지기 전의 옅은 골격 (짙은 획만 흐릿하게 남긴다) */
+.art-img.lines {
+  filter: grayscale(1) brightness(1.45) contrast(1.5);
+  opacity: 0.34;
+  mix-blend-mode: multiply;
 }
 .wm-svg {
   position: absolute;
@@ -453,8 +452,8 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   background: radial-gradient(circle at 40% 28%, #4a4038, #221c16);
   animation: inkFall 2.1s cubic-bezier(0.5, 0, 0.9, 0.4) infinite;
 }
-.wd1 { left: 38%; animation-delay: 0s; }
-.wd2 { left: 55%; animation-delay: 0.6s; }
+.wd1 { left: 43%; animation-delay: 0s; }
+.wd2 { left: 60%; animation-delay: 0.9s; }
 .wd3 { left: 46%; animation-delay: 1.2s; }
 .wd4 { left: 63%; animation-delay: 1.7s; width: 6px; height: 10px; }
 @keyframes inkFall {
