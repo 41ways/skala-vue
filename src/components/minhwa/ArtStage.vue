@@ -240,7 +240,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
           <!-- 해가 뜨며 인왕의 물결에 노을이 진다 - 물과 같은 필터로 함께 일렁인다 -->
           <div class="w-dawn" :style="dawnStyle"></div>
           <!-- 밑선: 색이 채워지기 전의 옅은 골격 -->
-          <img :src="img" alt="" class="art-img lines" draggable="false" />
+          <img :src="img" alt="" class="art-img lines" draggable="false" loading="lazy" decoding="async" />
           <svg class="wm-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
             <defs>
               <filter id="bleed" x="-30%" y="-30%" width="160%" height="160%">
@@ -297,7 +297,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
 
       <!-- 물감 낙하 수묵 채색 (+ 해/달 누끼 부유) -->
       <template v-if="effect === 'inkfill' || effect === 'sunrise'">
-        <img v-if="!waterIntro" :src="img" alt="" class="art-img gray" draggable="false" />
+        <img v-if="!waterIntro" :src="img" alt="" class="art-img gray" draggable="false" loading="lazy" decoding="async" />
         <img
           :src="effect === 'sunrise' ? img2 : img"
           alt=""
@@ -354,7 +354,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
       <!-- 누끼 콜라주 (기본) -->
       <template v-if="effect === 'collage'">
         <div class="backdrop" :style="backdropStyle">
-          <img :src="bg || img" alt="" draggable="false" />
+          <img :src="bg || img" alt="" draggable="false" loading="lazy" decoding="async" />
         </div>
         <!-- 누끼 배치판 - 세로 화면에선 원화 비율 상자로 모아 한 폭처럼 보이게 -->
         <div class="cut-field">
