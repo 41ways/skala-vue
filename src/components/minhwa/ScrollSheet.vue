@@ -169,8 +169,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     0 10px 18px rgba(0, 0, 0, 0.5);
   animation: rodIn 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
-.rod-l { --dir: 1; }
-.rod-r { --dir: -1; }
+.rod-l { --dir: 1; order: 1; }
+.rod-r { --dir: -1; order: 3; }
+.silk { order: 2; }
 /* 축 두 개가 아래서 함께 솟아오른 뒤, 양옆으로 벌어진다 */
 @keyframes rodIn {
   0% { transform: translateX(calc(var(--dir) * (min(960px, 94vw) / 2 - 14px))) translateY(75vh); }
