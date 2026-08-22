@@ -133,7 +133,7 @@ onBeforeUnmount(() => {
 function etchStyle(i) {
   const p = progress.value[i] ?? 0
   return {
-    opacity: (easeOut(clamp01(p / 0.08)) * (1 - clamp01((p - 0.3) / 0.12))).toFixed(3),
+    opacity: (easeOut(clamp01(p / 0.08)) * (1 - clamp01((p - 0.44) / 0.12))).toFixed(3), // 선묘를 오래 두고
     transform: `scale(${(1.2 - easeOut(clamp01(p / 0.6)) * 0.14).toFixed(4)})`,
   }
 }
@@ -141,7 +141,7 @@ function etchStyle(i) {
 function paintStyle(i, art) {
   const p = progress.value[i] ?? 0
   const enter = easeOut(clamp01(p / 0.14))
-  const reveal = easeOut(clamp01((p - 0.06) / 0.26))
+  const reveal = easeOut(clamp01((p - 0.22) / 0.26)) // 원색은 선묘를 충분히 본 뒤에
   const r = reveal * 125
   const mask = `radial-gradient(circle at ${art.focal}, #000 ${Math.max(0, r - 28).toFixed(1)}%, transparent ${r.toFixed(1)}%)`
   const dive = easeOut(clamp01(p / 0.6))
@@ -214,8 +214,8 @@ const fxMap = {
 // 효과는 그림과 함께 떠오르고 함께 물러난다 - 미리 보이지 않게
 function fxVis(i) {
   const p = progress.value[i] ?? 0
-  // 원색 리빌(0.06~0.32)이 거의 끝난 뒤에야 효과가 스며든다
-  return { opacity: (easeOut(clamp01((p - 0.24) / 0.14)) * (1 - clamp01((p - 0.84) / 0.12))).toFixed(3) }
+  // 원색 리빌(0.22~0.48)이 거의 끝난 뒤에야 효과가 스며든다
+  return { opacity: (easeOut(clamp01((p - 0.4) / 0.14)) * (1 - clamp01((p - 0.84) / 0.12))).toFixed(3) }
 }
 // 효과 레이어용 그림 스타일 - 리빌 마스크는 빼고(자체 부드러운 마스크 사용) 움직임만 따라간다
 function fxPaintStyle(i, art) {

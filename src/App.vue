@@ -32,13 +32,24 @@ function toTop() {
   else window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 // 화폭 전환 - Lenis가 이전 스크롤 위치를 물고 있지 않게 즉시 맨 위로
+const TITLES = {
+  '/': '팔도청우록',
+  '/world': '만국청우록',
+  '/guide': '빨래 지침',
+  '/classic': '실습 대시보드',
+  '/about': '소개',
+  '/edition': '에디션',
+}
 watch(
   () => route.path,
-  () => {
+  (path) => {
     if (lenis) lenis.scrollTo(0, { immediate: true })
     window.scrollTo(0, 0)
     showTop.value = false
+    const t = TITLES[path] ?? (path.startsWith('/weather/') ? '고을 상세' : '')
+    document.title = t ? `${t} · 청우록` : '청우록 — 민화로 보는 오늘의 하늘'
   },
+  { immediate: true },
 )
 onMounted(() => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return

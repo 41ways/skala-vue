@@ -6,7 +6,8 @@ import ArtStage from '@/components/minhwa/ArtStage.vue'
 import ScrollSheet from '@/components/minhwa/ScrollSheet.vue'
 import InkRipple from '@/components/minhwa/InkRipple.vue'
 import ScrollHint from '@/components/minhwa/ScrollHint.vue'
-import { useWeather } from '@/composables/useWeather.js'
+import { useWeather, cachedGet, codeToStatus } from '@/composables/useWeather.js'
+import { laundryScore } from '@/data/weatherData.js'
 
 import obongdoImg from '@/assets/minhwa-art/obongdo.jpg'
 import mudongImg from '@/assets/minhwa-art/mudong.jpg'
@@ -410,6 +411,37 @@ const railActive = computed(() => {
   }
   return -1
 })
+// 지금 계신 곳: 위치 권한을 받아 그 자리의 하늘을 한 줄로
+const hereSky = ref('')
+const hereBusy = ref(false)
+function askHere() {
+  if (!navigator.geolocation) return (hereSky.value = '이 브라우저는 위치를 알 수 없습니다')
+  hereBusy.value = true
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      try {
+        const d = await cachedGet({
+          latitude: pos.coords.latitude.toFixed(2),
+          longitude: pos.coords.longitude.toFixed(2),
+          current: 'temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code',
+          timezone: 'auto',
+        })
+        const cur = d.current
+        const c = { temp: Math.round(cur.temperature_2m), humidity: cur.relative_humidity_2m, wind: cur.wind_speed_10m, status: codeToStatus(cur.weather_code) }
+        hereSky.value = `지금 계신 곳 — ${c.status} ${c.temp}° · 습도 ${c.humidity}% · 빨래 ${laundryScore(c)}점`
+      } catch {
+        hereSky.value = '지금 계신 곳의 하늘을 받지 못했습니다'
+      } finally {
+        hereBusy.value = false
+      }
+    },
+    () => {
+      hereBusy.value = false
+      hereSky.value = '위치 권한이 없어 팔도만 보여 드립니다'
+    },
+    { timeout: 8000 },
+  )
+}
 // 히어로 한 줄 요약: 오늘 팔도 하늘 - 비 3 · 맑음 4 …
 const skySummary = computed(() => {
   const count = {}
@@ -474,6 +506,10 @@ function jumpTo(r) {
           </p>
           <p class="hero-note util">
             {{ loading ? '팔도의 하늘을 살피는 중…' : skySummary }}
+          </p>
+          <p class="hero-here util">
+            <button v-if="!hereSky" type="button" :disabled="hereBusy" @click="askHere">{{ hereBusy ? '하늘을 살피는 중…' : '지금 계신 곳의 하늘 보기' }}</button>
+            <span v-else>{{ hereSky }}</span>
           </p>
           <div class="hero-hint"><ScrollHint /></div>
         </div>
@@ -667,6 +703,28 @@ function jumpTo(r) {
   margin: 18px 0 6px;
   opacity: 0;
   animation: rise 1s ease-out 2.6s forwards;
+}
+.hero-here {
+  margin: -18px 0 26px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  opacity: 0;
+  animation: rise 1s ease-out 3.3s forwards;
+}
+.hero-here button {
+  background: none;
+  border: 0;
+  border-bottom: 1px solid rgba(178, 58, 44, 0.5);
+  padding: 0 2px 1px;
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--jeok);
+  cursor: pointer;
+}
+.hero-here button:disabled {
+  color: var(--ink-soft);
+  cursor: default;
 }
 .hero-note {
   font-size: 12.5px;
@@ -1355,6 +1413,7 @@ function jumpTo(r) {
   }
   .hero-copy,
   .hero-note,
+  .hero-here,
   .hero-hint {
     animation: none;
     opacity: 1;

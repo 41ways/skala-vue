@@ -123,7 +123,7 @@ a:hover {
 @media (hover: hover) and (pointer: fine) {
   main.gukfok,
   main.mangug {
-    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath d='M2 3l8 22 3-9 9-3z' fill='%23221c16'/%3E%3Cpath d='M2 3l8 22 3-9 9-3z' fill='none' stroke='%23fbf6ea' stroke-width='1'/%3E%3C/svg%3E") 2 3, auto;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath d='M2 3l8 22 3-9 9-3z' fill='%23000'/%3E%3Cpath d='M2 3l8 22 3-9 9-3z' fill='none' stroke='%23fbf6ea' stroke-width='1'/%3E%3C/svg%3E") 2 3, auto;
   }
   main.gukfok button,
   main.gukfok a,
