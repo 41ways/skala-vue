@@ -85,7 +85,7 @@ const fillStyle = computed(() => {
 const dropsDone = computed(() => fillR.value > 150)
 // 수면 도입: 선염 없이 — 물이 걷히면 화폭이 온전한 색으로 떠오른다
 const plainFillStyle = computed(() => ({
-  opacity: clamp01((oprog.value - 0.46) / 0.18).toFixed(3),
+  opacity: clamp01((oprog.value - 0.52) / 0.18).toFixed(3),
 }))
 
 // 수면 도입 — 해·달이 물에서 떠오르고, 물은 서서히 걷힌다
@@ -114,7 +114,7 @@ function glintStyle(c) {
   const waterTopVh = 56 + riseT.value * 20
   const discCenterVh = c.iy * 100 + (1 - riseT.value) * 72
   const h = Math.max(0, waterTopVh - discCenterVh)
-  const waterAlive = 1 - clamp01((oprog.value - 0.36) / 0.24)
+  const waterAlive = 1 - clamp01((oprog.value - 0.45) / 0.2)
   return {
     height: h.toFixed(1) + 'vh',
     opacity: (0.6 * riseT.value * waterAlive).toFixed(3),
@@ -122,7 +122,7 @@ function glintStyle(c) {
 }
 // 수면에 물드는 노을
 const dawnStyle = computed(() => ({
-  opacity: (riseT.value * 0.75 * (1 - clamp01((oprog.value - 0.36) / 0.24))).toFixed(3),
+  opacity: (riseT.value * 0.8 * (1 - clamp01((oprog.value - 0.45) / 0.2))).toFixed(3),
 }))
 function celestialStyle(c) {
   const land = clamp01((oprog.value - 0.62) / 0.16) // 화폭이 다 차면 원화의 해·달 위에서 스러진다
@@ -180,7 +180,7 @@ const inkDropsDone = computed(() => wprog.value > 0.42)
 const mainRise = computed(() => {
   const t = easeOut(clamp01((wprog.value - 0.02) / 0.1))
   // 병합 무대: 일출이 무르익으면 물결 잔상도 오봉도에 자리를 내준다
-  const yield2 = isCombo.value ? 1 - clamp01((oprog.value - 0.35) / 0.3) : 1
+  const yield2 = isCombo.value ? 1 - clamp01((oprog.value - 0.45) / 0.2) : 1
   return {
     opacity: (t * (1 - melt.value * 0.85) * yield2).toFixed(3),
     transform: `scale(${(1 + melt.value * 0.03).toFixed(3)})`,
@@ -220,6 +220,8 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
         </svg>
         <!-- 물 위에 떠 있는 그림 (부감) — 스크롤하면 시선이 수평선으로 기울어진다 -->
         <div class="w-tilt" :style="tiltStyle">
+        <!-- 해가 뜨며 인왕의 물결에 노을이 진다 -->
+        <div class="w-dawn" :style="dawnStyle"></div>
         <div class="w-main" :style="mainRise">
           <!-- 밑선: 색이 채워지기 전의 옅은 골격 -->
           <img :src="img" alt="" class="art-img lines" draggable="false" />
@@ -301,7 +303,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
               <span class="cel-drip d3"></span>
             </template>
           </span>
-          <div class="intro-water" :style="introWaterStyle">
+          <div v-if="effect !== 'sunrise'" class="intro-water" :style="introWaterStyle">
             <!-- 해가 뜨며 수면에 물드는 노을 -->
             <div class="iw-dawn" :style="dawnStyle"></div>
             <!-- 앞 폭이 풀어진 물의 잔영 — 같은 물결로 일렁인다 -->
@@ -463,7 +465,16 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
 .w-tilt {
   position: absolute;
   inset: 0;
+  z-index: 3; /* 해·달(z2)이 물결 뒤에서 떠오른다 */
   will-change: transform;
+}
+.w-dawn {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 30%, rgba(224, 138, 78, 0.34) 62%, rgba(224, 120, 60, 0.5));
+  mix-blend-mode: multiply;
 }
 /* 밑선 — 색이 채워지기 전의 옅은 골격 (짙은 획만 흐릿하게 남긴다) */
 .art-img.lines {
