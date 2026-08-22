@@ -136,10 +136,6 @@ function celestialStyle(c) {
 // 물 위에 떠 있는 그림을 내려다본다 — 항상 잔물결, 말미엔 배경만 남기고 일렁이며 사라진다
 const melt = computed(() => clamp01((props.p - 0.62) / 0.28))
 const mainWobble = computed(() => (7 + melt.value * 85).toFixed(1))
-// 퇴장 수면 — 그림이 풀어지며 하단에 물이 고인다 (다음 폭의 도입 수면과 같은 모습으로 이어진다)
-const exitWaterStyle = computed(() => ({
-  opacity: melt.value.toFixed(3),
-}))
 // 빗방울 파문 고리 위치 (마운트 시 고정)
 const rainRings = Array.from({ length: 7 }, (_, i) => ({
   left: 8 + ((i * 137) % 84) + '%',
@@ -241,20 +237,6 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
               preserveAspectRatio="xMidYMid slice"
               mask="url(#inkmask)"
             />
-          </svg>
-        </div>
-        <!-- 퇴장 수면 — 그림이 풀어지며 고이는 물 (다음 폭의 수면으로 이어진다) -->
-        <div class="exit-water" :style="exitWaterStyle">
-          <svg class="iw-svg" preserveAspectRatio="xMidYMin slice">
-            <defs>
-              <filter id="wobexit" x="-15%" y="-15%" width="130%" height="130%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.011 0.05" numOctaves="2" seed="4" result="ne">
-                  <animate attributeName="baseFrequency" values="0.011 0.05;0.014 0.06;0.011 0.05" dur="7s" repeatCount="indefinite" />
-                </feTurbulence>
-                <feDisplacementMap in="SourceGraphic" in2="ne" scale="55" xChannelSelector="R" yChannelSelector="G" />
-              </filter>
-            </defs>
-            <image :href="img" x="0" y="0" width="100%" height="100%" preserveAspectRatio="xMidYMin slice" filter="url(#wobexit)" transform="scale(1,-1)" transform-origin="center" />
           </svg>
         </div>
         <!-- 빗방울 파문 — 표면에 고리가 퍼진다 -->
@@ -541,25 +523,6 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   62% { top: 37%; opacity: 0.95; transform: scaleY(1.25); }
   70% { top: 38%; opacity: 0; transform: scaleY(0.4) scaleX(1.8); }
   100% { opacity: 0; }
-}
-
-/* 퇴장 수면 — 도입 수면과 같은 얼굴 */
-.exit-water {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 44%;
-  z-index: 3;
-  pointer-events: none;
-  overflow: hidden;
-  background: linear-gradient(
-    180deg,
-    rgba(96, 102, 106, 0.6),
-    rgba(80, 86, 92, 0.8) 35%,
-    rgba(62, 68, 74, 0.96)
-  );
-  box-shadow: 0 -6px 22px rgba(80, 86, 92, 0.35);
 }
 
 /* 수면에 물드는 노을 */
