@@ -331,9 +331,11 @@ const dcPhotoStyle = computed(() => ({
   opacity: ((0.22 + dcFocus.value * 0.78) * (1 - dcWash.value)).toFixed(3),
   filter: `contrast(${(0.7 + dcFocus.value * 0.3).toFixed(3)}) brightness(${(1.4 - dcFocus.value * 0.4).toFixed(3)}) saturate(${(0.55 + dcFocus.value * 0.45).toFixed(2)})`,
 }))
+// 히어로 끝자락 — 마당이 한지 바탕으로 녹아들어 다음 화폭과 경계 없이 이어진다
+const dcOut = computed(() => easeOut(clamp01((heroP.value - 0.84) / 0.16)))
 const dcViewStyle = computed(() => ({
   transform: `scale(${(1.14 - dcOpen.value * 0.1).toFixed(3)})`,
-  opacity: (0.25 + dcFocus.value * 0.75).toFixed(3),
+  opacity: ((0.25 + dcFocus.value * 0.75) * (1 - dcOut.value)).toFixed(3),
 }))
 const dcCapStyle = computed(() => ({ opacity: (1 - dcWash.value).toFixed(3) }))
 const heroDrops = Array.from({ length: 36 }, (_, i) => ({
@@ -952,7 +954,7 @@ function jumpTo(r) {
   inset: 0;
   background:
     radial-gradient(ellipse at 50% 30%, rgba(255, 252, 244, 0.55), transparent 60%),
-    linear-gradient(180deg, #e6e0d2 0%, #d4cdbd 55%, #bfb7a6 100%);
+    linear-gradient(180deg, #e6e0d2 0%, #d8d1c1 55%, #cdc5b3 100%);
 }
 .dc-rain {
   position: absolute;
