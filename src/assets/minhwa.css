@@ -2,7 +2,6 @@
    민화 디자인 토큰 — 사이트 전역 스킨
    값만 바꾸면 전체가 갈아입는 최상위 레이어
    ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Song+Myung&family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
 :root {
   /* 오방색 + 한지 */
@@ -97,4 +96,11 @@ a:hover {
 #app:has(main.edition) {
   max-width: none;
   padding: 0;
+}
+
+/* 좁은 화면에서는 #app 여백을 줄여 본문 폭 확보 */
+@media (max-width: 640px) {
+  #app:not(:has(main.gukfok)):not(:has(main.mangug)):not(:has(main.edition)) {
+    padding: 1rem 0.75rem;
+  }
 }
