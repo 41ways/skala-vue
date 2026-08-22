@@ -160,7 +160,7 @@ const chapters = [
     id: 'tiger',
     img: tigerImg,
     bg: bgOf('tiger'),
-    zoom: 0.22,
+    zoom: 0.12,
     title: '작호도',
     hanja: '鵲虎圖',
     era: '조선 민화 · 세화(歲畫)',
