@@ -161,7 +161,7 @@ function headStyle(i) {
 function ghostStyle(i) {
   const p = progress.value[i] ?? 0
   return {
-    opacity: (clamp01(p / 0.2) * (1 - clamp01((p - 0.8) / 0.16)) * 0.24).toFixed(3),
+    opacity: (clamp01(p / 0.2) * (1 - clamp01((p - 0.8) / 0.16)) * 0.36).toFixed(3),
     transform: `translateY(${((0.5 - p) * 12).toFixed(1)}vh) translateX(${(mx.value * -12).toFixed(1)}px)`,
   }
 }
@@ -897,7 +897,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   z-index: 1;
   font-family: 'Cinzel', 'Times New Roman', serif;
   font-weight: 700;
-  font-size: clamp(260px, 52vh, 600px);
+  font-size: clamp(320px, 72vh, 840px);
   line-height: 1;
   letter-spacing: 0.04em;
   /* 새김 윤곽 + 옅은 채움 */
