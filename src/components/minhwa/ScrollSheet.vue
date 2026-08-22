@@ -155,8 +155,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               :title="hanjaMode ? '아라비아 숫자로 보기' : '한자 숫자로 보기'"
               @click="hanjaMode = !hanjaMode"
             >
-              <span class="seal-face">{{ hanjaMode ? '123' : '一二三' }}</span>
-              <span class="seal-cap">{{ hanjaMode ? '숫자로' : '한자로' }}</span>
+              <span class="seal-face" :class="{ on: hanjaMode }">文</span>
+              <span class="seal-face num" :class="{ on: !hanjaMode }">123</span>
             </button>
             <button ref="closeBtn" class="close" @click="emit('close')">거두기</button>
           </div>
@@ -323,6 +323,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   flex-direction: column;
   gap: 24px;
   padding-right: 52px;
+  padding-left: 78px; /* 낙관·거두기 자리 확보 */
   color: var(--ink);
   font-family: var(--font-display);
 }
@@ -396,7 +397,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   font-size: clamp(15px, 1.7vw, 18px);
 }
 .col.date {
-  margin-left: auto;
   font-size: 13px;
   letter-spacing: 0.3em;
   color: var(--ink-soft);
@@ -435,29 +435,19 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .seal-face {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   line-height: 1;
-  letter-spacing: 0.02em;
+  opacity: 0.45;
+  transition: opacity 0.2s;
 }
-.seal-cap {
+.seal-face.num {
   font-family: var(--font-util);
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  opacity: 0.9;
+  font-size: 15px;
+  letter-spacing: 0.04em;
 }
-.seal::after {
-  /* 도장 곁 안내 */
-  content: '숫자 표기 바꾸기';
-  position: absolute;
-  left: 74px;
-  top: 50%;
-  transform: translateY(-50%) rotate(3deg);
-  white-space: nowrap;
-  font-family: var(--font-util);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  color: var(--ink-soft);
+.seal-face.on {
+  opacity: 1;
 }
 .close {
   position: absolute;
@@ -510,14 +500,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .rod { flex-basis: 30px; }
   .silk { padding: 14px 24px; margin: 0 -12px; }
   .paper { padding: 20px 18px 20px 16px; overflow-x: auto; }
-  .columns { gap: 12px; padding-right: 16px; }
+  .columns { gap: 12px; padding-right: 16px; padding-left: 64px; }
   .col { font-size: 15px; letter-spacing: 0.14em; }
   .col.title { font-size: 30px; letter-spacing: 0.2em; }
   .col.sky { font-size: 18px; }
   .head { display: none; }
   .seal { left: 18px; bottom: 18px; width: 54px; height: 54px; }
   .seal-face { font-size: 16px; }
-  .seal::after { display: none; }
   .close { left: 18px; top: 18px; }
   .rules { inset: 12px 14px; }
 }
