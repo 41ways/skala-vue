@@ -2,8 +2,7 @@
 // ScrollSheet: 두루마리 날씨첩. 도시를 누르면 열리고 세로글로 날씨를 적는다
 import { computed, watch, onBeforeUnmount, nextTick, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import axios from 'axios'
-import { cityCoords, codeToStatus } from '@/composables/useWeather.js'
+import { cityCoords, codeToStatus, cachedGet } from '@/composables/useWeather.js'
 import { toHanja, ganjiYear, STATUS_HANJA as HANJA } from '@/utils/hanja.js'
 import { laundryScore, laundryGrade } from '@/data/weatherData.js'
 import hanjiImg from '@/assets/minhwa-art/bg/mudong.jpg'
@@ -59,14 +58,12 @@ watch(
     const co = cityCoords[c.id] ?? { lat: c.lat, lon: c.lon }
     if (co.lat === undefined || co.lat === null) return
     try {
-      const { data } = await axios.get('https://api.open-meteo.com/v1/forecast', {
-        params: {
-          latitude: co.lat,
-          longitude: co.lon,
-          daily: 'weather_code,temperature_2m_max,temperature_2m_min',
-          forecast_days: 4,
-          timezone: 'auto',
-        },
+      const data = await cachedGet({
+        latitude: co.lat,
+        longitude: co.lon,
+        daily: 'weather_code,temperature_2m_max,temperature_2m_min',
+        forecast_days: 4,
+        timezone: 'auto',
       })
       const d = data.daily
       forecast.value = [1, 2, 3].map((i) => ({

@@ -31,6 +31,25 @@ export function codeToStatus(code) {
   return '흐림'
 }
 
+// 같은 요청은 10분 동안 sessionStorage에 두고 재사용 (새로고침 연타해도 429가 안 나게)
+const TTL = 10 * 60 * 1000
+export async function cachedGet(params) {
+  const key = 'om:' + JSON.stringify(params)
+  try {
+    const hit = JSON.parse(sessionStorage.getItem(key) || 'null')
+    if (hit && Date.now() - hit.t < TTL) return hit.data
+  } catch {
+    /* 저장소 못 읽으면 그냥 요청 */
+  }
+  const { data } = await axios.get('https://api.open-meteo.com/v1/forecast', { params })
+  try {
+    sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), data }))
+  } catch {
+    /* 용량 초과 등은 무시 */
+  }
+  return data
+}
+
 export function useWeather() {
   const cities = ref(
     // 시작 상태 = 실습 목데이터 (API 실패 시에도 화면은 성립)
@@ -45,13 +64,11 @@ export function useWeather() {
     try {
       // 도시 전부를 한 번의 요청으로 - latitude/longitude에 쉼표로 여러 좌표를 넘기면 배열로 온다
       const list = cities.value
-      const { data } = await axios.get('https://api.open-meteo.com/v1/forecast', {
-        params: {
-          latitude: list.map((c) => cityCoords[c.id].lat).join(','),
-          longitude: list.map((c) => cityCoords[c.id].lon).join(','),
-          current: 'temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day',
-          timezone: 'Asia/Seoul',
-        },
+      const data = await cachedGet({
+        latitude: list.map((c) => cityCoords[c.id].lat).join(','),
+        longitude: list.map((c) => cityCoords[c.id].lon).join(','),
+        current: 'temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day',
+        timezone: 'Asia/Seoul',
       })
       const rows = Array.isArray(data) ? data : [data]
       cities.value = list.map((c, i) => {
@@ -89,13 +106,11 @@ export function useWorldWeather() {
     error.value = null
     try {
       const live = cities.value.filter((c) => !c.demo) // 시연 도시는 고정값
-      const { data } = await axios.get('https://api.open-meteo.com/v1/forecast', {
-        params: {
-          latitude: live.map((c) => c.lat).join(','),
-          longitude: live.map((c) => c.lon).join(','),
-          current: 'temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day',
-          timezone: 'auto',
-        },
+      const data = await cachedGet({
+        latitude: live.map((c) => c.lat).join(','),
+        longitude: live.map((c) => c.lon).join(','),
+        current: 'temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day',
+        timezone: 'auto',
       })
       const rows = Array.isArray(data) ? data : [data]
       const byId = {}
