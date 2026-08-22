@@ -137,7 +137,24 @@ const chapters = [
       // 까치 — 솔가지에 앉아 까딱인다
       { src: cut('tiger_magpie'), left: '64%', top: '8%', w: '24%', depth: 10, ox: 14, oy: -14, ds: 0.03, idle: 'bob', z: 1 },
       // 호랑이 — 개별로 숨쉬며 앞으로 나온다
-      { src: cut('tiger_body'), left: '16%', top: '12%', w: '45%', depth: 22, ox: -10, oy: 10, ds: 0.08, idle: 'breathe', z: 3 },
+      // 호랑이 — 몸은 숨쉬고, 머리·꼬리·앞발은 저마다 따로 움직인다
+      {
+        src: cut('tiger_body'),
+        left: '16%',
+        top: '12%',
+        w: '45%',
+        depth: 22,
+        ox: -10,
+        oy: 10,
+        ds: 0.08,
+        idle: 'breathe',
+        z: 3,
+        parts: [
+          { src: cut('tiger_head'), left: '4.1%', top: '1.1%', w: '43.2%', anim: 'p-head', origin: '55% 92%' },
+          { src: cut('tiger_tail'), left: '0%', top: '59.5%', w: '25.3%', anim: 'p-tail', origin: '88% 18%' },
+          { src: cut('tiger_paw'), left: '17.8%', top: '80.6%', w: '18.5%', anim: 'p-paw', origin: '50% 20%' },
+        ],
+      },
     ],
     line: '궂은 하늘을 막아서는 세화 — 눈 오는 고을을 지킵니다.',
     empty: '오늘 눈 내리는 고을은 없습니다. 호랑이가 잘 막고 있습니다.',

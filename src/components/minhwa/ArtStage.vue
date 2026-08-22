@@ -6,6 +6,7 @@
 //  · 선염(渲染): 가장자리가 물기로 풀린 라디얼 마스크가 번지며 나타나고, 먹이 적시며 사라진다
 //  · effect: 'collage'(누끼 콜라주) | 'inkfill'(물감 낙하 수묵 채색) | 'water'(수면 반영)
 import { computed } from 'vue'
+import MinhwaCut from '@/components/minhwa/MinhwaCut.vue'
 
 const props = defineProps({
   img: { type: String, required: true },
@@ -123,7 +124,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
         <img :src="img" alt="" class="art-img gray" draggable="false" />
         <img :src="img" alt="" class="art-img colorized" draggable="false" :style="fillStyle" />
         <span v-for="(c, i) in cuts" :key="'c' + i" class="cut-wrap" :style="cutStyle(c)">
-          <img :src="c.src" alt="" class="cut-img" :class="c.idle" draggable="false" />
+          <MinhwaCut :src="c.src" :parts="c.parts ?? []" :idle="c.idle" />
         </span>
         <div v-if="!dropsDone" class="paint-drops">
           <span class="pd pd1"></span>
@@ -138,7 +139,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
           <img :src="img" alt="" draggable="false" />
         </div>
         <span v-for="(c, i) in cuts" :key="'k' + i" class="cut-wrap" :style="cutStyle(c)">
-          <img :src="c.src" alt="" class="cut-img" :class="c.idle" draggable="false" />
+          <MinhwaCut :src="c.src" :parts="c.parts ?? []" :idle="c.idle" />
         </span>
       </template>
     </div>
