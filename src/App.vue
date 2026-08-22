@@ -1,9 +1,10 @@
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
 import Lenis from 'lenis'
 
 // 레퍼런스와 동일한 관성 스무스 스크롤 — 화폭이 물 흐르듯 넘어간다
+const route = useRoute()
 let lenis = null
 let rafId = 0
 onMounted(() => {
@@ -24,7 +25,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <header class="top">
+  <header class="top" :class="{ dark: route.path.startsWith('/world') }">
     <RouterLink to="/" class="logo">청우<em>록</em><small>晴雨錄</small></RouterLink>
     <nav class="util">
       <RouterLink to="/">국내 화폭</RouterLink>
@@ -47,6 +48,22 @@ onBeforeUnmount(() => {
   gap: 16px;
   padding: 16px 24px;
   flex-wrap: wrap;
+}
+/* 세계화폭 — 먹빛 내비 (레퍼런스의 nav theme 전환) */
+.top.dark {
+  background: #0b0f18;
+  transition: background 0.4s;
+}
+.top.dark .logo,
+.top.dark .logo small {
+  color: var(--baek);
+}
+.top.dark nav a {
+  color: rgba(251, 246, 234, 0.6);
+}
+.top.dark nav a.router-link-exact-active,
+.top.dark nav a:hover {
+  color: #e8a5b0;
 }
 .logo {
   font-family: var(--font-display);

@@ -138,9 +138,24 @@ function headStyle(i) {
   const leave = clamp01((p - 0.82) / 0.14)
   return {
     opacity: (t * (1 - leave)).toFixed(3),
-    transform: `translateY(${((1 - t) * 60 - leave * 40).toFixed(1)}px) scale(${(0.94 + t * 0.06).toFixed(3)})`,
+    transform: `translateY(${((1 - t) * 60 - leave * 40).toFixed(1)}px) translateX(${(mx.value * 7).toFixed(1)}px) scale(${(0.94 + t * 0.06).toFixed(3)})`,
   }
 }
+// 유령 숫자 — 화폭보다 느리게 흐른다
+function ghostStyle(i) {
+  const p = progress.value[i] ?? 0
+  return {
+    opacity: (clamp01(p / 0.2) * (1 - clamp01((p - 0.8) / 0.16)) * 0.09).toFixed(3),
+    transform: `translateY(${((0.5 - p) * 12).toFixed(1)}vh) translateX(${(mx.value * -12).toFixed(1)}px)`,
+  }
+}
+// 빛 입자 — 어두운 화폭 위 느린 티끌
+const motes = Array.from({ length: 9 }, (_, i) => ({
+  left: 6 + ((i * 131) % 88) + '%',
+  top: 10 + ((i * 67) % 70) + '%',
+  animationDuration: (5 + ((i * 13) % 40) / 6).toFixed(1) + 's',
+  animationDelay: -(((i * 17) % 50) / 10).toFixed(1) + 's',
+}))
 const heroStyle = computed(() => ({
   transform: `translateY(${(heroP.value * -8).toFixed(2)}%)`,
   opacity: clamp01((1 - heroP.value) / 0.45).toFixed(3),
@@ -173,6 +188,11 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 <template>
   <main class="mangug">
     <InkRipple />
+
+    <!-- 필름 그레인 -->
+    <div class="grain" aria-hidden="true"></div>
+    <!-- 상주 브랜드 마크 (챕터 진입 후) -->
+    <p v-show="activeIdx >= 0" class="brand util">만국청우록 <span>萬國晴雨錄</span></p>
 
     <!-- ══ 좌측 상주 차례 레일 ══ -->
     <nav v-show="activeIdx >= 0" class="rail util" aria-label="도시 차례">
@@ -256,6 +276,10 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
           ></span>
         </template>
 
+        <!-- 유령 숫자 — 화폭 뒤 거대한 차례 -->
+        <span class="ghost-num" :style="ghostStyle(i)">{{ numerals[i] }}</span>
+        <!-- 빛 입자 -->
+        <span v-for="(m, k) in motes" :key="'mo' + k" class="mote" :style="m"></span>
         <!-- 초대형 헤드라인 -->
         <h2 class="mega" :style="headStyle(i)">
           {{ c.name }}
@@ -349,6 +373,11 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   position: absolute;
   inset: -4%;
   will-change: transform;
+  animation: ambientZoom 36s ease-in-out infinite alternate;
+}
+@keyframes ambientZoom {
+  from { scale: 1; }
+  to { scale: 1.045; }
 }
 .hero-art img {
   width: 100%;
@@ -385,6 +414,13 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   position: absolute;
   inset: 0;
   will-change: transform, opacity;
+}
+.title-box {
+  animation: boxIn 1.4s ease-out 0.3s both;
+}
+@keyframes boxIn {
+  from { opacity: 0; box-shadow: 0 0 0 0 rgba(251, 246, 234, 0); }
+  to { opacity: 1; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45); }
 }
 .title-box {
   position: absolute;
@@ -442,6 +478,20 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   list-style: none;
   margin: 0;
   padding: 0;
+}
+.menu li {
+  opacity: 0;
+  animation: menuIn 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+.menu li:nth-child(1) { animation-delay: 2.7s; }
+.menu li:nth-child(2) { animation-delay: 2.85s; }
+.menu li:nth-child(3) { animation-delay: 3s; }
+.menu li:nth-child(4) { animation-delay: 3.15s; }
+.menu li:nth-child(5) { animation-delay: 3.3s; }
+.menu li:nth-child(6) { animation-delay: 3.45s; }
+@keyframes menuIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .menu-item {
   display: flex;
@@ -612,10 +662,77 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   font-size: 15px;
 }
 .credit {
-  margin: 10px 0 0;
-  font-size: 11.5px;
-  color: rgba(251, 246, 234, 0.55);
-  letter-spacing: 0.05em;
+  display: inline-block;
+  margin: 12px 0 0;
+  padding: 5px 10px;
+  font-size: 11px;
+  color: rgba(251, 246, 234, 0.75);
+  letter-spacing: 0.06em;
+  border: 1px solid rgba(251, 246, 234, 0.25);
+  border-radius: 3px;
+  background: rgba(11, 15, 24, 0.45);
+  backdrop-filter: blur(3px);
+}
+
+/* 필름 그레인 */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.28;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+/* 상주 브랜드 마크 */
+.brand {
+  position: fixed;
+  left: 20px;
+  top: 74px;
+  z-index: 30;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.14em;
+  color: rgba(251, 246, 234, 0.85);
+}
+.brand span {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: rgba(251, 246, 234, 0.45);
+  margin-left: 6px;
+}
+
+/* 유령 숫자 */
+.ghost-num {
+  position: absolute;
+  right: 4%;
+  top: 8%;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-size: clamp(280px, 55vh, 620px);
+  line-height: 1;
+  color: var(--baek);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* 빛 입자 */
+.mote {
+  position: absolute;
+  z-index: 2;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 240, 200, 0.9);
+  box-shadow: 0 0 8px 2px rgba(206, 155, 59, 0.4);
+  animation: moteFloat ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes moteFloat {
+  0%, 100% { opacity: 0; transform: translateY(0); }
+  50% { opacity: 0.9; transform: translateY(-14px); }
 }
 
 /* ── 발문 ── */
