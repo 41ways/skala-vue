@@ -68,6 +68,7 @@ export function useWeather() {
         latitude: list.map((c) => cityCoords[c.id].lat).join(','),
         longitude: list.map((c) => cityCoords[c.id].lon).join(','),
         current: 'temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day',
+        wind_speed_unit: 'ms', // 기본값은 km/h라 m/s로 받아야 표기와 맞는다
         timezone: 'Asia/Seoul',
       })
       const rows = Array.isArray(data) ? data : [data]
@@ -110,6 +111,7 @@ export function useWorldWeather() {
         latitude: live.map((c) => c.lat).join(','),
         longitude: live.map((c) => c.lon).join(','),
         current: 'temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day',
+        wind_speed_unit: 'ms', // 기본값은 km/h라 m/s로 받아야 표기와 맞는다
         timezone: 'auto',
       })
       const rows = Array.isArray(data) ? data : [data]

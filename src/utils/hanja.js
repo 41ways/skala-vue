@@ -9,6 +9,12 @@ export function toHanja(n) {
     const o = n % 10
     return (t > 1 ? DIG[t] : '') + '十' + (o ? DIG[o] : '')
   }
+  if (n < 1000) {
+    // 습도 100%, 빨래 100점처럼 백 단위도 나온다
+    const h = Math.floor(n / 100)
+    const rest = n % 100
+    return (h > 1 ? DIG[h] : '') + '百' + (rest ? (rest < 10 ? '零' + DIG[rest] : toHanja(rest)) : '')
+  }
   return String(n)
 }
 

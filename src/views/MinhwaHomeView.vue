@@ -424,6 +424,7 @@ function askHere() {
           latitude: pos.coords.latitude.toFixed(2),
           longitude: pos.coords.longitude.toFixed(2),
           current: 'temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code',
+          wind_speed_unit: 'ms',
           timezone: 'auto',
         })
         const cur = d.current
