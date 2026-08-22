@@ -36,8 +36,9 @@ const camStyle = computed(() => ({
   transformOrigin: props.focal,
 }))
 
-// 선염 등장 마스크
+// 선염 등장 마스크 (수면 도입 챕터는 물·하늘이 이미 무대라 생략)
 const veilStyle = computed(() => {
+  if (props.waterIntro) return {}
   const r = 24 + easeOut(clamp01(props.p / 0.24)) * 150
   const g = `radial-gradient(ellipse 90% 75% at 50% 45%, #000 ${Math.max(0, r - 38)}%, transparent ${r}%)`
   return { maskImage: g, WebkitMaskImage: g }
@@ -76,9 +77,9 @@ const fillStyle = computed(() => {
   return { maskImage: g, WebkitMaskImage: g }
 })
 const dropsDone = computed(() => fillR.value > 150)
-// 수면 도입이면 해·달이 다 떠오른 뒤에야 수묵 밑그림이 배어난다
-const grayStyle = computed(() => ({
-  opacity: props.waterIntro ? clamp01((props.p - 0.38) / 0.1).toFixed(3) : '1',
+// 수면 도입: 선염 없이 — 물이 걷히면 화폭이 온전한 색으로 떠오른다
+const plainFillStyle = computed(() => ({
+  opacity: clamp01((props.p - 0.34) / 0.2).toFixed(3),
 }))
 
 // 수면 도입 — 해·달이 물에서 떠오르고, 물은 서서히 걷힌다
@@ -179,7 +180,6 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
         <!-- 아래의 물 = 제 그림이 풀어진 먹빛 — 부서질수록 드러난다 -->
         <div class="w-under" :style="underStyle">
           <img :src="img" alt="" class="w-under-img" draggable="false" />
-          <div class="iw-shimmer"></div>
         </div>
         <!-- 물 위에 떠 있는 그림 (부감) — 먹얼룩 마스크가 아지랑이처럼 번지며 채운다 -->
         <div class="w-main" :style="mainRise">
@@ -230,8 +230,14 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
 
       <!-- ══ 물감 낙하 수묵 채색 (+ 해·달 누끼 부유) ══ -->
       <template v-else-if="effect === 'inkfill'">
-        <img :src="img" alt="" class="art-img gray" draggable="false" :style="grayStyle" />
-        <img :src="img" alt="" class="art-img colorized" draggable="false" :style="fillStyle" />
+        <img v-if="!waterIntro" :src="img" alt="" class="art-img gray" draggable="false" />
+        <img
+          :src="img"
+          alt=""
+          class="art-img colorized"
+          draggable="false"
+          :style="waterIntro ? plainFillStyle : fillStyle"
+        />
         <!-- 수면 도입: 해·달이 물에서 떠오르고, 화폭이 차면 제 자리에 스며든다 -->
         <template v-if="waterIntro">
           <span v-for="(c, i) in cuts" :key="'cel' + i" class="celestial" :style="celestialStyle(c)">
@@ -251,7 +257,6 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
               </defs>
               <image :href="introWaterImg" x="0" y="0" width="100%" height="100%" preserveAspectRatio="xMidYMin slice" filter="url(#wobintro)" transform="scale(1,-1)" transform-origin="center" />
             </svg>
-            <div class="iw-shimmer"></div>
           </div>
         </template>
         <template v-else>
@@ -259,7 +264,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
             <MinhwaCut :src="c.src" :parts="c.parts ?? []" :idle="c.idle" />
           </span>
         </template>
-        <div v-if="!dropsDone && p > fillStart" class="paint-drops">
+        <div v-if="!waterIntro && !dropsDone && p > fillStart" class="paint-drops">
           <span class="pd pd1"></span>
           <span class="pd pd2"></span>
           <span class="pd pd3"></span>
@@ -538,20 +543,6 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   width: 100%;
   height: 160%;
   mix-blend-mode: multiply;
-}
-.iw-shimmer {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    180deg,
-    transparent 0 9px,
-    rgba(251, 246, 234, 0.09) 9px 11px
-  );
-  animation: iwFlow 5s ease-in-out infinite alternate;
-}
-@keyframes iwFlow {
-  from { transform: translateY(0); }
-  to { transform: translateY(6px); }
 }
 
 /* ── 날씨 기운 ── */
