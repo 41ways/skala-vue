@@ -42,30 +42,30 @@ export function useWeather() {
     loading.value = true
     error.value = null
     try {
-      const results = await Promise.all(
-        cities.value.map(async (c) => {
-          const { lat, lon } = cityCoords[c.id]
-          const { data } = await axios.get('https://api.open-meteo.com/v1/forecast', {
-            params: {
-              latitude: lat,
-              longitude: lon,
-              current: 'temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day',
-              timezone: 'Asia/Seoul',
-            },
-          })
-          const cur = data.current
-          return {
-            ...c,
-            temp: Math.round(cur.temperature_2m),
-            humidity: cur.relative_humidity_2m,
-            wind: Math.round(cur.wind_speed_10m * 10) / 10,
-            status: codeToStatus(cur.weather_code),
-            isDay: cur.is_day === 1,
-            live: true,
-          }
-        }),
-      )
-      cities.value = results
+      // 도시 전부를 한 번의 요청으로 — latitude/longitude에 쉼표로 여러 좌표를 넘기면 배열로 온다
+      const list = cities.value
+      const { data } = await axios.get('https://api.open-meteo.com/v1/forecast', {
+        params: {
+          latitude: list.map((c) => cityCoords[c.id].lat).join(','),
+          longitude: list.map((c) => cityCoords[c.id].lon).join(','),
+          current: 'temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day',
+          timezone: 'Asia/Seoul',
+        },
+      })
+      const rows = Array.isArray(data) ? data : [data]
+      cities.value = list.map((c, i) => {
+        const cur = rows[i]?.current
+        if (!cur) return c
+        return {
+          ...c,
+          temp: Math.round(cur.temperature_2m),
+          humidity: cur.relative_humidity_2m,
+          wind: Math.round(cur.wind_speed_10m * 10) / 10,
+          status: codeToStatus(cur.weather_code),
+          isDay: cur.is_day === 1,
+          live: true,
+        }
+      })
     } catch (e) {
       // 폴백: 목데이터 유지 — 오프라인/차단 환경에서도 데모 가능
       error.value = e
@@ -87,31 +87,36 @@ export function useWorldWeather() {
     loading.value = true
     error.value = null
     try {
-      const results = await Promise.all(
-        cities.value.map(async (c) => {
-          if (c.demo) return { ...c, live: false, localTime: '' } // 시연 도시는 고정값 유지
-          const { data } = await axios.get('https://api.open-meteo.com/v1/forecast', {
-            params: {
-              latitude: c.lat,
-              longitude: c.lon,
-              current: 'temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day',
-              timezone: 'auto',
-            },
-          })
-          const cur = data.current
-          return {
-            ...c,
-            temp: Math.round(cur.temperature_2m),
-            humidity: cur.relative_humidity_2m,
-            wind: Math.round(cur.wind_speed_10m * 10) / 10,
-            status: codeToStatus(cur.weather_code),
-            isDay: cur.is_day === 1,
-            localTime: (cur.time || '').slice(11, 16), // 현지 시각 HH:MM
-            live: true,
-          }
-        }),
-      )
-      cities.value = results
+      const live = cities.value.filter((c) => !c.demo) // 시연 도시는 고정값
+      const { data } = await axios.get('https://api.open-meteo.com/v1/forecast', {
+        params: {
+          latitude: live.map((c) => c.lat).join(','),
+          longitude: live.map((c) => c.lon).join(','),
+          current: 'temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,is_day',
+          timezone: 'auto',
+        },
+      })
+      const rows = Array.isArray(data) ? data : [data]
+      const byId = {}
+      live.forEach((c, i) => {
+        const cur = rows[i]?.current
+        if (cur) byId[c.id] = cur
+      })
+      cities.value = cities.value.map((c) => {
+        if (c.demo) return { ...c, live: false, localTime: '' }
+        const cur = byId[c.id]
+        if (!cur) return c
+        return {
+          ...c,
+          temp: Math.round(cur.temperature_2m),
+          humidity: cur.relative_humidity_2m,
+          wind: Math.round(cur.wind_speed_10m * 10) / 10,
+          status: codeToStatus(cur.weather_code),
+          isDay: cur.is_day === 1,
+          localTime: (cur.time || '').slice(11, 16), // 현지 시각 HH:MM
+          live: true,
+        }
+      })
     } catch (e) {
       error.value = e
     } finally {
