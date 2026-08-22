@@ -27,21 +27,20 @@ function toHanja(n) {
   }
   return String(n)
 }
-const tempH = computed(() => (props.city?.temp < 0 ? '零下' : '') + toHanja(props.city?.temp ?? 0))
-const humH = computed(() => toHanja(props.city?.humidity ?? 0))
-const windH = computed(() => toHanja(props.city?.wind ?? 0))
-
+// 숫자 표기 — 한자 ⇄ 아라비아 (낙관 버튼으로 전환)
+const hanjaMode = ref(true)
+const num = (n) => (hanjaMode.value ? toHanja(n) : String(Math.round(n)))
+const tempTxt = computed(() => {
+  const t = props.city?.temp ?? 0
+  return hanjaMode.value ? (t < 0 ? '零下' : '') + toHanja(t) + '度' : `${Math.round(t)}°`
+})
+const humTxt = computed(() => (hanjaMode.value ? num(props.city?.humidity ?? 0) + '分' : `${Math.round(props.city?.humidity ?? 0)}%`))
+const windTxt = computed(() => (hanjaMode.value ? num(props.city?.wind ?? 0) + '米' : `${props.city?.wind ?? 0} m/s`))
 const today = computed(() => {
   const d = new Date()
-  return `${toHanja(d.getMonth() + 1)}月 ${toHanja(d.getDate())}日`
-})
-const feel = computed(() => {
-  const t = props.city?.temp ?? 0
-  if (t >= 30) return '한낮 볕이 따가우니 그늘을 찾을 일'
-  if (t >= 24) return '더위가 옷에 감기니 얇게 입을 일'
-  if (t >= 17) return '바람이 옷깃에 알맞은 날'
-  if (t >= 9) return '겹옷 하나 걸칠 일'
-  return '손끝이 시리니 화로를 가까이할 일'
+  return hanjaMode.value
+    ? `${toHanja(d.getMonth() + 1)}月 ${toHanja(d.getDate())}日`
+    : `${d.getMonth() + 1}월 ${d.getDate()}일`
 })
 const windWord = computed(() => {
   const w = props.city?.wind ?? 0
@@ -86,9 +85,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
         <!-- 비단 표장(만자문) → 시전지 -->
         <div class="silk" :style="{ backgroundImage: `url(${silkImg})` }">
           <div class="paper" :style="{ backgroundImage: `url(${hanjiImg})` }">
-            <span class="roll roll-l"></span>
-            <span class="roll roll-r"></span>
-
             <!-- 시전지 괘선 -->
             <div class="rules" aria-hidden="true"></div>
 
@@ -100,15 +96,23 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
                 {{ city.name }}<span class="hanja">{{ cityHanja }}</span>
               </p>
               <p class="col sky"><i class="sky-hanja">{{ statusHanja }}</i>{{ city.status }} · {{ city.isDay ? '낮' : '밤' }}</p>
-              <p class="col">기온 <b>{{ tempH }}度</b></p>
-              <p class="col">습기 <b>{{ humH }}分</b></p>
-              <p class="col">바람 <b>{{ windWord }}</b> {{ windH }}尺</p>
-              <p class="col note">{{ feel }}</p>
-              <p class="col date">{{ today }} {{ city.live ? '實測' : '標本' }}</p>
+              <p class="col"><span class="k">기온</span><b>{{ tempTxt }}</b></p>
+              <p class="col"><span class="k">습도</span><b>{{ humTxt }}</b></p>
+              <p class="col"><span class="k">바람</span><b>{{ windTxt }}</b><span class="sub">{{ windWord }}</span></p>
+              <p class="col date">{{ today }} · {{ city.live ? '실측' : '표본' }}</p>
             </div>
 
-            <!-- 낙관 -->
-            <i class="seal">{{ statusHanja }}</i>
+            <!-- 낙관 = 숫자 표기 전환 버튼 -->
+            <button
+              class="seal"
+              type="button"
+              :aria-pressed="hanjaMode"
+              :title="hanjaMode ? '아라비아 숫자로 보기' : '한자 숫자로 보기'"
+              @click="hanjaMode = !hanjaMode"
+            >
+              <span class="seal-face">{{ hanjaMode ? '123' : '一二三' }}</span>
+              <span class="seal-cap">{{ hanjaMode ? '숫자로' : '한자로' }}</span>
+            </button>
             <button ref="closeBtn" class="close" @click="emit('close')">거두기</button>
           </div>
         </div>
@@ -155,7 +159,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .rod {
   position: relative;
   z-index: 3;
-  flex: 0 0 44px;
+  flex: 0 0 40px;
   margin: -44px 0;
   animation: rodIn 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.55));
@@ -183,7 +187,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 /* 비단 표장 — 쪽빛 명주 만자(卍)문 */
 .silk {
   flex: 1;
-  padding: 18px 20px;
+  margin: 0 -16px; /* 축 몸통 밑으로 파고들어 붙는다 */
+  padding: 18px 34px;
+  z-index: 1;
   background-color: #22345a;
   background-size: 360px 360px;
   background-blend-mode: normal;
@@ -237,35 +243,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     linear-gradient(90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.14) 18%, rgba(0, 0, 0, 0.05) 34%, rgba(255, 255, 255, 0.1) 52%, rgba(0, 0, 0, 0.05) 70%, rgba(255, 255, 255, 0.12) 86%, rgba(0, 0, 0, 0.06));
   mix-blend-mode: soft-light;
 }
-.roll {
-  position: absolute;
-  top: -6px;
-  bottom: -6px;
-  width: 58px;
-  pointer-events: none;
-  z-index: 2;
-}
-/* 겹겹이 감긴 종이 — 밝고 어두운 띠가 원통처럼 반복 */
-.roll-l {
-  left: -10px;
-  background:
-    linear-gradient(90deg,
-      rgba(80, 55, 30, 0.55) 0, rgba(250, 242, 225, 0.85) 6px, rgba(120, 90, 55, 0.5) 11px,
-      rgba(250, 242, 225, 0.8) 17px, rgba(120, 90, 55, 0.42) 23px, rgba(250, 242, 225, 0.7) 30px,
-      rgba(120, 90, 55, 0.3) 38px, rgba(250, 242, 225, 0.35) 46px, transparent 58px);
-  box-shadow: 8px 0 14px -4px rgba(40, 25, 10, 0.35);
-  border-radius: 0 40% 40% 0 / 0 8% 8% 0;
-}
-.roll-r {
-  right: -10px;
-  background:
-    linear-gradient(270deg,
-      rgba(80, 55, 30, 0.55) 0, rgba(250, 242, 225, 0.85) 6px, rgba(120, 90, 55, 0.5) 11px,
-      rgba(250, 242, 225, 0.8) 17px, rgba(120, 90, 55, 0.42) 23px, rgba(250, 242, 225, 0.7) 30px,
-      rgba(120, 90, 55, 0.3) 38px, rgba(250, 242, 225, 0.35) 46px, transparent 58px);
-  box-shadow: -8px 0 14px -4px rgba(40, 25, 10, 0.35);
-  border-radius: 40% 0 0 40% / 8% 0 0 8%;
-}
 .rules {
   position: absolute;
   inset: 18px 26px;
@@ -312,6 +289,21 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .col b {
   font-weight: 700;
   color: var(--jeok);
+  font-size: 1.25em;
+  letter-spacing: 0.08em;
+}
+.col .k {
+  display: inline-block;
+  margin-bottom: 14px;
+  font-size: 0.8em;
+  color: var(--ink-soft);
+  letter-spacing: 0.3em;
+}
+.col .sub {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 0.78em;
+  color: var(--ink-soft);
 }
 .col.title {
   font-size: clamp(36px, 4.8vw, 56px);
@@ -349,23 +341,54 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .seal {
   position: absolute;
-  left: 34px;
+  left: 36px;
   bottom: 30px;
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   display: grid;
   place-items: center;
+  gap: 0;
+  padding: 0;
   background: var(--jeok);
   color: var(--baek);
-  font-family: var(--font-display);
-  font-style: normal;
-  font-size: 30px;
-  font-weight: 700;
-  border-radius: 3px;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
   transform: rotate(-3deg);
-  box-shadow: inset 0 0 0 2px rgba(251, 246, 234, 0.4), 0 3px 8px rgba(34, 28, 22, 0.3);
-  mix-blend-mode: multiply;
-  opacity: 0.92;
+  box-shadow: inset 0 0 0 2px rgba(251, 246, 234, 0.45), 0 4px 10px rgba(34, 28, 22, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.seal:hover,
+.seal:focus-visible {
+  transform: rotate(-3deg) scale(1.06);
+  outline: none;
+  box-shadow: inset 0 0 0 2px rgba(251, 246, 234, 0.7), 0 6px 14px rgba(34, 28, 22, 0.4);
+}
+.seal-face {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+.seal-cap {
+  font-family: var(--font-util);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  opacity: 0.9;
+}
+.seal::after {
+  /* 도장 곁 안내 */
+  content: '숫자 표기 바꾸기';
+  position: absolute;
+  left: 74px;
+  top: 50%;
+  transform: translateY(-50%) rotate(3deg);
+  white-space: nowrap;
+  font-family: var(--font-util);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
 }
 .close {
   position: absolute;
