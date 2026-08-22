@@ -230,8 +230,6 @@ const citiesFor = (ch, i) =>
 
 // ── 스크롤 진행도 + 마우스 시차 ──────────────────────────
 const heroEl = ref(null)
-const dcEl = ref(null) // 대청 — 문이 열리는 구간
-const dcP = ref(0)
 const chapterEls = ref([])
 const progress = ref([])
 const heroP = ref(0)
@@ -251,10 +249,6 @@ function measure() {
   if (heroEl.value) {
     const r = heroEl.value.getBoundingClientRect()
     heroP.value = clamp01(-r.top / (r.height - vh || 1))
-  }
-  if (dcEl.value) {
-    const r = dcEl.value.getBoundingClientRect()
-    dcP.value = clamp01(-r.top / (r.height - vh || 1))
   }
   let act = -1
   progress.value = chapterEls.value.map((el, i) => {
@@ -327,13 +321,12 @@ onBeforeUnmount(() => {
 // 두루마리 날씨첩 — 화기의 고을을 누르면 펼쳐진다
 const sheetCity = ref(null)
 // 대청 — 스크롤하면 분합문이 양쪽으로 열리고, 문밖에 인왕제색도가 선다
-const dcOpen = computed(() => easeOut(clamp01((dcP.value - 0.1) / 0.62)))
+const dcOpen = computed(() => easeOut(clamp01((heroP.value - 0.18) / 0.55)))
 const dcPhotoStyle = computed(() => ({ '--o': dcOpen.value.toFixed(3) }))
 const dcViewStyle = computed(() => ({
   transform: `scale(${(1.14 - dcOpen.value * 0.1).toFixed(3)})`,
   filter: `brightness(${(0.55 + dcOpen.value * 0.45).toFixed(3)}) saturate(${(0.8 + dcOpen.value * 0.2).toFixed(2)})`,
 }))
-const dcLabelStyle = computed(() => ({ opacity: (1 - clamp01((dcP.value - 0.05) / 0.2)).toFixed(3) }))
 const activeToneLight = computed(() => {
   const i = activeIdx.value
   if (i < 0) return false
@@ -366,6 +359,7 @@ function infoStyle(i, order = 0) {
   }
 }
 const heroStyle = computed(() => ({
+  pointerEvents: heroP.value > 0.3 ? 'none' : 'auto',
   transform: `scale(${(1 - heroP.value * 0.12).toFixed(4)}) translateY(${(heroP.value * -6).toFixed(2)}%)`,
   opacity: clamp01((1 - heroP.value) / 0.5).toFixed(3),
 }))
@@ -409,10 +403,17 @@ function jumpTo(r) {
     <!-- ══ 표제 — 만국청우록의 획 드로잉 스타일, 국내판 ══ -->
     <section ref="heroEl" class="hero-wrap">
       <div class="hero-stage">
-        <!-- 은은한 오봉도 배경 — 한지에 배접된 옛 그림처럼 -->
-        <div class="hero-bg">
-          <img :src="obongdoImg" alt="" draggable="false" />
+        <!-- 대청 — 문밖엔 오늘의 하늘(인왕제색도), 앞엔 분합문. 스크롤하면 문이 열린다 -->
+        <div class="dc-view" :style="dcViewStyle">
+          <img :src="inwangImg" alt="" draggable="false" />
+          <span class="dc-haze"></span>
         </div>
+        <div class="dc-photo" :style="dcPhotoStyle">
+          <img class="dc-base" :src="dcBase" alt="" draggable="false" />
+          <img class="dc-door l" :src="dcDoorL" alt="" draggable="false" />
+          <img class="dc-door r" :src="dcDoorR" alt="" draggable="false" />
+        </div>
+        <p class="dc-cap util">오리 이원익 종택 분합문 · 문화재청 (공공누리 제1유형)</p>
         <div class="hero-inner" :style="heroStyle">
           <svg class="title-svg" viewBox="0 0 900 260">
             <text x="450" y="118" class="stroke-title t-main">팔도청우록</text>
@@ -433,23 +434,6 @@ function jumpTo(r) {
           <path d="M640 200 L860 80 L1080 200 Z" fill="rgba(34,28,22,.07)" />
           <path d="M920 200 L1090 110 L1240 200 Z" fill="rgba(34,28,22,.05)" />
         </svg>
-      </div>
-    </section>
-
-    <!-- ══ 대청 — 분합문이 열리면 오늘의 하늘 ══ -->
-    <section ref="dcEl" class="daecheong" aria-label="대청 — 문을 열면 오늘의 하늘">
-      <div class="dc-stage">
-        <div class="dc-view" :style="dcViewStyle">
-          <img :src="inwangImg" alt="" draggable="false" />
-          <span class="dc-haze"></span>
-        </div>
-        <div class="dc-photo" :style="dcPhotoStyle">
-          <img class="dc-base" :src="dcBase" alt="" draggable="false" />
-          <img class="dc-door l" :src="dcDoorL" alt="" draggable="false" />
-          <img class="dc-door r" :src="dcDoorR" alt="" draggable="false" />
-        </div>
-        <p class="dc-label" :style="dcLabelStyle">大廳 — 문을 열면, 오늘의 하늘</p>
-        <p class="dc-cap util">오리 이원익 종택 분합문 · 문화재청 (공공누리 제1유형)</p>
       </div>
     </section>
 
@@ -568,7 +552,7 @@ function jumpTo(r) {
 
 /* ── 표제 (만국청우록 스타일 이식) ── */
 .hero-wrap {
-  height: 160vh;
+  height: 300vh; /* 제목 → 문 열림 → 인왕제색도 */
 }
 .hero-stage {
   position: sticky;
@@ -927,17 +911,7 @@ function jumpTo(r) {
   color: rgba(34, 28, 22, 0.4);
 }
 
-/* ── 대청 ── */
-.daecheong {
-  height: 240vh;
-}
-.dc-stage {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow: hidden;
-  background: #2a211a;
-}
+/* ── 대청(히어로 배경) ── */
 .dc-view {
   position: absolute;
   inset: -4%;
@@ -993,20 +967,6 @@ function jumpTo(r) {
   width: 41.42%;
   transform-origin: right center;
   transform: perspective(1600px) rotateY(calc(var(--o) * 96deg));
-}
-.dc-label {
-  position: absolute;
-  left: 50%;
-  top: 7%;
-  transform: translateX(-50%);
-  margin: 0;
-  z-index: 3;
-  font-family: var(--font-display);
-  font-size: clamp(15px, 1.8vw, 21px);
-  letter-spacing: 0.3em;
-  color: var(--baek);
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
-  white-space: nowrap;
 }
 .dc-cap {
   position: absolute;
