@@ -1,0 +1,14 @@
+{
+  "name": "청우록 — 민화로 보는 오늘의 하늘",
+  "short_name": "청우록",
+  "description": "화폭을 내리면 팔도의 날씨가 펼쳐집니다",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f1e7d0",
+  "theme_color": "#f1e7d0",
+  "lang": "ko",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
