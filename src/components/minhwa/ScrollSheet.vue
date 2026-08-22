@@ -128,7 +128,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
             <!-- 우상단 제첨: 청우록 -->
             <p class="head">晴雨錄 · 날씨첩</p>
 
-            <div class="columns">
+            <div class="columns" :class="{ arabic: !hanjaMode }">
               <p class="col title">
                 {{ city.name }}<span class="hanja">{{ cityHanja }}</span>
               </p>
@@ -340,6 +340,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   color: var(--jeok);
   font-size: 1.25em;
   letter-spacing: 0.08em;
+}
+/* 아라비아 숫자 모드 — 세로글 속 숫자는 반대 방향(아래→위)으로 눕힌다 */
+.columns.arabic .col b,
+.columns.arabic .col.date,
+.columns.arabic .col.fc .sub {
+  display: inline-block;
+  rotate: 180deg;
 }
 .col .k {
   display: inline-block;
