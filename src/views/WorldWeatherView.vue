@@ -21,13 +21,14 @@ import sydneyImg from '@/assets/world-art/sydney.jpg'
 import romeImg from '@/assets/world-art/rome.jpg'
 import istanbulImg from '@/assets/world-art/istanbul.jpg'
 import cairoImg from '@/assets/world-art/cairo.jpg'
+import sejongImg from '@/assets/world-art/sejong.jpg'
 // 스칼라 시연 사진 — src/assets/world-art/skala.jpg 를 넣으면 자동 연결, 없으면 먹빛 폭풍 배경
 const skalaFiles = import.meta.glob('@/assets/world-art/skala.{jpg,jpeg,png,webp}', { eager: true, import: 'default' })
 const skalaImg = Object.values(skalaFiles)[0] ?? ''
 
 const { cities, loading, error, fetchLive } = useWorldWeather()
 
-const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
+const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI']
 // 두루마리 날씨첩 — 도시 이름을 누르면 펼쳐진다
 const sheetCity = ref(null)
 
@@ -42,6 +43,7 @@ const artMap = {
   w_rome: { img: romeImg, caption: '조반니 파올로 파니니 「로마 포룸」 1735', focal: '50% 48%' },
   w_istanbul: { img: istanbulImg, caption: '이반 아이바좁스키 「콘스탄티노플과 보스포루스」 1856', focal: '50% 50%' },
   w_cairo: { img: cairoImg, caption: '장레옹 제롬 「카이로의 저녁 기도」 1865', focal: '50% 42%' },
+  w_sejong: { img: sejongImg, caption: '리처드 비치 「빙산 사이를 지나는 HMS 에레버스호」 1842', focal: '50% 50%' },
   w_skala: { img: skalaImg, caption: 'SKALA 캠퍼스 · 시연용 사진 (고정 기상: 뇌우 21° · 풍속 11.4m/s)', focal: '50% 40%' },
 }
 
@@ -351,7 +353,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
             :style="{ left: d.left, animationDuration: d.duration, animationDelay: d.delay, opacity: d.opacity }"
           ></span>
         </template>
-        <template v-if="c.status === '눈'">
+        <template v-if="c.status === '눈' || c.snowAlways">
           <span
             v-for="(f, j) in snowFlakes"
             :key="'s' + j"
