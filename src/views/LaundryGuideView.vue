@@ -49,7 +49,7 @@ const grades = [
       흐름이 필요하기 때문입니다.
     </p>
 
-    <button @click="router.push('/')">메인 대시보드로 돌아가기</button>
+    <button @click="router.push('/')">국내 화폭으로 돌아가기</button>
   </div>
 </template>
 

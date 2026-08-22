@@ -10,7 +10,7 @@ const router = useRouter()
     <p class="code">404</p>
     <p class="msg">요청하신 경로를 찾을 수 없습니다.</p>
     <p class="path">{{ decodeURIComponent(route.fullPath) }}</p>
-    <button @click="router.push('/')">메인 대시보드로 돌아가기</button>
+    <button @click="router.push('/')">국내 화폭으로 돌아가기</button>
   </div>
 </template>
 
