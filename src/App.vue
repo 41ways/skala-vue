@@ -64,13 +64,26 @@ onBeforeUnmount(() => {
     <UnitToggler v-if="route.path === '/classic' || route.path.startsWith('/weather/')" class="unit" />
   </header>
   <div class="saekdong"></div>
-  <RouterView />
+  <RouterView v-slot="{ Component }">
+    <Transition name="page" mode="out-in">
+      <component :is="Component" />
+    </Transition>
+  </RouterView>
   <Transition name="totop">
     <button v-show="showTop" class="totop" aria-label="맨 위로" @click="toTop">↑</button>
   </Transition>
 </template>
 
 <style scoped>
+/* 화폭 전환: 먹이 마르듯 잠깐 옅어졌다 다음 폭이 든다 */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.32s ease;
+}
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+}
 .unit {
   margin-left: 12px;
 }
