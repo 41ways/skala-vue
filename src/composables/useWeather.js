@@ -11,6 +11,10 @@ export const cityCoords = {
   city_04: { lat: 35.16, lon: 126.85 }, // 광주
   city_05: { lat: 37.75, lon: 128.88 }, // 강릉
   city_06: { lat: 33.5, lon: 126.53 }, // 제주
+  city_07: { lat: 37.46, lon: 126.71 }, // 인천
+  city_08: { lat: 36.35, lon: 127.38 }, // 대전
+  city_09: { lat: 35.87, lon: 128.6 }, // 대구
+  city_10: { lat: 37.88, lon: 127.73 }, // 춘천
 }
 
 // Open-Meteo weathercode → 민화 장면 상태

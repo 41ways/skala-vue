@@ -18,10 +18,13 @@ import parisImg from '@/assets/world-art/paris.jpg'
 import londonImg from '@/assets/world-art/london.jpg'
 import newyorkImg from '@/assets/world-art/newyork.jpg'
 import sydneyImg from '@/assets/world-art/sydney.jpg'
+import romeImg from '@/assets/world-art/rome.jpg'
+import istanbulImg from '@/assets/world-art/istanbul.jpg'
+import cairoImg from '@/assets/world-art/cairo.jpg'
 
 const { cities, loading, error, fetchLive } = useWorldWeather()
 
-const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
+const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX']
 // 두루마리 날씨첩 — 도시 이름을 누르면 펼쳐진다
 const sheetCity = ref(null)
 
@@ -33,6 +36,9 @@ const artMap = {
   w_london: { img: londonImg, caption: '윌리엄 터너 「비, 증기, 속도」 1844', focal: '58% 45%' },
   w_newyork: { img: newyorkImg, caption: '앨버트 비어슈타트 「로키산맥의 폭풍」 1866', focal: '45% 40%' },
   w_sydney: { img: sydneyImg, caption: '유진 폰 게라르 「시드니 헤즈」 1865', focal: '50% 45%' },
+  w_rome: { img: romeImg, caption: '조반니 파올로 파니니 「로마 포룸」 1735', focal: '50% 48%' },
+  w_istanbul: { img: istanbulImg, caption: '이반 아이바좁스키 「콘스탄티노플과 보스포루스」 1856', focal: '50% 50%' },
+  w_cairo: { img: cairoImg, caption: '데이비드 로버츠 「카이로 풍경」 1840', focal: '50% 45%' },
 }
 
 
@@ -310,9 +316,13 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
         <div class="etch" :style="etchStyle(i)">
           <img :src="artMap[c.id].img" alt="" loading="lazy" decoding="async" draggable="false" />
         </div>
-        <div class="paint" :style="paintStyle(i, artMap[c.id])">
+        <div class="paint" :class="{ windy: c.wind >= 6 }" :style="paintStyle(i, artMap[c.id])">
           <img :src="artMap[c.id].img" :alt="artMap[c.id].caption" loading="lazy" decoding="async" draggable="false" />
         </div>
+        <!-- 실황 연동 — 흐리거나 구름 끼면 안개 띠가 지나간다 (고정 효과가 없는 도시) -->
+        <template v-if="!fxMap[c.id]?.mist && (c.status === '흐림' || c.status === '구름' || c.status === '안개')">
+          <span v-for="(m, j) in mists" :key="'wm' + j" class="mistband" :style="[m, { top: 26 + j * 9 + '%' }]"></span>
+        </template>
         <!-- 도시별 — 구름·물결·안개·번개 -->
         <template v-if="fxMap[c.id]">
           <div class="fx" :class="fxMap[c.id].kind" :style="[paintStyle(i, artMap[c.id]), { clipPath: fxMap[c.id].clip }]">
@@ -629,6 +639,18 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   object-fit: cover;
   user-select: none;
 }
+/* 바람 ≥ 6m/s — 걸어 둔 화폭이 바람에 살짝 휘날린다 (translate/rotate 대신 별도 속성으로 흔들어 인라인 transform과 충돌 없음) */
+.paint.windy {
+  animation: windFlutter 3.6s ease-in-out infinite;
+  transform-origin: 50% 0%;
+}
+@keyframes windFlutter {
+  0%, 100% { rotate: 0deg; translate: 0 0; }
+  25% { rotate: 0.5deg; translate: 6px 2px; }
+  50% { rotate: -0.35deg; translate: -4px 0; }
+  75% { rotate: 0.3deg; translate: 3px 2px; }
+}
+
 /* ── 도시별 효과 레이어 ── */
 .fx {
   position: absolute;
@@ -974,6 +996,6 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
     fill-opacity: 1;
     stroke-dashoffset: 0;
   }
-  .spark, .w-drop, .w-flake, .fx, .mistband, .sunglow, .lightning { animation: none !important; }
+  .spark, .w-drop, .w-flake, .fx, .mistband, .sunglow, .lightning, .paint.windy { animation: none !important; }
 }
 </style>

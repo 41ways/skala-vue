@@ -5,6 +5,10 @@ export const weatherList = [
   { id: 'city_04', name: '광주', temp: 30, status: '맑음', humidity: 55, wind: 1.8, x: 28, y: 64 },
   { id: 'city_05', name: '강릉', temp: 19, status: '흐림', humidity: 70, wind: 5.2, x: 82, y: 17 },
   { id: 'city_06', name: '제주', temp: 24, status: '바람', humidity: 81, wind: 7.3, x: 19, y: 94 },
+  { id: 'city_07', name: '인천', temp: 27, status: '구름', humidity: 70, wind: 3.6, x: 24, y: 22 },
+  { id: 'city_08', name: '대전', temp: 29, status: '맑음', humidity: 58, wind: 1.9, x: 40, y: 46 },
+  { id: 'city_09', name: '대구', temp: 31, status: '맑음', humidity: 50, wind: 2.2, x: 66, y: 54 },
+  { id: 'city_10', name: '춘천', temp: 26, status: '흐림', humidity: 72, wind: 1.4, x: 44, y: 14 },
 ]
 
 // 해외 도시 — 세계화폭(스크롤텔링) 챕터. genre = 배정된 풍속화 장면
@@ -21,6 +25,9 @@ export const worldList = [
   { id: 'w_newyork', name: '뉴욕', hanja: '紐約', country: '미국', lat: 40.71, lon: -74.01, temp: 25, status: '구름', humidity: 60, wind: 4.9, genre: 'mudong', line: '폭풍이 걷히는 산맥처럼 뉴욕의 하늘이 열립니다' },
   // prettier-ignore
   { id: 'w_sydney', name: '시드니', hanja: '雪梨', country: '호주', lat: -33.87, lon: 151.21, temp: 16, status: '맑음', humidity: 58, wind: 6.1, genre: 'ssireum', line: '남반구의 바람이 항구의 물빛을 고르게 폅니다' },
+  { id: 'w_rome', name: '로마', hanja: '羅馬', country: '이탈리아', lat: 41.9, lon: 12.5, temp: 30, status: '맑음', humidity: 45, wind: 2.8, genre: 'seodang', line: '천 년 폐허 위로 오늘의 볕이 고르게 내립니다' },
+  { id: 'w_istanbul', name: '이스탄불', hanja: '伊斯坦堡', country: '튀르키예', lat: 41.01, lon: 28.98, temp: 27, status: '구름', humidity: 60, wind: 4.2, genre: 'mudong', line: '보스포루스의 물결 위로 두 대륙의 하늘이 만납니다' },
+  { id: 'w_cairo', name: '카이로', hanja: '開羅', country: '이집트', lat: 30.04, lon: 31.24, temp: 35, status: '맑음', humidity: 30, wind: 3.5, genre: 'tiger', line: '사막의 바람이 첨탑 사이로 마른 볕을 실어 옵니다' },
 ]
 
 export const starCount = (city) => {
