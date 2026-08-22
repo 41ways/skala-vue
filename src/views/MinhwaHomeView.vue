@@ -97,9 +97,9 @@ const chapters = [
         idle: 'sway',
         z: 3,
         parts: [
-          { src: cut('mudong_sleeve_r'), left: '64.9%', top: '25%', w: '35.1%', anim: 'p-flutter', origin: '6% 50%' },
-          { src: cut('mudong_sleeve_l'), left: '0%', top: '27.4%', w: '28.8%', anim: 'p-flutter-b', origin: '92% 22%' },
-          { src: cut('mudong_leg'), left: '18.9%', top: '53.8%', w: '34.4%', anim: 'p-kick', origin: '82% 10%' },
+          { src: cut('mudong_sleeve_r'), left: '45.4%', top: '1.1%', w: '45.4%', anim: 'p-flutter', origin: '8% 82%' },
+          { src: cut('mudong_sleeve_l'), left: '0%', top: '27.2%', w: '34.8%', anim: 'p-flutter-b', origin: '88% 18%' },
+          { src: cut('mudong_leg'), left: '42.4%', top: '52.2%', w: '27.2%', anim: 'p-kick', origin: '55% 6%' },
         ],
       },
     ],
@@ -142,7 +142,7 @@ const chapters = [
     focal: '44% 50%',
     cuts: [
       // 훈장님 — 서안 뒤에서 지긋이
-      { src: cut('seodang_hunjang'), left: '37.9%', top: '4.7%', w: '31.8%', depth: 8, oy: -12, ds: 0.02, idle: 'bob', z: 2 },
+      { src: cut('seodang_hunjang'), left: '29%', top: '4%', w: '44%', depth: 8, oy: -12, ds: 0.02, idle: 'bob', z: 2 },
       // 학동들 — 양쪽 줄
       { src: cut('seodang_students_l'), left: '4%', top: '16%', w: '25%', depth: 12, ox: -12, ds: 0.03, idle: 'bob', z: 1 },
       { src: cut('seodang_students_r'), left: '66%', top: '32%', w: '25%', depth: 12, ox: 12, ds: 0.03, idle: 'bob', z: 1 },

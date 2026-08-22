@@ -151,7 +151,7 @@ const tiltT = computed(() => easeOut(clamp01((wprog.value - 0.84) / 0.15)))
 const mainWobble = computed(() => (7 + melt.value * 85).toFixed(1))
 // 시선 이동 — 호수를 내려다보다가, 스크롤하면 수면을 수평선 보듯 기울어진다
 const tiltStyle = computed(() => ({
-  transform: `perspective(90vh) rotateX(${(tiltT.value * 62).toFixed(1)}deg) translateY(${(tiltT.value * -5).toFixed(1)}%)`,
+  transform: `perspective(90vh) rotateX(${(tiltT.value * 62).toFixed(1)}deg) translateY(${(tiltT.value * -5).toFixed(1)}%) scale(${(1 + tiltT.value * 0.65).toFixed(3)})`,
   transformOrigin: '50% 96%',
 }))
 // 빗방울 파문 고리 위치 (마운트 시 고정)

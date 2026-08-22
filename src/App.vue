@@ -30,7 +30,6 @@ onBeforeUnmount(() => {
     <nav class="util">
       <RouterLink to="/">국내 화폭</RouterLink>
       <RouterLink to="/world">세계화폭</RouterLink>
-      <RouterLink to="/sky">별하늘</RouterLink>
       <RouterLink to="/guide">빨래 지침</RouterLink>
       <RouterLink to="/classic">실습 대시보드</RouterLink>
       <RouterLink to="/about">소개</RouterLink>
