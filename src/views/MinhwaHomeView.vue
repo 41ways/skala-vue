@@ -453,19 +453,13 @@ function jumpTo(r) {
 
         <!-- 우측 — 그림 곁에 띄운 도시 정보 -->
         <aside class="side-cities" :class="{ light: fld(ch, i, 'tone') === 'light' }" :style="sideStyle(i)">
-          <p class="side-cap util">{{ fld(ch, i, 'wHanja') }} — 이 화폭의 고을</p>
+          <p class="side-cap"><i class="cap-seal">{{ fld(ch, i, 'wHanja') }}</i>이 화폭의 고을</p>
           <template v-if="citiesFor(ch, i).length">
-            <router-link
-              v-for="c in citiesFor(ch, i)"
-              :key="c.id"
-              class="chip util"
-              :to="`/weather/${c.id}`"
-            >
-              <span class="chip-hanja">{{ fld(ch, i, 'wHanja') }}</span>
-              <b>{{ c.name }}</b> {{ c.temp }}° · {{ c.status }}
+            <router-link v-for="c in citiesFor(ch, i)" :key="c.id" class="vc" :to="`/weather/${c.id}`">
+              <b>{{ c.name }}</b><span>{{ c.temp }}° {{ c.status }}</span>
             </router-link>
           </template>
-          <p v-else class="chip-empty util">{{ fld(ch, i, 'empty') }}</p>
+          <p v-else class="vc vc-empty">{{ fld(ch, i, 'empty') }}</p>
         </aside>
 
         <!-- 다음 폭으로 — 하단의 작은 손짓 -->
@@ -844,7 +838,7 @@ function jumpTo(r) {
     0 0 4px rgba(241, 231, 208, 1),
     0 0 10px rgba(241, 231, 208, 1),
     0 0 20px rgba(241, 231, 208, 0.9);
-  transition: color 0.25s, transform 0.25s;
+  transition: color 0.9s ease, text-shadow 0.9s ease, transform 0.25s;
 }
 .rail-item:hover,
 .rail-item.on {
@@ -930,6 +924,7 @@ function jumpTo(r) {
   text-shadow:
     0 0 3px rgba(241, 231, 208, 0.9),
     0 0 12px rgba(241, 231, 208, 0.8);
+  transition: color 0.9s ease, text-shadow 0.9s ease;
 }
 .st-hanja {
   margin-top: 16px;
@@ -964,56 +959,90 @@ function jumpTo(r) {
   color: rgba(251, 246, 234, 0.6);
 }
 
-/* ── 우측 여백 도시 패널 — 족자 한 폭처럼 ── */
+/* ── 우측 여백 — 화기(畫記): 그림에 적어 넣은 세로 기문처럼 ── */
 .side-cities {
   position: fixed;
-  right: 18px;
+  right: 26px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 30;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: 9px;
-  max-width: 230px;
-  padding: 16px 13px 14px;
-  background: rgba(251, 246, 234, 0.86);
-  border: 1px solid var(--line);
-  border-top: 3px double var(--line);
-  border-bottom: 3px double var(--line);
-  border-radius: 3px;
-  box-shadow: 0 14px 34px rgba(34, 28, 22, 0.16);
-  backdrop-filter: blur(2px);
+  align-items: flex-start;
+  gap: 15px;
+  max-height: 62vh;
+  color: var(--ink);
   will-change: opacity;
   pointer-events: none;
-}
-.side-cities .chip {
-  pointer-events: auto;
-  font-size: 12.5px;
-  padding: 7px 12px;
-  box-shadow: none;
-  background: rgba(255, 252, 244, 0.9);
+  transition: color 0.9s ease;
 }
 .side-cities.light {
-  background: rgba(18, 16, 24, 0.55);
-  border-color: rgba(251, 246, 234, 0.3);
-}
-.side-cities.light .chip {
-  background: rgba(251, 246, 234, 0.92);
+  color: var(--baek);
 }
 .side-cap {
-  margin: 0 0 4px;
+  margin: 0;
   font-family: var(--font-display);
-  font-size: 12px;
-  letter-spacing: 0.2em;
-  text-align: center;
-  color: var(--ink-soft);
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 7px;
+  font-size: 12.5px;
+  letter-spacing: 0.34em;
+  color: inherit;
+  opacity: 0.78;
+  text-shadow: 0 0 3px rgba(241, 231, 208, 0.9), 0 0 10px rgba(241, 231, 208, 0.8);
+  transition: text-shadow 0.9s ease;
 }
 .side-cities.light .side-cap {
-  color: rgba(251, 246, 234, 0.8);
-  border-bottom-color: rgba(251, 246, 234, 0.3);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.6);
+}
+/* 기문 첫머리의 작은 인장 */
+.cap-seal {
+  display: inline-block;
+  font-style: normal;
+  background: var(--jeok);
+  color: var(--baek);
+  font-size: 12px;
+  padding: 4px 3px;
+  border-radius: 2px;
+  margin-bottom: 10px;
+  letter-spacing: 0;
+  text-orientation: upright;
+  text-shadow: none;
+  box-shadow: inset 0 0 0 1px rgba(251, 246, 234, 0.35);
+}
+/* 도시 한 줄 = 세로 글줄 하나 */
+.vc {
+  pointer-events: auto;
+  font-family: var(--font-display);
+  font-size: 15.5px;
+  letter-spacing: 0.2em;
+  color: inherit;
+  text-decoration: none;
+  text-shadow: 0 0 3px rgba(241, 231, 208, 0.9), 0 0 10px rgba(241, 231, 208, 0.8);
+  transition: color 0.9s ease, text-shadow 0.9s ease;
+}
+.side-cities.light .vc {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.6);
+}
+.vc:hover {
+  color: var(--jeok);
+  transition: color 0.2s ease;
+}
+.vc b {
+  font-weight: 700;
+}
+.vc span {
+  display: inline-block;
+  margin-top: 8px;
+  font-family: var(--font-util);
+  font-size: 0.72em;
+  letter-spacing: 0.12em;
+  opacity: 0.82;
+}
+.vc-empty {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.75;
+  max-height: 300px;
 }
 .side-cities .chip-empty {
   padding: 8px 12px;
@@ -1038,15 +1067,22 @@ function jumpTo(r) {
     top: auto;
     bottom: 3%;
     transform: none;
+    writing-mode: horizontal-tb;
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: baseline;
     justify-content: flex-end;
+    gap: 14px;
     max-width: 58%;
+    max-height: none;
     z-index: 5;
   }
   .side-cap {
     display: none;
+  }
+  .vc span {
+    margin-top: 0;
+    margin-left: 6px;
   }
   .foot {
     bottom: 12%;

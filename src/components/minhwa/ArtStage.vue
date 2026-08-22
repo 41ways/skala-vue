@@ -115,13 +115,15 @@ const introReflStyle = computed(() => ({
 const dripping = computed(() => riseT.value > 0.1 && riseT.value < 0.82)
 // 윤슬 기둥 — 디스크 아래에서 수면까지 잇는 빛 반사
 function glintStyle(c) {
+  // 기둥이 아니라 수면 위 잔광 — 디스크 아래 물결에만 짧게 얹힌다
   const waterTopVh = 56 + riseT.value * 20
   const discCenterVh = c.iy * 100 + (1 - riseT.value) * 72
-  const h = Math.max(0, waterTopVh - discCenterVh)
+  const gap = waterTopVh - discCenterVh
   const waterAlive = 1 - clamp01((oprog.value - 0.45) / 0.2)
   return {
-    height: h.toFixed(1) + 'vh',
-    opacity: (0.6 * riseT.value * waterAlive).toFixed(3),
+    top: `calc(50% + ${(gap - 2).toFixed(1)}vh)`,
+    height: '7vh',
+    opacity: (gap > 1 ? 0.32 * riseT.value * waterAlive : 0).toFixed(3),
   }
 }
 // 수면에 물드는 노을
@@ -589,19 +591,18 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
 .cel-glint {
   position: absolute;
   left: 50%;
-  top: 52%;
-  width: 46%;
+  width: 58%;
   transform: translateX(-50%);
-  border-radius: 40%;
-  filter: blur(6px);
+  border-radius: 50%;
+  filter: blur(5px);
   animation: glintFlicker 2.8s ease-in-out infinite;
   pointer-events: none;
 }
 .cel-glint.warm {
-  background: linear-gradient(180deg, rgba(255, 178, 106, 0.85), rgba(255, 178, 106, 0.25) 55%, transparent);
+  background: radial-gradient(ellipse 50% 46% at 50% 40%, rgba(255, 178, 106, 0.55), transparent 72%);
 }
 .cel-glint.cool {
-  background: linear-gradient(180deg, rgba(252, 248, 235, 0.75), rgba(252, 248, 235, 0.22) 55%, transparent);
+  background: radial-gradient(ellipse 50% 46% at 50% 40%, rgba(252, 248, 235, 0.5), transparent 72%);
 }
 @keyframes glintFlicker {
   0%, 100% { transform: translateX(-50%) scaleX(1); }
