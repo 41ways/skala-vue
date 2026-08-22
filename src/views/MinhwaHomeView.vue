@@ -309,18 +309,6 @@ onBeforeUnmount(() => {
 })
 
 // 정보 오버레이 : 그림이 자리잡은 뒤 순차 등장
-// 범례 — 하늘 → 화폭 대응과 오늘 팔도 집계
-const legend = computed(() => {
-  const map = [
-    { h: '雨', w: ['비', '뇌우'], title: '인왕제색도' },
-    { h: '晴', w: ['맑음'], title: '일월오봉도' },
-    { h: '風', w: ['바람'], title: '무동' },
-    { h: '雲', w: ['구름'], title: '씨름' },
-    { h: '陰', w: ['흐림', '안개'], title: '서당' },
-    { h: '雪', w: ['눈'], title: '작호도' },
-  ]
-  return map.map((m) => ({ ...m, n: cities.value.filter((c) => m.w.includes(c.status)).length }))
-})
 // 두루마리 날씨첩 — 화기의 고을을 누르면 펼쳐진다
 const sheetCity = ref(null)
 const activeToneLight = computed(() => {
@@ -414,12 +402,6 @@ function jumpTo(r) {
           <p class="hero-note util">
             {{ loading ? '팔도의 하늘을 살피는 중…' : '실측 · Open-Meteo · 그림은 조선의 원본 스캔' }}
           </p>
-          <!-- 범례 — 오늘 팔도의 하늘이 어느 화폭으로 가는지 -->
-          <ul class="legend" aria-label="하늘과 화폭의 대응">
-            <li v-for="(lg, k) in legend" :key="lg.h" :class="{ on: lg.n > 0 }" :style="{ animationDelay: (3.2 + k * 0.12) + 's' }">
-              <i>{{ lg.h }}</i><span>{{ lg.title }}</span><b v-if="lg.n">{{ lg.n }}</b>
-            </li>
-          </ul>
           <div class="hero-hint"><ScrollHint /></div>
         </div>
         <svg class="hero-mts" viewBox="0 0 1200 200" preserveAspectRatio="xMidYMax slice">
@@ -903,60 +885,6 @@ function jumpTo(r) {
   font-family: var(--font-display);
   font-size: 13px;
   color: rgba(34, 28, 22, 0.4);
-}
-
-/* ── 히어로 범례 ── */
-.legend {
-  list-style: none;
-  margin: 22px 0 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px 10px;
-}
-.legend li {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 5px 11px 5px 6px;
-  border: 1px solid var(--line);
-  border-radius: 3px;
-  background: rgba(251, 246, 234, 0.7);
-  font-family: var(--font-display);
-  font-size: 13px;
-  letter-spacing: 0.1em;
-  color: var(--ink-soft);
-  opacity: 0;
-  animation: menuIn 0.6s ease-out both;
-}
-.legend li.on {
-  color: var(--ink);
-  border-color: rgba(179, 56, 44, 0.55);
-}
-.legend i {
-  display: inline-grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border: 1.2px solid var(--jeok);
-  border-radius: 3px;
-  color: var(--jeok);
-  font-style: normal;
-  font-size: 13px;
-}
-.legend li.on i {
-  background: var(--jeok);
-  color: var(--baek);
-}
-.legend b {
-  font-family: var(--font-util);
-  font-size: 11px;
-  color: var(--jeok);
-}
-@keyframes menuIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ── 다음 폭 버튼 ── */
