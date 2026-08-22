@@ -244,7 +244,7 @@ function toTop() {
         <p class="sb-title">The Ren<em>ai</em>ssance<br />Edition</p>
         <ol class="sb-menu">
           <li v-for="(ch, i) in chapters" :key="ch.id">
-            <button class="sb-item" :class="{ on: activeIdx === i }" @click="jump(i)">
+            <button class="sb-item" :class="{ on: activeIdx === i }" :aria-current="activeIdx === i ? 'true' : null" @click="jump(i)">
               <span>{{ ch.name }}</span>
               <span class="sb-dots"></span>
               <span class="sb-num">{{ numerals[i] }}</span>
@@ -544,8 +544,10 @@ function toTop() {
   text-align: left;
 }
 .sb-item:hover,
+.sb-item:focus-visible,
 .sb-item.on {
   color: #14130f;
+  outline: none;
 }
 .sb-dots {
   flex: 1;
@@ -763,9 +765,11 @@ function toTop() {
 }
 
 @media (max-width: 860px) {
-  .rail { display: none; }
-  .mega { top: 22%; }
-  .menu { grid-template-columns: 1fr; gap: 0; }
+  .sidebar { display: none; }
+  .big-title { left: 8%; font-size: clamp(34px, 9vw, 64px); }
+  .parch-inner { padding: 6vh 7vw 32px; max-width: none; }
+  .ch-body { padding-left: 7vw; padding-right: 7vw; }
+  .ft-copy { max-width: none; }
   .parcel { left: 52%; top: 42%; }
 }
 @media (prefers-reduced-motion: reduce) {
