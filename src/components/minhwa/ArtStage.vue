@@ -134,11 +134,13 @@ function celestialStyle(c) {
 
 // ── water ──
 // 물 위에 떠 있는 그림을 내려다본다 — 항상 잔물결, 말미엔 배경만 남기고 일렁이며 사라진다
-const melt = computed(() => clamp01((props.p - 0.62) / 0.28))
+const melt = computed(() => clamp01((props.p - 0.5) / 0.24))
+// 물 파동만 남은 뒤에야 시점이 눕는다
+const tiltT = computed(() => easeOut(clamp01((props.p - 0.76) / 0.2)))
 const mainWobble = computed(() => (7 + melt.value * 85).toFixed(1))
 // 시선 이동 — 호수를 내려다보다가, 스크롤하면 수면을 수평선 보듯 기울어진다
 const tiltStyle = computed(() => ({
-  transform: `perspective(90vh) rotateX(${(melt.value * 56).toFixed(1)}deg) translateY(${(melt.value * -4).toFixed(1)}%)`,
+  transform: `perspective(90vh) rotateX(${(tiltT.value * 62).toFixed(1)}deg) translateY(${(tiltT.value * -5).toFixed(1)}%)`,
   transformOrigin: '50% 96%',
 }))
 // 빗방울 파문 고리 위치 (마운트 시 고정)
@@ -167,7 +169,7 @@ const inkDropsDone = computed(() => props.p > 0.42)
 const mainRise = computed(() => {
   const t = easeOut(clamp01((props.p - 0.02) / 0.1))
   return {
-    opacity: (t * (1 - melt.value)).toFixed(3),
+    opacity: (t * (1 - melt.value * 0.85)).toFixed(3),
     transform: `scale(${(1 + melt.value * 0.03).toFixed(3)})`,
     filter: 'url(#wobmain)', // 그림 전체(밑선 포함)가 물 위에서 일렁인다
   }
