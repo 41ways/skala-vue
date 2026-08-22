@@ -321,11 +321,19 @@ onBeforeUnmount(() => {
 // 두루마리 날씨첩 — 화기의 고을을 누르면 펼쳐진다
 const sheetCity = ref(null)
 // 대청 — 스크롤하면 분합문이 양쪽으로 열리고, 문밖에 인왕제색도가 선다
-const dcOpen = computed(() => easeOut(clamp01((heroP.value - 0.18) / 0.55)))
-const dcPhotoStyle = computed(() => ({ '--o': dcOpen.value.toFixed(3) }))
+// 처음엔 흐린 대청 — 제목이 물러나는 동안 진해지고, 그 다음 문이 열린다
+const dcFocus = computed(() => easeOut(clamp01((heroP.value - 0.04) / 0.3)))
+const dcOpen = computed(() => easeOut(clamp01((heroP.value - 0.3) / 0.5)))
+const dcPhotoStyle = computed(() => ({
+  '--o': dcOpen.value.toFixed(3),
+  opacity: (0.34 + dcFocus.value * 0.66).toFixed(3),
+  filter: `contrast(${(0.7 + dcFocus.value * 0.3).toFixed(3)}) brightness(${(1.3 - dcFocus.value * 0.3).toFixed(3)}) saturate(${(0.55 + dcFocus.value * 0.45).toFixed(2)})`,
+}))
 const dcViewStyle = computed(() => ({
   transform: `scale(${(1.14 - dcOpen.value * 0.1).toFixed(3)})`,
+  // 문 뒤 인왕은 대청이 흐릴 때 함께 옅게 — 흰 한지 톤으로 가라앉힌다
   filter: `brightness(${(0.55 + dcOpen.value * 0.45).toFixed(3)}) saturate(${(0.8 + dcOpen.value * 0.2).toFixed(2)})`,
+  opacity: (0.25 + dcFocus.value * 0.75).toFixed(3),
 }))
 const activeToneLight = computed(() => {
   const i = activeIdx.value
@@ -361,7 +369,7 @@ function infoStyle(i, order = 0) {
 const heroStyle = computed(() => ({
   pointerEvents: heroP.value > 0.3 ? 'none' : 'auto',
   transform: `scale(${(1 - heroP.value * 0.12).toFixed(4)}) translateY(${(heroP.value * -6).toFixed(2)}%)`,
-  opacity: (1 - clamp01((heroP.value - 0.12) / 0.28)).toFixed(3), // 문이 열리기 시작하면 제목이 먼저 물러난다
+  opacity: (1 - clamp01((heroP.value - 0.08) / 0.24)).toFixed(3), // 대청이 진해지는 동안 제목이 먼저 물러난다
 }))
 
 // 레일: 병합 챕터는 두 항목(인왕/오봉)으로 나눠 표시
