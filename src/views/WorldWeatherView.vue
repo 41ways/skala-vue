@@ -228,6 +228,10 @@ function fxPaintStyle(i, art) {
   delete st.WebkitMaskImage
   return st
 }
+// 스크린리더용 한글 독법 (한자 기문의 대체 텍스트)
+function readingAria(c) {
+  return `${c.status}, 기온 ${c.temp}도, 습도 ${c.humidity}퍼센트, 바람 초속 ${c.wind}미터, ${c.isDay ? '낮' : '밤'}`
+}
 // 고풍 독법 — 氣溫 二十二度 · 濕度 四十一分 · 風 四米
 function readingOf(c) {
   const parts = [`氣溫 ${tempHanja(c.temp)}`, `濕度 ${toHanja(c.humidity)}分`, `風 ${toHanja(Math.round(c.wind))}米`]
@@ -400,9 +404,9 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
           <p class="narrative">
             <span class="dcap">{{ firstChar(c.line) }}</span>{{ restChars(c.line) }}
           </p>
-          <p class="reading">
-            <i class="r-seal">{{ STATUS_HANJA[c.status] ?? '天' }}</i>
-            <span class="r-text">{{ readingOf(c) }}</span>
+          <p class="reading" :aria-label="readingAria(c)">
+            <i class="r-seal" aria-hidden="true">{{ STATUS_HANJA[c.status] ?? '天' }}</i>
+            <span class="r-text" aria-hidden="true">{{ readingOf(c) }}</span>
           </p>
           <p class="credit util">{{ artMap[c.id].caption }}</p>
         </div>
