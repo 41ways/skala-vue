@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue'
+import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import Lenis from 'lenis'
 
@@ -7,6 +7,16 @@ import Lenis from 'lenis'
 const route = useRoute()
 let lenis = null
 let rafId = 0
+
+// 맨 위로 — 한 화면 넘게 내려가면 우하단에 뜬다
+const showTop = ref(false)
+function onScrollTop() {
+  showTop.value = window.scrollY > window.innerHeight * 1.2
+}
+function toTop() {
+  if (lenis) lenis.scrollTo(0, { duration: 1.8 })
+  else window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 onMounted(() => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   lenis = new Lenis({ lerp: 0.09, smoothWheel: true })
@@ -17,7 +27,11 @@ onMounted(() => {
   }
   rafId = requestAnimationFrame(raf)
 })
+onMounted(() => {
+  window.addEventListener('scroll', onScrollTop, { passive: true })
+})
 onBeforeUnmount(() => {
+  window.removeEventListener('scroll', onScrollTop)
   cancelAnimationFrame(rafId)
   lenis?.destroy()
   window.__lenis = null
@@ -38,6 +52,9 @@ onBeforeUnmount(() => {
   </header>
   <div class="saekdong"></div>
   <RouterView />
+  <Transition name="totop">
+    <button v-show="showTop" class="totop" aria-label="맨 위로" @click="toTop">↑</button>
+  </Transition>
 </template>
 
 <style scoped>
@@ -100,5 +117,38 @@ nav a {
 nav a.router-link-exact-active,
 nav a:hover {
   color: var(--jeok);
+}
+
+/* ── 맨 위로 ── */
+.totop {
+  position: fixed;
+  right: 22px;
+  bottom: 26px;
+  z-index: 60;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(251, 246, 234, 0.5);
+  background: rgba(20, 18, 14, 0.62);
+  backdrop-filter: blur(4px);
+  color: var(--baek, #fbf6ea);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  transition: transform 0.25s, background 0.25s;
+}
+.totop:hover {
+  transform: translateY(-3px);
+  background: rgba(20, 18, 14, 0.85);
+}
+.totop-enter-from,
+.totop-leave-to {
+  opacity: 0;
+  transform: translateY(14px);
+}
+.totop-enter-active,
+.totop-leave-active {
+  transition: opacity 0.3s, transform 0.3s;
 }
 </style>

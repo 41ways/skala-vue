@@ -214,7 +214,7 @@ const chapters = [
 
 // 병합 챕터: 진행도 후반이면 2막(오봉도) 정보를 쓴다
 const fld = (ch, i, k) =>
-  ch.phase2 && (progress.value[i] ?? 0) > 0.55 ? (ch.phase2[k] ?? ch[k]) : ch[k]
+  ch.phase2 && (progress.value[i] ?? 0) > 0.65 ? (ch.phase2[k] ?? ch[k]) : ch[k]
 const citiesFor = (ch, i) => cities.value.filter((c) => fld(ch, i, 'weather').includes(c.status))
 
 // ── 스크롤 진행도 + 마우스 시차 ──────────────────────────
@@ -310,6 +310,18 @@ onBeforeUnmount(() => {
 // 정보 오버레이 : 그림이 자리잡은 뒤 순차 등장
 function infoStyle(i, order = 0) {
   const p = progress.value[i] ?? 0
+  if (chapters[i]?.phase2) {
+    // 병합 챕터 — 1막 문구는 그림이 흐트러지기 전에 먼저 물러나고,
+    // 2막(일월오봉도) 문구는 화폭이 다 차오른 뒤에야 든다
+    const in1 = easeOut(clamp01((p - 0.08 - order * 0.04) / 0.12))
+    const out1 = clamp01((p - 0.36 - order * 0.02) / 0.06)
+    const in2 = easeOut(clamp01((p - 0.9 - order * 0.03) / 0.07))
+    const t = Math.max(in1 * (1 - out1), in2)
+    return {
+      opacity: t.toFixed(3),
+      transform: `translateY(${((1 - Math.max(in1, in2)) * 26).toFixed(1)}px)`,
+    }
+  }
   const t = easeOut(clamp01((p - 0.3 - order * 0.05) / 0.16))
   const leave = clamp01((p - 0.88) / 0.1)
   return {
@@ -337,7 +349,7 @@ const railActive = computed(() => {
   let k = 0
   for (let c = 0; c < chapters.length; c++) {
     if (c === i) {
-      if (chapters[c].phase2 && (progress.value[c] ?? 0) > 0.55) return k + 1
+      if (chapters[c].phase2 && (progress.value[c] ?? 0) > 0.65) return k + 1
       return k
     }
     k += chapters[c].phase2 ? 2 : 1
@@ -395,7 +407,7 @@ function jumpTo(r) {
       :ref="(el) => (chapterEls[i] = el)"
       class="chapter"
       :id="ch.id"
-      :style="ch.tall ? { height: '540vh' } : null"
+      :style="ch.tall ? { height: '640vh' } : null"
     >
       <div class="stage">
         <ArtStage

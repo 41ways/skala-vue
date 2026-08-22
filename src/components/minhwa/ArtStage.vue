@@ -29,8 +29,8 @@ const easeOut = (t) => 1 - Math.pow(1 - t, 3)
 
 // 병합 챕터(sunrise): 전반(wprog)=인왕 물, 후반(oprog)=해달·오봉도 — 같은 무대에서 이어진다
 const isCombo = computed(() => props.effect === 'sunrise')
-const wprog = computed(() => (isCombo.value ? clamp01(props.p / 0.5) : props.p))
-const oprog = computed(() => (isCombo.value ? clamp01((props.p - 0.48) / 0.52) : props.p))
+const wprog = computed(() => (isCombo.value ? clamp01(props.p / 0.72) : props.p))
+const oprog = computed(() => (isCombo.value ? clamp01((props.p - 0.7) / 0.3) : props.p))
 
 // 빠져드는 정도
 const dive = computed(() => easeOut(clamp01((props.p - 0.22) / 0.5)))
@@ -103,7 +103,7 @@ const introWaterStyle = computed(() => {
   const h = Math.max(44 - riseT.value * 20, 100 - settle * 56)
   return {
     height: h.toFixed(1) + '%',
-    opacity: (0.96 * (1 - clamp01((oprog.value - 0.36) / 0.24)) * (isCombo.value ? clamp01((props.p - 0.4) / 0.08) : 1)).toFixed(3),
+    opacity: (0.96 * (1 - clamp01((oprog.value - 0.36) / 0.24)) * (isCombo.value ? clamp01((props.p - 0.64) / 0.08) : 1)).toFixed(3),
   }
 })
 // 물에 남은 앞 폭의 잔영 — 해가 떠오를수록 스러진다
@@ -148,9 +148,9 @@ function celestialStyle(c) {
 
 // ── water ──
 // 물 위에 떠 있는 그림을 내려다본다 — 항상 잔물결, 말미엔 배경만 남기고 일렁이며 사라진다
-const melt = computed(() => clamp01((wprog.value - 0.5) / 0.24))
+const melt = computed(() => clamp01((wprog.value - 0.6) / 0.32))
 // 물 파동만 남은 뒤에야 시점이 눕는다
-const tiltT = computed(() => easeOut(clamp01((wprog.value - 0.84) / 0.15)))
+const tiltT = computed(() => easeOut(clamp01((wprog.value - 0.92) / 0.08)))
 const mainWobble = computed(() => (7 + melt.value * 85).toFixed(1))
 // 시선 이동 — 호수를 내려다보다가, 스크롤하면 수면을 수평선 보듯 기울어진다
 const tiltStyle = computed(() => ({
@@ -347,7 +347,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
     </div>
 
     <!-- 날씨 기운 -->
-    <template v-if="rain && (effect !== 'sunrise' || p < 0.55)">
+    <template v-if="rain && (effect !== 'sunrise' || p < 0.66)">
       <span
         v-for="(d, i) in rainDrops"
         :key="'r' + i"
