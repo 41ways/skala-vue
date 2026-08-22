@@ -39,6 +39,7 @@ const chapters = [
     wHanja: '晴',
     effect: 'inkfill',
     focal: '50% 44%',
+    tone: 'light', // 어두운 궁중화 위 — 밝은 글자
     line: '해와 달이 함께 뜬 다섯 봉우리 — 볕이 좋은 고을들입니다.',
     empty: '오늘은 맑게 갠 고을이 없습니다.',
   },
@@ -253,6 +254,10 @@ function jump(i) {
     <!-- ══ 표제 — 만국청우록의 획 드로잉 스타일, 국내판 ══ -->
     <section ref="heroEl" class="hero-wrap">
       <div class="hero-stage">
+        <!-- 은은한 오봉도 배경 — 한지에 배접된 옛 그림처럼 -->
+        <div class="hero-bg">
+          <img :src="obongdoImg" alt="" draggable="false" />
+        </div>
         <div class="hero-inner" :style="heroStyle">
           <svg class="title-svg" viewBox="0 0 900 260">
             <text x="450" y="118" class="stroke-title t-main">팔도청우록</text>
@@ -297,18 +302,18 @@ function jump(i) {
           :snow="!!ch.snow"
         />
 
-        <!-- 화제(畫題) + 날씨 도시 -->
-        <div class="ch-info" :style="{ opacity: infoStyle(i, 0).opacity }">
-          <p class="idx util" :style="infoStyle(i, 0)">
-            제{{ i + 1 }}폭 · {{ ch.era }}
+        <!-- 초대형 화제(畫題) — 그림과 겹친다 -->
+        <h2 class="mega" :class="{ light: ch.tone === 'light' }" :style="infoStyle(i, 0)">
+          {{ ch.title }}
+          <small>{{ ch.hanja }} · 제{{ i + 1 }}폭 · {{ ch.era }}</small>
+        </h2>
+
+        <!-- 드롭캡 내러티브 + 날씨 도시 -->
+        <div class="foot" :class="{ light: ch.tone === 'light' }" :style="infoStyle(i, 1)">
+          <p class="narrative">
+            <span class="dcap">{{ ch.line.slice(0, 1) }}</span>{{ ch.line.slice(1) }}
           </p>
-          <h2 class="ch-title" :style="infoStyle(i, 1)">
-            {{ ch.title }} <small>{{ ch.hanja }}</small>
-          </h2>
-          <p class="ch-line" :style="infoStyle(i, 2)">
-            <span class="w-badge">{{ ch.wHanja }}</span>{{ ch.line }}
-          </p>
-          <div class="city-chips" :style="infoStyle(i, 3)">
+          <div class="city-chips">
             <template v-if="citiesFor(ch).length">
               <router-link
                 v-for="c in citiesFor(ch)"
@@ -316,6 +321,7 @@ function jump(i) {
                 class="chip util"
                 :to="`/weather/${c.id}`"
               >
+                <span class="chip-hanja">{{ ch.wHanja }}</span>
                 <b>{{ c.name }}</b> {{ c.temp }}° · {{ c.status }}
               </router-link>
             </template>
@@ -342,18 +348,17 @@ function jump(i) {
       <p v-if="error" class="err util">실시간 조회 실패 — 표본 자료로 표시 중입니다.</p>
     </section>
 
-    <!-- ══ 병풍 차례 ══ -->
-    <nav class="folds util" aria-label="화폭 차례">
+    <!-- ══ 좌측 차례 레일 (챕터 진입 후) ══ -->
+    <nav v-show="activeIdx >= 0" class="rail util" aria-label="화폭 차례">
       <button
         v-for="(ch, i) in chapters"
         :key="ch.id"
-        class="fold"
+        class="rail-item"
         :class="{ on: activeIdx === i }"
         @click="jump(i)"
-        :aria-label="ch.title"
       >
-        <span class="fold-name">{{ ch.title }}</span>
-        <span class="fold-bar"></span>
+        <span class="rail-name">{{ ch.title }}</span>
+        <span class="rail-num">{{ ['一', '二', '三', '四', '五', '六'][i] }}</span>
       </button>
     </nav>
   </main>
@@ -379,6 +384,20 @@ function jump(i) {
   overflow: hidden;
   display: grid;
   place-items: center;
+}
+/* 한지에 배접된 오봉도 — 표제 뒤 은은하게 */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+}
+.hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+  mix-blend-mode: multiply;
+  opacity: 0.1;
+  filter: blur(1.5px) saturate(0.9);
 }
 .hero-inner {
   text-align: center;
@@ -474,78 +493,93 @@ function jump(i) {
   background: radial-gradient(ellipse 120% 100% at 50% 45%, transparent 62%, rgba(34, 28, 22, 0.12));
 }
 
-.ch-info {
+/* ── 초대형 화제 — 그림과 겹치는 헤드라인 (세계화폭과 같은 문법) ── */
+.mega {
   position: absolute;
   left: 5%;
-  bottom: 7%;
-  z-index: 5;
-  max-width: min(560px, 82vw);
-  /* 한지 반투명 받침 — 그림 위에서도 화제(畫題)가 또렷하게 */
-  padding: 18px 22px;
-  background: rgba(251, 246, 234, 0.72);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(34, 28, 22, 0.12);
-  border-radius: 4px;
-  box-shadow: 0 12px 34px rgba(34, 28, 22, 0.14);
+  right: 5%;
+  top: 30%;
+  z-index: 2;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(64px, 13vw, 180px);
+  line-height: 0.98;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  text-shadow:
+    0 0 26px rgba(241, 231, 208, 0.95),
+    0 0 60px rgba(241, 231, 208, 0.7);
+  will-change: transform, opacity;
+  pointer-events: none;
 }
-.ch-info > * {
+.mega small {
+  display: block;
+  font-size: clamp(12px, 1.5vw, 18px);
+  letter-spacing: 0.42em;
+  margin-top: 14px;
+  color: var(--ink-soft);
+  text-shadow: 0 0 18px rgba(241, 231, 208, 0.95);
+}
+.mega.light {
+  color: var(--baek);
+  text-shadow: 0 4px 44px rgba(0, 0, 0, 0.6);
+}
+.mega.light small {
+  color: rgba(251, 246, 234, 0.8);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
+}
+
+.foot {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  bottom: 6%;
+  z-index: 5;
+  max-width: 760px;
   will-change: transform, opacity;
 }
-.idx {
-  font-size: 12px;
-  letter-spacing: 0.28em;
-  color: var(--ink-soft);
-  margin: 0 0 8px;
-}
-.ch-title {
-  font-family: var(--font-display);
-  font-size: clamp(34px, 5.6vw, 62px);
-  letter-spacing: 0.12em;
-  line-height: 1.05;
+.narrative {
   margin: 0;
+  font-size: clamp(16px, 2.2vw, 24px);
+  line-height: 1.7;
   color: var(--ink);
+  text-shadow: 0 0 16px rgba(241, 231, 208, 0.95), 0 0 34px rgba(241, 231, 208, 0.8);
 }
-.ch-title small {
-  font-size: 0.4em;
-  letter-spacing: 0.3em;
-  color: var(--ink-soft);
-  margin-left: 10px;
+.foot.light .narrative {
+  color: var(--baek);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
 }
-.ch-line {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: clamp(13.5px, 1.6vw, 16px);
-  margin: 14px 0 0;
-  color: var(--ink);
-}
-.w-badge {
-  flex: 0 0 auto;
-  display: inline-grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border: 1.5px solid var(--jeok);
-  color: var(--jeok);
-  border-radius: 4px;
+.dcap {
+  float: left;
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 3em;
+  line-height: 0.9;
+  margin: 0.05em 0.14em 0 0;
+  color: var(--jeok);
+}
+.foot.light .dcap {
+  color: #e8a5b0;
 }
 .city-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 14px;
+  margin-top: 16px;
+  clear: left;
 }
 .chip {
-  display: inline-block;
-  padding: 7px 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
   border: 1px solid var(--line);
   border-radius: 4px;
-  background: var(--baek);
+  background: rgba(251, 246, 234, 0.92);
   font-size: 13px;
   color: var(--ink);
   text-decoration: none;
+  box-shadow: 0 10px 26px rgba(34, 28, 22, 0.16);
   transition: border-color 0.2s, transform 0.2s;
 }
 .chip:hover {
@@ -553,14 +587,29 @@ function jump(i) {
   transform: translateY(-2px);
   color: var(--ink);
 }
+.chip-hanja {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1.2px solid var(--jeok);
+  color: var(--jeok);
+  border-radius: 3px;
+  font-family: var(--font-display);
+  font-size: 13px;
+}
 .chip b {
   font-weight: 700;
-  margin-right: 3px;
 }
 .chip-empty {
-  font-size: 13px;
+  font-size: 13.5px;
   color: var(--ink-soft);
   margin: 0;
+  text-shadow: 0 0 14px rgba(241, 231, 208, 0.95);
+}
+.foot.light .chip-empty {
+  color: rgba(251, 246, 234, 0.85);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
 }
 
 /* ── 발문 ── */
@@ -597,62 +646,51 @@ function jump(i) {
   margin-top: 22px;
 }
 
-/* ── 병풍 차례 ── */
-.folds {
+/* ── 좌측 차례 레일 (세계화폭과 동일 문법, 한지 팔레트) ── */
+.rail {
   position: fixed;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 20;
+  left: 18px;
+  bottom: 34px;
+  z-index: 30;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 3px;
 }
-.fold {
+.rail-item {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
+  align-items: baseline;
+  gap: 10px;
   background: none;
   border: 0;
-  padding: 2px;
+  padding: 2px 0;
   cursor: pointer;
   color: var(--ink-soft);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 12px rgba(241, 231, 208, 0.95);
+  transition: color 0.25s, transform 0.25s;
 }
-.fold-name {
-  font-size: 11.5px;
-  letter-spacing: 0.1em;
-  opacity: 0;
-  transform: translateX(6px);
-  transition: opacity 0.25s, transform 0.25s;
+.rail-item:hover,
+.rail-item.on {
+  color: var(--ink);
+  transform: translateX(3px);
 }
-.fold:hover .fold-name,
-.fold.on .fold-name {
-  opacity: 1;
-  transform: translateX(0);
+.rail-item.on .rail-num {
+  color: var(--jeok);
 }
-.fold-bar {
-  width: 18px;
-  height: 3px;
-  border-radius: 2px;
-  background: currentColor;
-  opacity: 0.4;
-  transition: opacity 0.25s, width 0.25s, background 0.25s;
-}
-.fold.on .fold-bar {
-  width: 30px;
-  opacity: 1;
-  background: var(--jeok);
+.rail-num {
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: rgba(34, 28, 22, 0.4);
 }
 
 @media (max-width: 760px) {
-  .ch-info {
-    left: 6%;
-    right: 6%;
-    bottom: 5%;
+  .rail {
+    display: none;
   }
-  .folds {
-    right: 6px;
+  .mega {
+    top: 22%;
   }
 }
 

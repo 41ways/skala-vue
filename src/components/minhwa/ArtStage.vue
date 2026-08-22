@@ -176,9 +176,8 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   place-items: center;
 }
 .cam {
-  position: relative;
-  width: min(90vw, 1200px);
-  height: min(80vh, 860px);
+  position: absolute;
+  inset: 0; /* 풀블리드 — 그림이 화면을 가득 채운다 */
   will-change: transform;
 }
 .art-img {
@@ -186,7 +185,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   mix-blend-mode: multiply;
   filter: sepia(0.08) contrast(1.02);
   user-select: none;
