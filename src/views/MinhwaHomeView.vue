@@ -89,7 +89,23 @@ const chapters = [
       // 대금·해금 — 오른쪽 아래
       { src: cut('mudong_bottomright'), left: '58%', top: '38%', w: '27%', depth: 14, ox: 12, oy: 6, ds: 0.04, idle: 'bob', z: 2 },
       // 무동 — 앞으로 크게 나서며 춤춘다
-      { src: cut('mudong_dancer'), left: '20%', top: '30%', w: '31%', depth: 28, ox: -14, oy: 18, ds: 0.12, idle: 'sway', z: 3 },
+      {
+        src: cut('mudong_dancer'),
+        left: '20%',
+        top: '30%',
+        w: '31%',
+        depth: 28,
+        ox: -14,
+        oy: 18,
+        ds: 0.12,
+        idle: 'sway',
+        z: 3,
+        parts: [
+          { src: cut('mudong_sleeve_r'), left: '64.9%', top: '25%', w: '35.1%', anim: 'p-flutter', origin: '6% 50%' },
+          { src: cut('mudong_sleeve_l'), left: '0%', top: '27.4%', w: '28.8%', anim: 'p-flutter-b', origin: '92% 22%' },
+          { src: cut('mudong_leg'), left: '18.9%', top: '53.8%', w: '34.4%', anim: 'p-kick', origin: '82% 10%' },
+        ],
+      },
     ],
     line: '소매가 바람을 탑니다 — 바람 부는 고을들입니다.',
     empty: '오늘은 바람 든 고을이 없습니다.',

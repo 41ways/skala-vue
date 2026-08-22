@@ -95,6 +95,18 @@ defineProps({
   from { transform: rotate(-4deg); }
   to { transform: rotate(6deg) translateY(-3px); }
 }
+.part.p-flutter-b {
+  animation: pFlutter 2.6s ease-in-out infinite alternate-reverse;
+}
+/* 다리 — 차올림 */
+.part.p-kick {
+  animation: pKick 1.6s ease-in-out infinite;
+}
+@keyframes pKick {
+  0%, 100% { transform: rotate(4deg); }
+  45% { transform: rotate(-11deg) translateY(-4px); }
+  70% { transform: rotate(-3deg); }
+}
 
 /* ── 몸 전체 잔모션 ─────────────────────────────────── */
 .mcut.sway {
