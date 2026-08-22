@@ -94,7 +94,7 @@ const chapters = [
         idle: 'sway',
         z: 3,
         parts: [
-          { src: cut('mudong_sleeve_r'), left: '42.3%', top: '3.9%', w: '31%', anim: 'p-flutter', origin: '10% 85%' },
+          { src: cut('mudong_sleeve_r'), left: '23.9%', top: '1.9%', w: '50.7%', anim: 'p-flutter', origin: '76% 77%' },
           { src: cut('mudong_sleeve_l'), left: '4.2%', top: '33%', w: '32.4%', anim: 'p-flutter-b', origin: '85% 20%' },
           { src: cut('mudong_leg'), left: '46.5%', top: '68%', w: '32.4%', anim: 'p-kick', origin: '50% 8%' },
         ],
