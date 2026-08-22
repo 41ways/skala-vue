@@ -37,40 +37,36 @@ const { cities, loading, error, fetchLive } = useWeather()
 // 화폭 차례 — 그림과 날씨의 궁합
 const chapters = [
   {
-    id: 'inwang',
+    id: 'cheongwoo',
     img: inwangImg,
+    img2: obongdoImg,
+    tall: true,
     title: '인왕제색도',
     hanja: '仁王霽色圖',
     era: '정선 · 1751 · 국보',
     weather: ['비', '뇌우'],
     wHanja: '雨',
-    effect: 'water',
-    focal: '50% 48%',
-    rain: true,
-    line: '비에 젖은 인왕산 — 지금 비가 듣는 고을들입니다. 화폭을 내리면 그림이 물이 됩니다.',
-    empty: '오늘은 비에 든 고을이 없습니다.',
-  },
-  {
-    id: 'obongdo',
-    img: obongdoImg,
-    title: '일월오봉도',
-    hanja: '日月五峯圖',
-    era: '조선 후기 · 궁중 장식화',
-    weather: ['맑음'],
-    wHanja: '晴',
-    effect: 'inkfill',
-    waterIntro: true, // 앞 폭(인왕제색도)이 풀어진 물 위로 해와 달이 떠오른다
+    effect: 'sunrise',
+    waterIntro: true,
     waterImg: inwangImg,
-    focal: '50% 44%',
-    tone: 'light',
+    focal: '50% 46%',
+    rain: true,
     cuts: [
-      // ix/iy = 원화(2560x1106) 속 해·달의 좌표 비율, dvh = 지름(vh)
-      // riseX = 떠오를 때의 화면 x(%), 이후 원화 좌표로 미끄러져 정렬
       { src: cut('obongdo_moon'), ix: 0.277, iy: 0.1293, dvh: 10.3, depth: 10, riseX: 24 },
       { src: cut('obongdo_sun'), ix: 0.7172, iy: 0.1212, dvh: 12.7, depth: 14, riseX: 76, warm: true },
     ],
-    line: '비 갠 물 위로 해와 달이 떠오릅니다 — 볕이 좋은 고을들입니다.',
-    empty: '오늘은 맑게 갠 고을이 없습니다.',
+    line: '비에 젖은 인왕산 — 지금 비가 듣는 고을들입니다. 화폭을 내리면 그림이 물이 됩니다.',
+    empty: '오늘은 비에 든 고을이 없습니다.',
+    phase2: {
+      title: '일월오봉도',
+      hanja: '日月五峯圖',
+      era: '조선 후기 · 궁중 장식화',
+      weather: ['맑음'],
+      wHanja: '晴',
+      tone: 'light',
+      line: '그 물 위로 해와 달이 떠올라 다섯 봉우리가 열립니다 — 볕이 좋은 고을들입니다.',
+      empty: '오늘은 맑게 갠 고을이 없습니다.',
+    },
   },
   {
     id: 'mudong',
@@ -128,7 +124,7 @@ const chapters = [
       { src: cut('ssireum_crowd_bl'), left: '2%', top: '62%', w: '33%', depth: 10, ox: -12, oy: 10, ds: 0.02, idle: 'bob', z: 2 },
       { src: cut('ssireum_crowd_br'), left: '66%', top: '60%', w: '30%', depth: 10, ox: 12, oy: 10, ds: 0.02, idle: 'bob', z: 2 },
       // 씨름꾼 — 판 한가운데서 힘겨루기
-      { src: cut('ssireum_wrestlers'), left: '36%', top: '22%', w: '28%', depth: 24, oy: 12, ds: 0.11, idle: 'tussle', z: 3 },
+      { src: cut('ssireum_wrestlers'), left: '35.4%', top: '21.6%', w: '29.4%', depth: 24, oy: 12, ds: 0.11, idle: 'tussle', z: 3 },
     ],
     line: '구름처럼 모여든 판 — 구름 낀 고을들입니다.',
     empty: '오늘은 구름 든 고을이 없습니다.',
@@ -146,7 +142,7 @@ const chapters = [
     focal: '44% 50%',
     cuts: [
       // 훈장님 — 서안 뒤에서 지긋이
-      { src: cut('seodang_hunjang'), left: '32%', top: '4%', w: '40%', depth: 8, oy: -12, ds: 0.02, idle: 'bob', z: 2 },
+      { src: cut('seodang_hunjang'), left: '37.9%', top: '4.7%', w: '31.8%', depth: 8, oy: -12, ds: 0.02, idle: 'bob', z: 2 },
       // 학동들 — 양쪽 줄
       { src: cut('seodang_students_l'), left: '4%', top: '16%', w: '25%', depth: 12, ox: -12, ds: 0.03, idle: 'bob', z: 1 },
       { src: cut('seodang_students_r'), left: '66%', top: '32%', w: '25%', depth: 12, ox: 12, ds: 0.03, idle: 'bob', z: 1 },
@@ -199,7 +195,7 @@ const chapters = [
         ox: -10,
         oy: 10,
         ds: 0.08,
-        idle: 'breathe',
+        idle: 'prowl',
         z: 3,
         parts: [
           { src: cut('tiger_head'), left: '4.1%', top: '1.1%', w: '43.2%', anim: 'p-head', origin: '55% 92%' },
@@ -213,7 +209,10 @@ const chapters = [
   },
 ]
 
-const citiesFor = (ch) => cities.value.filter((c) => ch.weather.includes(c.status))
+// 병합 챕터: 진행도 후반이면 2막(오봉도) 정보를 쓴다
+const fld = (ch, i, k) =>
+  ch.phase2 && (progress.value[i] ?? 0) > 0.55 ? (ch.phase2[k] ?? ch[k]) : ch[k]
+const citiesFor = (ch, i) => cities.value.filter((c) => fld(ch, i, 'weather').includes(c.status))
 
 // ── 스크롤 진행도 + 마우스 시차 ──────────────────────────
 const heroEl = ref(null)
@@ -320,8 +319,35 @@ const heroStyle = computed(() => ({
   opacity: clamp01((1 - heroP.value) / 0.5).toFixed(3),
 }))
 
-function jump(i) {
-  chapterEls.value[i]?.scrollIntoView({ behavior: 'smooth' })
+// 레일: 병합 챕터는 두 항목(인왕/오봉)으로 나눠 표시
+const railItems = computed(() => {
+  const items = []
+  chapters.forEach((ch, i) => {
+    items.push({ label: ch.title, i, f: ch.phase2 ? 0.22 : 0.42 })
+    if (ch.phase2) items.push({ label: ch.phase2.title, i, f: 0.78 })
+  })
+  return items
+})
+const railActive = computed(() => {
+  const i = activeIdx.value
+  if (i < 0) return -1
+  let k = 0
+  for (let c = 0; c < chapters.length; c++) {
+    if (c === i) {
+      if (chapters[c].phase2 && (progress.value[c] ?? 0) > 0.55) return k + 1
+      return k
+    }
+    k += chapters[c].phase2 ? 2 : 1
+  }
+  return -1
+})
+function jumpTo(r) {
+  const el = chapterEls.value[r.i]
+  if (!el) return
+  const vh = window.innerHeight
+  const target = el.getBoundingClientRect().top + window.scrollY + (el.offsetHeight - vh) * r.f
+  if (window.__lenis) window.__lenis.scrollTo(target, { duration: 1.6 })
+  else window.scrollTo({ top: target, behavior: 'smooth' })
 }
 </script>
 
@@ -366,10 +392,12 @@ function jump(i) {
       :ref="(el) => (chapterEls[i] = el)"
       class="chapter"
       :id="ch.id"
+      :style="ch.tall ? { height: '540vh' } : null"
     >
       <div class="stage">
         <ArtStage
           :img="ch.img"
+          :img2="ch.img2 ?? ''"
           :bg="ch.bg ?? ''"
           :effect="ch.effect"
           :focal="ch.focal"
@@ -384,29 +412,29 @@ function jump(i) {
         />
 
         <!-- 초대형 화제(畫題) — 그림과 겹친다 -->
-        <h2 class="mega" :class="{ light: ch.tone === 'light' }" :style="infoStyle(i, 0)">
-          {{ ch.title }}
-          <small>{{ ch.hanja }} · 제{{ i + 1 }}폭 · {{ ch.era }}</small>
+        <h2 class="mega" :class="{ light: fld(ch, i, 'tone') === 'light' }" :style="infoStyle(i, 0)">
+          {{ fld(ch, i, 'title') }}
+          <small>{{ fld(ch, i, 'hanja') }} · 제{{ i + 1 }}폭 · {{ fld(ch, i, 'era') }}</small>
         </h2>
 
         <!-- 드롭캡 내러티브 + 날씨 도시 -->
-        <div class="foot" :class="{ light: ch.tone === 'light' }" :style="infoStyle(i, 1)">
+        <div class="foot" :class="{ light: fld(ch, i, 'tone') === 'light' }" :style="infoStyle(i, 1)">
           <p class="narrative">
-            <span class="dcap">{{ ch.line.slice(0, 1) }}</span>{{ ch.line.slice(1) }}
+            <span class="dcap">{{ fld(ch, i, 'line').slice(0, 1) }}</span>{{ fld(ch, i, 'line').slice(1) }}
           </p>
           <div class="city-chips">
-            <template v-if="citiesFor(ch).length">
+            <template v-if="citiesFor(ch, i).length">
               <router-link
-                v-for="c in citiesFor(ch)"
+                v-for="c in citiesFor(ch, i)"
                 :key="c.id"
                 class="chip util"
                 :to="`/weather/${c.id}`"
               >
-                <span class="chip-hanja">{{ ch.wHanja }}</span>
+                <span class="chip-hanja">{{ fld(ch, i, 'wHanja') }}</span>
                 <b>{{ c.name }}</b> {{ c.temp }}° · {{ c.status }}
               </router-link>
             </template>
-            <p v-else class="chip-empty util">{{ ch.empty }}</p>
+            <p v-else class="chip-empty util">{{ fld(ch, i, 'empty') }}</p>
           </div>
         </div>
       </div>
@@ -432,14 +460,14 @@ function jump(i) {
     <!-- ══ 좌측 차례 레일 (챕터 진입 후) ══ -->
     <nav v-show="activeIdx >= 0" class="rail util" aria-label="화폭 차례">
       <button
-        v-for="(ch, i) in chapters"
-        :key="ch.id"
+        v-for="(r, k) in railItems"
+        :key="k"
         class="rail-item"
-        :class="{ on: activeIdx === i }"
-        @click="jump(i)"
+        :class="{ on: railActive === k }"
+        @click="jumpTo(r)"
       >
-        <span class="rail-name">{{ ch.title }}</span>
-        <span class="rail-num">{{ ['一', '二', '三', '四', '五', '六'][i] }}</span>
+        <span class="rail-name">{{ r.label }}</span>
+        <span class="rail-num">{{ ['一', '二', '三', '四', '五', '六'][k] }}</span>
       </button>
     </nav>
   </main>

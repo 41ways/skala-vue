@@ -65,27 +65,30 @@ defineProps({
   animation: pHead 7s ease-in-out infinite;
 }
 @keyframes pHead {
-  0%, 30%, 100% { transform: rotate(0deg); }
-  38%, 50% { transform: rotate(-3.2deg) translateY(-2px); }
-  58% { transform: rotate(1.2deg); }
-  74%, 86% { transform: rotate(2.6deg); }
+  0%, 26%, 100% { transform: rotate(0deg); }
+  34%, 46% { transform: rotate(-5.5deg) translateY(-4px); }
+  54% { transform: rotate(2deg); }
+  68%, 80% { transform: rotate(4.2deg) translateY(-2px); }
+  88% { transform: rotate(-1.5deg); }
 }
 /* 꼬리 — 말렸다 풀렸다 */
 .part.p-tail {
   animation: pTail 4.4s ease-in-out infinite alternate;
 }
 @keyframes pTail {
-  from { transform: rotate(-5deg); }
-  to { transform: rotate(8deg) translateY(-3px); }
+  from { transform: rotate(-9deg); }
+  to { transform: rotate(13deg) translateY(-5px); }
 }
 /* 앞발 — 지그시 눌렀다 든다 */
 .part.p-paw {
   animation: pPaw 4.4s ease-in-out infinite;
 }
 @keyframes pPaw {
-  0%, 62%, 100% { transform: translateY(0) rotate(0deg); }
-  72% { transform: translateY(-6px) rotate(-4deg); }
-  82% { transform: translateY(-1px) rotate(1deg); }
+  0%, 52%, 100% { transform: translateY(0) rotate(0deg); }
+  62% { transform: translateY(-10px) rotate(-6deg); }
+  70% { transform: translateY(-2px) rotate(1deg); }
+  78% { transform: translateY(-7px) rotate(-3deg); }
+  86% { transform: translateY(0) rotate(0deg); }
 }
 /* 소매·팔 — 나부낌 */
 .part.p-flutter {
@@ -140,6 +143,20 @@ defineProps({
 @keyframes mcBreathe {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.018); }
+}
+/* 호랑이 — 숨쉬며 무게중심을 옮기고 이따금 으르렁 들썩 */
+.mcut.prowl {
+  animation: mcProwl 7s ease-in-out infinite;
+  transform-origin: 45% 70%;
+}
+@keyframes mcProwl {
+  0%, 100% { transform: scale(1) rotate(0deg) translateX(0); }
+  18% { transform: scale(1.016) rotate(-0.8deg) translateX(-5px); }
+  36% { transform: scale(1.005) rotate(0.4deg) translateX(3px); }
+  52% { transform: scale(1.02) rotate(-0.5deg) translateX(-2px) translateY(-3px); }
+  64% { transform: scale(1.028) rotate(1deg) translateX(4px) translateY(-6px); }
+  72% { transform: scale(1.01) rotate(0.2deg) translateX(1px); }
+  86% { transform: scale(1.015) rotate(-0.6deg) translateX(-3px); }
 }
 .mcut.tussle {
   animation: mcTussle 4s ease-in-out infinite;

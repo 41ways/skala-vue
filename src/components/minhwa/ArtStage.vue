@@ -10,6 +10,7 @@ import MinhwaCut from '@/components/minhwa/MinhwaCut.vue'
 
 const props = defineProps({
   img: { type: String, required: true },
+  img2: { type: String, default: '' }, // 병합(sunrise) 챕터의 2막 그림 (오봉도)
   bg: { type: String, default: '' }, // 누끼 자리를 메운 배경판 (콜라주용)
   effect: { type: String, default: 'collage' },
   focal: { type: String, default: '50% 50%' },
@@ -26,11 +27,16 @@ const props = defineProps({
 const clamp01 = (v) => Math.min(1, Math.max(0, v))
 const easeOut = (t) => 1 - Math.pow(1 - t, 3)
 
+// 병합 챕터(sunrise): 전반(wprog)=인왕 물, 후반(oprog)=해달·오봉도 — 같은 무대에서 이어진다
+const isCombo = computed(() => props.effect === 'sunrise')
+const wprog = computed(() => (isCombo.value ? clamp01(props.p / 0.5) : props.p))
+const oprog = computed(() => (isCombo.value ? clamp01((props.p - 0.48) / 0.52) : props.p))
+
 // 빠져드는 정도
 const dive = computed(() => easeOut(clamp01((props.p - 0.22) / 0.5)))
 
 // 효과별 줌 깊이 — 파노라마(inkfill)는 살짝만, 콜라주는 깊게 빠져든다
-const diveAmp = computed(() => ({ inkfill: 0.12, water: 0.24 })[props.effect] ?? 0.66)
+const diveAmp = computed(() => ({ inkfill: 0.12, water: 0.24, sunrise: 0.08 })[props.effect] ?? 0.66)
 const camStyle = computed(() => ({
   transform: `scale(${(0.97 + dive.value * diveAmp.value).toFixed(4)})`,
   transformOrigin: props.focal,
@@ -38,7 +44,7 @@ const camStyle = computed(() => ({
 
 // 선염 등장 마스크 (수면 도입 챕터는 물·하늘이 이미 무대라 생략)
 const veilStyle = computed(() => {
-  if (props.waterIntro) return {}
+  if (props.waterIntro || isCombo.value) return {}
   const r = 24 + easeOut(clamp01(props.p / 0.24)) * 150
   const g = `radial-gradient(ellipse 90% 75% at 50% 45%, #000 ${Math.max(0, r - 38)}%, transparent ${r}%)`
   return { maskImage: g, WebkitMaskImage: g }
@@ -71,7 +77,7 @@ function cutStyle(c) {
 // ── inkfill ──
 // waterIntro면 해·달이 물에서 떠오른 뒤(p~0.24)에야 물감이 번지기 시작한다
 const fillStart = computed(() => (props.waterIntro ? 0.42 : 0.05))
-const fillR = computed(() => easeOut(clamp01((props.p - fillStart.value) / 0.36)) * 165)
+const fillR = computed(() => easeOut(clamp01((oprog.value - fillStart.value) / 0.36)) * 165)
 const fillStyle = computed(() => {
   const g = `radial-gradient(ellipse 85% 90% at 46% 38%, #000 ${Math.max(0, fillR.value - 34)}%, transparent ${fillR.value}%)`
   return { maskImage: g, WebkitMaskImage: g }
@@ -79,19 +85,24 @@ const fillStyle = computed(() => {
 const dropsDone = computed(() => fillR.value > 150)
 // 수면 도입: 선염 없이 — 물이 걷히면 화폭이 온전한 색으로 떠오른다
 const plainFillStyle = computed(() => ({
-  opacity: clamp01((props.p - 0.46) / 0.18).toFixed(3),
+  opacity: clamp01((oprog.value - 0.46) / 0.18).toFixed(3),
 }))
 
 // 수면 도입 — 해·달이 물에서 떠오르고, 물은 서서히 걷힌다
 // 일출의 완급 — 수면에서 천천히 몸을 빼고, 중천으로 갈수록 미끄러진다
 const riseT = computed(() => {
-  const t = clamp01((props.p - 0.05) / 0.4)
+  const t = clamp01((oprog.value - 0.05) / 0.4)
   return t * t * (3 - 2 * t) // smoothstep
 })
-const introWaterStyle = computed(() => ({
-  height: (44 - riseT.value * 20).toFixed(1) + '%', // 앞 폭(인왕)의 수면 높이에서 시작해 낮아진다
-  opacity: (0.96 * (1 - clamp01((props.p - 0.36) / 0.24))).toFixed(3),
-}))
+const introWaterStyle = computed(() => {
+  // 병합 무대에선 같은 물이 그대로 띠가 된다 — 별도 이어받기 불필요
+  const settle = isCombo.value ? 1 : clamp01(props.p / 0.14)
+  const h = Math.max(44 - riseT.value * 20, 100 - settle * 56)
+  return {
+    height: h.toFixed(1) + '%',
+    opacity: (0.96 * (1 - clamp01((oprog.value - 0.36) / 0.24)) * (isCombo.value ? clamp01((props.p - 0.4) / 0.08) : 1)).toFixed(3),
+  }
+})
 // 물에 남은 앞 폭의 잔영 — 해가 떠오를수록 스러진다
 const introReflStyle = computed(() => ({
   opacity: ((1 - riseT.value) * 0.75).toFixed(3),
@@ -103,7 +114,7 @@ function glintStyle(c) {
   const waterTopVh = 56 + riseT.value * 20
   const discCenterVh = c.iy * 100 + (1 - riseT.value) * 72
   const h = Math.max(0, waterTopVh - discCenterVh)
-  const waterAlive = 1 - clamp01((props.p - 0.36) / 0.24)
+  const waterAlive = 1 - clamp01((oprog.value - 0.36) / 0.24)
   return {
     height: h.toFixed(1) + 'vh',
     opacity: (0.6 * riseT.value * waterAlive).toFixed(3),
@@ -111,17 +122,17 @@ function glintStyle(c) {
 }
 // 수면에 물드는 노을
 const dawnStyle = computed(() => ({
-  opacity: (riseT.value * 0.75 * (1 - clamp01((props.p - 0.36) / 0.24))).toFixed(3),
+  opacity: (riseT.value * 0.75 * (1 - clamp01((oprog.value - 0.36) / 0.24))).toFixed(3),
 }))
 function celestialStyle(c) {
-  const land = clamp01((props.p - 0.62) / 0.16) // 화폭이 다 차면 원화의 해·달 위에서 스러진다
+  const land = clamp01((oprog.value - 0.62) / 0.16) // 화폭이 다 차면 원화의 해·달 위에서 스러진다
   // 2단 모션: 보기 좋은 자리(riseX)에서 수직으로 떠오른 뒤,
   // 옆으로 미끄러져 원화 속 해·달의 실제 좌표(cover 크롭 보정)에 정렬한다
   const imgAR = c.imgAR ?? 2.315
   const vis = Math.min(1, window.innerWidth / window.innerHeight / imgAR)
   const x0 = 0.5 - vis / 2
   const targetX = Math.min(95, Math.max(5, ((c.ix - x0) / vis) * 100))
-  const slideT = easeOut(clamp01((props.p - 0.38) / 0.14))
+  const slideT = easeOut(clamp01((oprog.value - 0.38) / 0.14))
   const leftPct = (c.riseX ?? targetX) + (targetX - (c.riseX ?? targetX)) * slideT
   return {
     left: leftPct.toFixed(2) + '%',
@@ -134,9 +145,9 @@ function celestialStyle(c) {
 
 // ── water ──
 // 물 위에 떠 있는 그림을 내려다본다 — 항상 잔물결, 말미엔 배경만 남기고 일렁이며 사라진다
-const melt = computed(() => clamp01((props.p - 0.5) / 0.24))
+const melt = computed(() => clamp01((wprog.value - 0.5) / 0.24))
 // 물 파동만 남은 뒤에야 시점이 눕는다
-const tiltT = computed(() => easeOut(clamp01((props.p - 0.84) / 0.15)))
+const tiltT = computed(() => easeOut(clamp01((wprog.value - 0.84) / 0.15)))
 const mainWobble = computed(() => (7 + melt.value * 85).toFixed(1))
 // 시선 이동 — 호수를 내려다보다가, 스크롤하면 수면을 수평선 보듯 기울어진다
 const tiltStyle = computed(() => ({
@@ -162,14 +173,16 @@ const inkBlots = [
   { x: 430, y: 400, t: 0.05, max: 980, sat: mkSat(3, 10) },
   { x: 600, y: 500, t: 0.18, max: 860, sat: mkSat(8, 8) },
 ]
-const blotT = (b) => easeOut(clamp01((props.p - b.t) / 0.4))
+const blotT = (b) => easeOut(clamp01((wprog.value - b.t) / 0.4))
 const blotR = (b) => (blotT(b) * b.max).toFixed(1)
 const satR = (b, s) => (blotT(b) * s.r * 2.4).toFixed(1)
-const inkDropsDone = computed(() => props.p > 0.42)
+const inkDropsDone = computed(() => wprog.value > 0.42)
 const mainRise = computed(() => {
-  const t = easeOut(clamp01((props.p - 0.02) / 0.1))
+  const t = easeOut(clamp01((wprog.value - 0.02) / 0.1))
+  // 병합 무대: 일출이 무르익으면 물결 잔상도 오봉도에 자리를 내준다
+  const yield2 = isCombo.value ? 1 - clamp01((oprog.value - 0.35) / 0.3) : 1
   return {
-    opacity: (t * (1 - melt.value * 0.85)).toFixed(3),
+    opacity: (t * (1 - melt.value * 0.85) * yield2).toFixed(3),
     transform: `scale(${(1 + melt.value * 0.03).toFixed(3)})`,
     filter: 'url(#wobmain)', // 그림 전체(밑선 포함)가 물 위에서 일렁인다
   }
@@ -193,7 +206,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   <div class="art-stage" :style="veilStyle">
     <div class="cam" :style="camStyle">
       <!-- ══ 수면 반영 ══ -->
-      <template v-if="effect === 'water'">
+      <template v-if="effect === 'water' || effect === 'sunrise'">
         <!-- 본화용 물결 필터 — 말미에 그림이 수면처럼 일렁이며 풀어진다 -->
         <svg width="0" height="0" style="position: absolute" aria-hidden="true">
           <filter id="wobmain" x="-15%" y="-15%" width="130%" height="130%">
@@ -265,10 +278,10 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
       </template>
 
       <!-- ══ 물감 낙하 수묵 채색 (+ 해·달 누끼 부유) ══ -->
-      <template v-else-if="effect === 'inkfill'">
+      <template v-if="effect === 'inkfill' || effect === 'sunrise'">
         <img v-if="!waterIntro" :src="img" alt="" class="art-img gray" draggable="false" />
         <img
-          :src="img"
+          :src="effect === 'sunrise' ? img2 : img"
           alt=""
           class="art-img colorized"
           draggable="false"
@@ -318,7 +331,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
       </template>
 
       <!-- ══ 누끼 콜라주 (기본) ══ -->
-      <template v-else>
+      <template v-if="effect === 'collage'">
         <div class="backdrop" :style="backdropStyle">
           <img :src="bg || img" alt="" draggable="false" />
         </div>
@@ -329,7 +342,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
     </div>
 
     <!-- 날씨 기운 -->
-    <template v-if="rain">
+    <template v-if="rain && (effect !== 'sunrise' || p < 0.55)">
       <span
         v-for="(d, i) in rainDrops"
         :key="'r' + i"
