@@ -315,7 +315,9 @@ const activeToneLight = computed(() => {
   return fld(chapters[i], i, 'tone') === 'light'
 })
 function sideStyle(i) {
-  return { opacity: infoStyle(i, 1).opacity }
+  const o = infoStyle(i, 1).opacity
+  // 겹쳐 쌓인 고정 패널끼리 클릭이 새지 않게 — 안 보이면 숨긴다
+  return { opacity: o, visibility: o < 0.05 ? 'hidden' : 'visible' }
 }
 function infoStyle(i, order = 0) {
   const p = progress.value[i] ?? 0
@@ -497,7 +499,9 @@ function jumpTo(r) {
     </section>
 
     <!-- ══ 좌측 여백 — 세로 표제 ══ -->
-    <p v-show="activeIdx >= 0" class="side-title" :class="{ light: activeToneLight }">팔도청우록<span>八道晴雨錄</span></p>
+    <p v-show="activeIdx >= 0" class="side-title" :class="{ light: activeToneLight }">
+      팔도청우록<span class="st-hanja">八道晴雨錄</span><i class="st-seal">晴雨</i>
+    </p>
 
     <!-- ══ 좌측 차례 레일 (챕터 진입 후) ══ -->
     <nav v-show="activeIdx >= 0" class="rail util" :class="{ light: activeToneLight }" aria-label="화폭 차례">
@@ -889,59 +893,103 @@ function jumpTo(r) {
   color: #e8a5b0;
 }
 
-/* ── 좌측 여백 세로 표제 — 두루마리 낙관처럼 ── */
+/* ── 좌측 여백 세로 표제 — 두루마리 제첨(題簽)과 낙관 ── */
 .side-title {
   position: fixed;
-  left: 26px;
-  top: 96px;
+  left: 22px;
+  top: 92px;
   z-index: 30;
   margin: 0;
   writing-mode: vertical-rl;
+  text-orientation: mixed;
   font-family: var(--font-display);
-  font-size: 24px;
-  letter-spacing: 0.34em;
+  font-size: clamp(26px, 2.6vw, 38px);
+  font-weight: 700;
+  letter-spacing: 0.3em;
   color: var(--ink);
-  text-shadow: 0 0 14px rgba(241, 231, 208, 0.95);
+  text-shadow: 0 0 16px rgba(241, 231, 208, 0.95), 0 0 30px rgba(241, 231, 208, 0.8);
 }
-.side-title span {
-  display: block;
-  margin-top: 14px;
-  font-size: 12px;
-  letter-spacing: 0.5em;
+.st-hanja {
+  margin-top: 16px;
+  font-size: 0.38em;
+  font-weight: 400;
+  letter-spacing: 0.52em;
   color: var(--ink-soft);
+}
+/* 낙관 — 붉은 도장 */
+.st-seal {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 7px 5px;
+  background: var(--jeok);
+  color: var(--baek);
+  border-radius: 3px;
+  font-style: normal;
+  font-size: 0.42em;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-orientation: upright;
+  text-shadow: none;
+  box-shadow: 0 2px 8px rgba(34, 28, 22, 0.25), inset 0 0 0 1px rgba(251, 246, 234, 0.35);
 }
 .side-title.light {
   color: var(--baek);
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
 }
-.side-title.light span {
+.side-title.light .st-hanja {
   color: rgba(251, 246, 234, 0.6);
 }
 
-/* ── 우측 도시 정보 패널 ── */
+/* ── 우측 여백 도시 패널 — 족자 한 폭처럼 ── */
 .side-cities {
-  position: absolute;
-  right: 4%;
+  position: fixed;
+  right: 18px;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 5;
+  z-index: 30;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: stretch;
   gap: 9px;
-  max-width: 250px;
+  max-width: 230px;
+  padding: 16px 13px 14px;
+  background: rgba(251, 246, 234, 0.86);
+  border: 1px solid var(--line);
+  border-top: 3px double var(--line);
+  border-bottom: 3px double var(--line);
+  border-radius: 3px;
+  box-shadow: 0 14px 34px rgba(34, 28, 22, 0.16);
+  backdrop-filter: blur(2px);
   will-change: opacity;
+  pointer-events: none;
+}
+.side-cities .chip {
+  pointer-events: auto;
+  font-size: 12.5px;
+  padding: 7px 12px;
+  box-shadow: none;
+  background: rgba(255, 252, 244, 0.9);
+}
+.side-cities.light {
+  background: rgba(18, 16, 24, 0.55);
+  border-color: rgba(251, 246, 234, 0.3);
+}
+.side-cities.light .chip {
+  background: rgba(251, 246, 234, 0.92);
 }
 .side-cap {
-  margin: 0 0 3px;
-  font-size: 11.5px;
-  letter-spacing: 0.18em;
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-align: center;
   color: var(--ink-soft);
-  text-shadow: 0 0 12px rgba(241, 231, 208, 0.95);
   border-bottom: 1px solid var(--line);
-  padding-bottom: 5px;
-  background: rgba(241, 231, 208, 0.75);
-  box-shadow: 0 0 14px 8px rgba(241, 231, 208, 0.75);
+  padding-bottom: 7px;
+}
+.side-cities.light .side-cap {
+  color: rgba(251, 246, 234, 0.8);
+  border-bottom-color: rgba(251, 246, 234, 0.3);
 }
 .side-cities .chip-empty {
   padding: 8px 12px;
@@ -957,15 +1005,10 @@ function jumpTo(r) {
   border-bottom-color: rgba(251, 246, 234, 0.3);
 }
 
-@media (max-width: 760px) {
-  .rail,
-  .side-title {
-    display: none;
-  }
-  .mega {
-    top: 22%;
-  }
+@media (max-width: 1100px) {
+  /* 여백이 좁아지면 — 처음처럼 내러티브 아래 하단 나열로 */
   .side-cities {
+    position: absolute;
     right: 5%;
     left: 5%;
     top: auto;
@@ -975,12 +1018,26 @@ function jumpTo(r) {
     flex-wrap: wrap;
     align-items: center;
     max-width: none;
+    z-index: 5;
   }
   .side-cap {
     display: none;
   }
   .foot {
-    bottom: 14%;
+    bottom: 12%;
+  }
+}
+
+@media (max-width: 760px) {
+  .rail,
+  .side-title {
+    display: none;
+  }
+  .mega {
+    top: 22%;
+  }
+  .next-fab {
+    bottom: 1.6%;
   }
 }
 

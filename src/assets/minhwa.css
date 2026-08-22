@@ -90,3 +90,11 @@ a:hover {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── 몰입 화폭 페이지 — 폭 제한 해제 (넓은 화면 풀블리드) ── */
+#app:has(main.gukfok),
+#app:has(main.mangug),
+#app:has(main.edition) {
+  max-width: none;
+  padding: 0;
+}

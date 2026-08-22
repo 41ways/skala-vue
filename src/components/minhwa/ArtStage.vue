@@ -224,9 +224,9 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
         </svg>
         <!-- 물 위에 떠 있는 그림 (부감) — 스크롤하면 시선이 수평선으로 기울어진다 -->
         <div class="w-tilt" :style="tiltStyle">
-        <!-- 해가 뜨며 인왕의 물결에 노을이 진다 -->
-        <div class="w-dawn" :style="dawnStyle"></div>
         <div class="w-main" :style="mainRise">
+          <!-- 해가 뜨며 인왕의 물결에 노을이 진다 — 물과 같은 필터로 함께 일렁인다 -->
+          <div class="w-dawn" :style="dawnStyle"></div>
           <!-- 밑선: 색이 채워지기 전의 옅은 골격 -->
           <img :src="img" alt="" class="art-img lines" draggable="false" />
           <svg class="wm-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
@@ -477,7 +477,13 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(224, 120, 60, 0.52), rgba(224, 138, 78, 0.3) 34%, transparent 68%);
+  /* 해가 뜨는 오른쪽 수평선이 가장 붉고, 달 쪽(왼쪽)으로 갈수록 옅어진다 */
+  background: radial-gradient(
+    ellipse 75% 52% at 76% 0%,
+    rgba(224, 110, 52, 0.6),
+    rgba(224, 138, 78, 0.3) 42%,
+    transparent 74%
+  );
   mix-blend-mode: multiply;
 }
 /* 밑선 — 색이 채워지기 전의 옅은 골격 (짙은 획만 흐릿하게 남긴다) */
