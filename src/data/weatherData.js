@@ -7,6 +7,22 @@ export const weatherList = [
   { id: 'city_06', name: '제주', temp: 24, status: '바람', humidity: 81, wind: 7.3, x: 19, y: 94 },
 ]
 
+// 해외 도시 — 세계화폭(스크롤텔링) 챕터. genre = 배정된 풍속화 장면
+export const worldList = [
+  // prettier-ignore
+  { id: 'w_tokyo', name: '도쿄', hanja: '東京', country: '일본', lat: 35.68, lon: 139.69, temp: 27, status: '맑음', humidity: 66, wind: 3.2, genre: 'mudong', line: '동경의 볕 아래 소매가 날립니다' },
+  // prettier-ignore
+  { id: 'w_beijing', name: '베이징', hanja: '北京', country: '중국', lat: 39.9, lon: 116.4, temp: 29, status: '구름', humidity: 48, wind: 2.1, genre: 'tiger', line: '연경 하늘 아래 호랑이가 눈을 굴립니다' },
+  // prettier-ignore
+  { id: 'w_paris', name: '파리', hanja: '巴里', country: '프랑스', lat: 48.85, lon: 2.35, temp: 21, status: '비', humidity: 82, wind: 4.4, genre: 'seodang', line: '파리의 비는 글 읽는 소리에 섞입니다' },
+  // prettier-ignore
+  { id: 'w_london', name: '런던', hanja: '倫敦', country: '영국', lat: 51.51, lon: -0.13, temp: 18, status: '흐림', humidity: 78, wind: 5.6, genre: 'ssireum', line: '런던의 낮은 하늘 밑에서 샅바를 당깁니다' },
+  // prettier-ignore
+  { id: 'w_newyork', name: '뉴욕', hanja: '紐約', country: '미국', lat: 40.71, lon: -74.01, temp: 25, status: '구름', humidity: 60, wind: 4.9, genre: 'mudong', line: '뉴욕의 구름 사이로 북소리가 퍼집니다' },
+  // prettier-ignore
+  { id: 'w_sydney', name: '시드니', hanja: '雪梨', country: '호주', lat: -33.87, lon: 151.21, temp: 16, status: '맑음', humidity: 58, wind: 6.1, genre: 'ssireum', line: '남반구의 바람이 구경꾼 함성을 실어 나릅니다' },
+]
+
 export const starCount = (city) => {
   if (city.status === '비' || city.status === '눈') return 8
   let n = 220
