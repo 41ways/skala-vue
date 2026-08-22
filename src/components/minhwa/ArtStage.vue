@@ -27,8 +27,10 @@ const easeOut = (t) => 1 - Math.pow(1 - t, 3)
 // 빠져드는 정도
 const dive = computed(() => easeOut(clamp01((props.p - 0.22) / 0.5)))
 
+// 효과별 줌 깊이 — 파노라마(inkfill)는 살짝만, 콜라주는 깊게 빠져든다
+const diveAmp = computed(() => ({ inkfill: 0.12, water: 0.24 })[props.effect] ?? 0.66)
 const camStyle = computed(() => ({
-  transform: `scale(${(0.94 + dive.value * 0.66).toFixed(4)})`,
+  transform: `scale(${(0.97 + dive.value * diveAmp.value).toFixed(4)})`,
   transformOrigin: props.focal,
 }))
 
@@ -65,7 +67,7 @@ function cutStyle(c) {
 
 // ── inkfill ──
 // waterIntro면 해·달이 물에서 떠오른 뒤(p~0.24)에야 물감이 번지기 시작한다
-const fillStart = computed(() => (props.waterIntro ? 0.34 : 0.05))
+const fillStart = computed(() => (props.waterIntro ? 0.42 : 0.05))
 const fillR = computed(() => easeOut(clamp01((props.p - fillStart.value) / 0.36)) * 165)
 const fillStyle = computed(() => {
   const g = `radial-gradient(ellipse 85% 90% at 46% 38%, #000 ${Math.max(0, fillR.value - 34)}%, transparent ${fillR.value}%)`
@@ -74,11 +76,15 @@ const fillStyle = computed(() => {
 const dropsDone = computed(() => fillR.value > 150)
 // 수면 도입이면 해·달이 다 떠오른 뒤에야 수묵 밑그림이 배어난다
 const grayStyle = computed(() => ({
-  opacity: props.waterIntro ? clamp01((props.p - 0.28) / 0.12).toFixed(3) : '1',
+  opacity: props.waterIntro ? clamp01((props.p - 0.38) / 0.1).toFixed(3) : '1',
 }))
 
 // 수면 도입 — 해·달이 물에서 떠오르고, 물은 서서히 걷힌다
-const riseT = computed(() => easeOut(clamp01((props.p - 0.02) / 0.26)))
+// 일출의 완급 — 수면에서 천천히 몸을 빼고, 중천으로 갈수록 미끄러진다
+const riseT = computed(() => {
+  const t = clamp01((props.p - 0.05) / 0.4)
+  return t * t * (3 - 2 * t) // smoothstep
+})
 const introWaterStyle = computed(() => ({
   opacity: (0.95 * (1 - clamp01((props.p - 0.34) / 0.24))).toFixed(3),
 }))
@@ -94,7 +100,7 @@ function celestialStyle(c) {
     top: (c.iy * 100).toFixed(2) + '%',
     width: c.dvh + 'vh',
     opacity: (riseT.value * (1 - land)).toFixed(3),
-    transform: `translate(-50%, -50%) translateY(${((1 - riseT.value) * 62).toFixed(2)}vh) translate3d(${(props.mx * (c.depth ?? 10) * 0.4).toFixed(1)}px, ${(props.my * 5).toFixed(1)}px, 0)`,
+    transform: `translate(-50%, -50%) translateY(${((1 - riseT.value) * 72).toFixed(2)}vh) translate3d(${(props.mx * (c.depth ?? 10) * 0.4).toFixed(1)}px, ${(props.my * 5).toFixed(1)}px, 0)`,
   }
 }
 
@@ -391,7 +397,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
 /* ── 수면 도입 : 해·달의 상승 ── */
 .celestial {
   position: absolute;
-  z-index: 4;
+  z-index: 2; /* 물띠(z3) 뒤 — 수면을 뚫고 떠오르는 일출 */
   will-change: transform, opacity;
 }
 .celestial img {
@@ -417,10 +423,17 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   left: 0;
   right: 0;
   bottom: 0;
-  height: 22%;
+  height: 26%;
   z-index: 3;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent, rgba(47, 86, 122, 0.5) 30%, rgba(36, 67, 95, 0.85));
+  /* 수면 위쪽부터 진하게 — 뒤에서 올라오는 해·달이 물속에서 어른거리다 떠오른다 */
+  background: linear-gradient(
+    180deg,
+    rgba(47, 86, 122, 0.62),
+    rgba(41, 76, 108, 0.8) 35%,
+    rgba(36, 67, 95, 0.96)
+  );
+  box-shadow: 0 -6px 22px rgba(47, 86, 122, 0.35);
 }
 .iw-shimmer {
   position: absolute;
