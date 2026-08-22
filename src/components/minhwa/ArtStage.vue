@@ -125,18 +125,25 @@ const rainRings = Array.from({ length: 7 }, (_, i) => ({
   dur: (2.2 + ((i * 7) % 10) / 6).toFixed(2) + 's',
   delay: -(((i * 13) % 22) / 10).toFixed(1) + 's',
 }))
-// 먹이 번지며 그림이 채워진다 — 빗속에 먹물이 떨어져 화폭이 살아나는 도입
-const inkFillR = computed(() => easeOut(clamp01((props.p - 0.03) / 0.44)) * 170)
-const inkDropsDone = computed(() => inkFillR.value > 160)
+// 진짜 먹방울처럼 — 방울이 닿은 자리마다 얼룩이 생겨 아지랑이같이 번진다
+// (SVG 마스크: 터뷸런스로 가장자리가 일렁이는 원들이 자라난다. 좌표계 0~1000)
+const inkBlots = [
+  { x: 380, y: 400, t: 0.04 },
+  { x: 550, y: 430, t: 0.1 },
+  { x: 460, y: 370, t: 0.16 },
+  { x: 630, y: 420, t: 0.22 },
+  { x: 500, y: 520, t: 0.27 },
+]
+function blotR(i) {
+  const b = inkBlots[i]
+  return (easeOut(clamp01((props.p - b.t) / 0.38)) * 780).toFixed(1)
+}
+const inkDropsDone = computed(() => props.p > 0.5)
 const mainRise = computed(() => {
   const t = easeOut(clamp01((props.p - 0.02) / 0.1))
-  const g = `radial-gradient(ellipse 80% 95% at 48% 30%, #000 ${Math.max(0, inkFillR.value - 40)}%, transparent ${inkFillR.value}%)`
   return {
     opacity: (t * (1 - melt.value * 0.94)).toFixed(3),
     transform: `scale(${(1 + melt.value * 0.03).toFixed(3)})`,
-    filter: 'url(#wobmain)', // 물 위라 항상 잔물결
-    maskImage: g,
-    WebkitMaskImage: g,
   }
 })
 
@@ -169,13 +176,39 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
             <feGaussianBlur :stdDeviation="(melt * 2.2).toFixed(2)" />
           </filter>
         </svg>
-        <!-- 아래의 물 — 그림이 부서질수록 드러난다 -->
+        <!-- 아래의 물 = 제 그림이 풀어진 먹빛 — 부서질수록 드러난다 -->
         <div class="w-under" :style="underStyle">
+          <img :src="img" alt="" class="w-under-img" draggable="false" />
           <div class="iw-shimmer"></div>
         </div>
-        <!-- 물 위에 떠 있는 그림 (위에서 내려다봄) — 항상 미세하게 일렁인다 -->
+        <!-- 물 위에 떠 있는 그림 (부감) — 먹얼룩 마스크가 아지랑이처럼 번지며 채운다 -->
         <div class="w-main" :style="mainRise">
-          <img :src="img" alt="" class="art-img" draggable="false" />
+          <svg class="wm-svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+            <defs>
+              <filter id="bleed" x="-25%" y="-25%" width="150%" height="150%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.006" numOctaves="3" seed="11" result="bn">
+                  <animate attributeName="baseFrequency" values="0.006;0.0075;0.006" dur="9s" repeatCount="indefinite" />
+                </feTurbulence>
+                <feDisplacementMap in="SourceGraphic" in2="bn" scale="46" xChannelSelector="R" yChannelSelector="G" />
+                <feGaussianBlur stdDeviation="16" />
+              </filter>
+              <mask id="inkmask" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1000">
+                <g filter="url(#bleed)">
+                  <circle v-for="(b, i) in inkBlots" :key="'ib' + i" :cx="b.x" :cy="b.y" :r="blotR(i)" fill="#fff" />
+                </g>
+              </mask>
+            </defs>
+            <image
+              :href="img"
+              x="0"
+              y="0"
+              width="1000"
+              height="1000"
+              preserveAspectRatio="xMidYMid slice"
+              mask="url(#inkmask)"
+              filter="url(#wobmain)"
+            />
+          </svg>
         </div>
         <!-- 빗방울 파문 — 표면에 고리가 퍼진다 -->
         <template v-if="rain && melt < 0.7">
@@ -362,13 +395,25 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   inset: 0;
   will-change: transform, opacity, filter;
 }
-/* 그림이 부서진 자리에 드러나는 물 */
+/* 그림이 부서진 자리에 드러나는 물 — 제 그림이 풀어진 먹빛 */
 .w-under {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse 120% 90% at 50% 40%, rgba(61, 106, 148, 0.9), rgba(36, 67, 95, 0.98)),
-    #24435f;
+  overflow: hidden;
+  background: #565c60;
+}
+.w-under-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(18px) saturate(0.5) brightness(0.88);
+  transform: scale(1.06);
+}
+.wm-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 /* 빗방울이 수면(그림 표면)에 만드는 파문 고리 */
 .rain-ring {
@@ -478,14 +523,14 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   z-index: 3;
   pointer-events: none;
   overflow: hidden;
-  /* 수면 위쪽부터 진하게 — 뒤에서 올라오는 해·달이 물속에서 어른거리다 떠오른다 */
+  /* 앞 폭이 풀어진 먹빛 물 — 파랗지 않게, 수묵의 잿빛으로 */
   background: linear-gradient(
     180deg,
-    rgba(47, 86, 122, 0.62),
-    rgba(41, 76, 108, 0.8) 35%,
-    rgba(36, 67, 95, 0.96)
+    rgba(96, 102, 106, 0.6),
+    rgba(80, 86, 92, 0.8) 35%,
+    rgba(62, 68, 74, 0.96)
   );
-  box-shadow: 0 -6px 22px rgba(47, 86, 122, 0.35);
+  box-shadow: 0 -6px 22px rgba(80, 86, 92, 0.35);
 }
 .iw-svg {
   position: absolute;
