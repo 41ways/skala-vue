@@ -221,7 +221,7 @@ const fld = (ch, i, k) =>
 const citiesFor = (ch, i) =>
   cities.value.filter((c) => {
     const w = fld(ch, i, 'weather')
-    return w.includes(c.status) || (c.snowAlways && w.includes('눈'))
+    return c.snowAlways ? w.includes('눈') : w.includes(c.status)
   })
 
 // ── 스크롤 진행도 + 마우스 시차 ──────────────────────────

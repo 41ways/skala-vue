@@ -422,13 +422,22 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   place-items: center;
   gap: 0;
   padding: 0;
-  background: var(--jeok);
   color: var(--baek);
   border: 0;
-  border-radius: 4px;
+  border-radius: 3px;
   cursor: pointer;
   transform: rotate(-3deg);
-  box-shadow: inset 0 0 0 2px rgba(251, 246, 234, 0.45), 0 4px 10px rgba(34, 28, 22, 0.35);
+  /* 인주(印朱) — 고르지 않게 찍힌 붉은 면 + 안쪽 이중 테 */
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.12), transparent 40%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.08 0 0 0 0 0.05 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='80' height='80' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(160deg, #c4402f, #9f2f23);
+  box-shadow:
+    inset 0 0 0 2px rgba(251, 246, 234, 0.55),
+    inset 0 0 0 5px rgba(159, 47, 35, 1),
+    inset 0 0 0 6px rgba(251, 246, 234, 0.35),
+    0 4px 10px rgba(34, 28, 22, 0.35);
+  mix-blend-mode: multiply;
   transition: transform 0.2s, box-shadow 0.2s;
   animation: stampIn 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) 1.35s both;
 }
@@ -450,6 +459,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   font-weight: 700;
   line-height: 1;
   opacity: 0.45;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 1px rgba(251, 246, 234, 0.6);
   transition: opacity 0.2s;
 }
 .seal-arrow {
@@ -495,25 +506,29 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   color: var(--jeok);
   outline: none;
 }
-/* 빨래 지침 — 닫기 아래 세로 링크 */
+/* 빨래 지침 — 종이 아래 가운데, 낙관·닫기와 겹치지 않게 */
 .guide-link {
   position: absolute;
-  right: 34px;
-  top: 110px;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
   z-index: 2;
-  writing-mode: vertical-lr;
+  padding: 7px 16px;
+  border: 1.5px solid rgba(178, 58, 44, 0.7);
+  border-radius: 3px;
+  background: rgba(251, 246, 234, 0.55);
   font-family: var(--font-display);
-  font-size: 19px;
+  font-size: 16px;
   font-weight: 700;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.22em;
   color: var(--jeok);
   text-decoration: none;
-  border-left: 1.5px solid rgba(178, 58, 44, 0.5);
-  padding-left: 8px;
+  white-space: nowrap;
 }
 .guide-link:hover,
 .guide-link:focus-visible {
-  color: #8e2a22;
+  background: var(--jeok);
+  color: var(--baek);
   outline: none;
 }
 .sheet-enter-active,
@@ -547,7 +562,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .seal { right: 18px; bottom: 18px; width: 52px; height: 62px; }
   .seal-face { font-size: 16px; }
   .close { right: 18px; top: 18px; }
-  .guide-link { right: 18px; top: 96px; font-size: 15px; }
+  .guide-link { bottom: 14px; font-size: 13px; padding: 5px 12px; }
   .rules { inset: 12px 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
