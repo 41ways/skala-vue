@@ -98,6 +98,15 @@ defineProps({
 .part.p-flutter-b {
   animation: pFlutter 2.6s ease-in-out infinite alternate-reverse;
 }
+/* 날개 — 제자리 날갯짓 */
+.part.p-flap {
+  animation: pFlap 0.9s ease-in-out infinite alternate;
+}
+@keyframes pFlap {
+  from { transform: rotate(-3deg); }
+  55% { transform: rotate(2deg); }
+  to { transform: rotate(13deg) translateY(-2px); }
+}
 /* 다리 — 차올림 */
 .part.p-kick {
   animation: pKick 1.6s ease-in-out infinite;

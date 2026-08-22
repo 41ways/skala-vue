@@ -180,10 +180,11 @@ const chapters = [
         ox: 14,
         oy: -14,
         ds: 0.03,
-        idle: 'fly',
+        idle: 'bob',
         z: 1,
         parts: [
           { src: cut('magpie_head'), left: '0%', top: '6.9%', w: '40%', anim: 'p-head', origin: '85% 80%' },
+          { src: cut('magpie_wing'), left: '18.2%', top: '27.6%', w: '47.3%', anim: 'p-flap', origin: '18% 28%' },
           { src: cut('magpie_tail'), left: '47.3%', top: '46.6%', w: '52.7%', anim: 'p-tail', origin: '10% 15%' },
         ],
       },

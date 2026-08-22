@@ -128,7 +128,7 @@ function celestialStyle(c) {
     top: (c.iy * 100).toFixed(2) + '%',
     width: c.dvh + 'vh',
     opacity: (riseT.value * (1 - land)).toFixed(3),
-    transform: `translate(-50%, -50%) translateY(${((1 - riseT.value) * 72).toFixed(2)}vh) translate3d(${(props.mx * (c.depth ?? 10) * 0.4).toFixed(1)}px, ${(props.my * 5).toFixed(1)}px, 0)`,
+    transform: `translate(-50%, -50%) translateY(${((1 - riseT.value) * 52).toFixed(2)}vh) translate3d(${(props.mx * (c.depth ?? 10) * 0.4).toFixed(1)}px, ${(props.my * 5).toFixed(1)}px, 0)`,
   }
 }
 
@@ -136,7 +136,7 @@ function celestialStyle(c) {
 // 물 위에 떠 있는 그림을 내려다본다 — 항상 잔물결, 말미엔 배경만 남기고 일렁이며 사라진다
 const melt = computed(() => clamp01((props.p - 0.5) / 0.24))
 // 물 파동만 남은 뒤에야 시점이 눕는다
-const tiltT = computed(() => easeOut(clamp01((props.p - 0.76) / 0.2)))
+const tiltT = computed(() => easeOut(clamp01((props.p - 0.84) / 0.15)))
 const mainWobble = computed(() => (7 + melt.value * 85).toFixed(1))
 // 시선 이동 — 호수를 내려다보다가, 스크롤하면 수면을 수평선 보듯 기울어진다
 const tiltStyle = computed(() => ({
@@ -630,13 +630,14 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   pointer-events: none;
   overflow: hidden;
   /* 앞 폭이 풀어진 먹빛 물 — 파랗지 않게, 수묵의 잿빛으로 */
+  /* 인왕이 풀어진 수면과 같은 밝기 — 한지 위 옅은 잿물 */
   background: linear-gradient(
     180deg,
-    rgba(96, 102, 106, 0.6),
-    rgba(80, 86, 92, 0.8) 35%,
-    rgba(62, 68, 74, 0.96)
+    rgba(120, 124, 126, 0.22),
+    rgba(104, 110, 112, 0.34) 40%,
+    rgba(88, 94, 98, 0.5)
   );
-  box-shadow: 0 -6px 22px rgba(80, 86, 92, 0.35);
+  box-shadow: 0 -4px 18px rgba(104, 110, 112, 0.25);
 }
 .iw-svg {
   position: absolute;
