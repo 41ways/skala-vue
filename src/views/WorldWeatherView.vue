@@ -218,7 +218,15 @@ const fxMap = {
 // 효과는 그림과 함께 떠오르고 함께 물러난다 — 미리 보이지 않게
 function fxVis(i) {
   const p = progress.value[i] ?? 0
-  return { opacity: (easeOut(clamp01((p - 0.06) / 0.16)) * (1 - clamp01((p - 0.84) / 0.12))).toFixed(3) }
+  // 원색 리빌(0.06~0.32)이 거의 끝난 뒤에야 효과가 스며든다
+  return { opacity: (easeOut(clamp01((p - 0.24) / 0.14)) * (1 - clamp01((p - 0.84) / 0.12))).toFixed(3) }
+}
+// 효과 레이어용 그림 스타일 — 리빌 마스크는 빼고(자체 부드러운 마스크 사용) 움직임만 따라간다
+function fxPaintStyle(i, art) {
+  const st = paintStyle(i, art)
+  delete st.maskImage
+  delete st.WebkitMaskImage
+  return st
 }
 // 고풍 독법 — 氣溫 二十二度 · 濕度 四十一分 · 風 四米
 function readingOf(c) {
@@ -380,7 +388,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
             <span v-for="(m, j) in mists" :key="'wm' + j" class="mistband" :style="[m, { top: 26 + j * 9 + '%' }]"></span>
           </template>
           <template v-if="fxMap[c.id]">
-            <div class="fx" :class="fxMap[c.id].kind" :style="[paintStyle(i, artMap[c.id]), { maskImage: fxMap[c.id].mask, WebkitMaskImage: fxMap[c.id].mask }]">
+            <div class="fx" :class="fxMap[c.id].kind" :style="[fxPaintStyle(i, artMap[c.id]), { maskImage: fxMap[c.id].mask, WebkitMaskImage: fxMap[c.id].mask }]">
               <img :src="artMap[c.id].img" alt="" loading="lazy" decoding="async" draggable="false" />
             </div>
             <template v-if="fxMap[c.id].mist">
