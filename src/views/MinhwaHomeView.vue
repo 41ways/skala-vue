@@ -25,6 +25,13 @@ const cutFiles = import.meta.glob('@/assets/minhwa-art/cut/*.png', {
 })
 const cut = (name) => cutFiles[Object.keys(cutFiles).find((k) => k.includes(name))]
 
+// 누끼 자리를 메운 배경판
+const bgFiles = import.meta.glob('@/assets/minhwa-art/bg/*.jpg', {
+  eager: true,
+  import: 'default',
+})
+const bgOf = (name) => bgFiles[Object.keys(bgFiles).find((k) => k.includes(name))]
+
 const { cities, loading, error, fetchLive } = useWeather()
 
 // 화폭 차례 — 그림과 날씨의 궁합
@@ -66,6 +73,7 @@ const chapters = [
   {
     id: 'mudong',
     img: mudongImg,
+    bg: bgOf('mudong'),
     title: '무동',
     hanja: '舞童',
     era: '김홍도 · 풍속화첩 · 보물',
@@ -87,6 +95,7 @@ const chapters = [
   {
     id: 'ssireum',
     img: ssireumImg,
+    bg: bgOf('ssireum'),
     title: '씨름',
     hanja: '角觝',
     era: '김홍도 · 풍속화첩 · 보물',
@@ -109,6 +118,7 @@ const chapters = [
   {
     id: 'seodang',
     img: seodangImg,
+    bg: bgOf('seodang'),
     title: '서당',
     hanja: '書堂',
     era: '김홍도 · 풍속화첩 · 보물',
@@ -132,6 +142,7 @@ const chapters = [
   {
     id: 'tiger',
     img: tigerImg,
+    bg: bgOf('tiger'),
     title: '작호도',
     hanja: '鵲虎圖',
     era: '조선 민화 · 세화(歲畫)',
@@ -325,6 +336,7 @@ function jump(i) {
       <div class="stage">
         <ArtStage
           :img="ch.img"
+          :bg="ch.bg ?? ''"
           :effect="ch.effect"
           :focal="ch.focal"
           :cuts="ch.cuts ?? []"

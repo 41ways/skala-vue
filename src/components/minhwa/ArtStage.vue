@@ -10,6 +10,7 @@ import MinhwaCut from '@/components/minhwa/MinhwaCut.vue'
 
 const props = defineProps({
   img: { type: String, required: true },
+  bg: { type: String, default: '' }, // 누끼 자리를 메운 배경판 (콜라주용)
   effect: { type: String, default: 'collage' },
   focal: { type: String, default: '50% 50%' },
   cuts: { type: Array, default: () => [] }, // {src,left,top,w,depth,ox,oy,ds,idle,z}
@@ -199,7 +200,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
       <!-- ══ 누끼 콜라주 (기본) ══ -->
       <template v-else>
         <div class="backdrop" :style="backdropStyle">
-          <img :src="img" alt="" draggable="false" />
+          <img :src="bg || img" alt="" draggable="false" />
         </div>
         <span v-for="(c, i) in cuts" :key="'k' + i" class="cut-wrap" :style="cutStyle(c)">
           <MinhwaCut :src="c.src" :parts="c.parts ?? []" :idle="c.idle" silhouette />
