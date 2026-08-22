@@ -30,20 +30,6 @@ const { cities, loading, error, fetchLive } = useWeather()
 // 화폭 차례 — 그림과 날씨의 궁합
 const chapters = [
   {
-    id: 'obongdo',
-    img: obongdoImg,
-    title: '일월오봉도',
-    hanja: '日月五峯圖',
-    era: '조선 후기 · 궁중 장식화',
-    weather: ['맑음'],
-    wHanja: '晴',
-    effect: 'inkfill',
-    focal: '50% 44%',
-    tone: 'light', // 어두운 궁중화 위 — 밝은 글자
-    line: '해와 달이 함께 뜬 다섯 봉우리 — 볕이 좋은 고을들입니다.',
-    empty: '오늘은 맑게 갠 고을이 없습니다.',
-  },
-  {
     id: 'inwang',
     img: inwangImg,
     title: '인왕제색도',
@@ -54,8 +40,28 @@ const chapters = [
     effect: 'water',
     focal: '50% 48%',
     rain: true,
-    line: '비에 젖은 인왕산 — 지금 비가 듣는 고을들입니다.',
+    line: '비에 젖은 인왕산 — 지금 비가 듣는 고을들입니다. 화폭을 내리면 그림이 물이 됩니다.',
     empty: '오늘은 비에 든 고을이 없습니다.',
+  },
+  {
+    id: 'obongdo',
+    img: obongdoImg,
+    title: '일월오봉도',
+    hanja: '日月五峯圖',
+    era: '조선 후기 · 궁중 장식화',
+    weather: ['맑음'],
+    wHanja: '晴',
+    effect: 'inkfill',
+    waterIntro: true, // 앞 폭의 물 위로 해와 달이 떠오른다
+    focal: '50% 44%',
+    tone: 'light',
+    cuts: [
+      // ix/iy = 원화(2560x1106) 속 해·달의 좌표 비율, dvh = 지름(vh)
+      { src: cut('obongdo_moon'), ix: 0.263, iy: 0.121, dvh: 17.7, depth: 10 },
+      { src: cut('obongdo_sun'), ix: 0.703, iy: 0.113, dvh: 16.6, depth: 14 },
+    ],
+    line: '비 갠 물 위로 해와 달이 떠오릅니다 — 볕이 좋은 고을들입니다.',
+    empty: '오늘은 맑게 갠 고을이 없습니다.',
   },
   {
     id: 'mudong',
@@ -300,6 +306,7 @@ function jump(i) {
           :my="my"
           :rain="!!ch.rain"
           :snow="!!ch.snow"
+          :water-intro="!!ch.waterIntro"
         />
 
         <!-- 초대형 화제(畫題) — 그림과 겹친다 -->

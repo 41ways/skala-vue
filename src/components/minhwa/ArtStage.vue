@@ -18,6 +18,7 @@ const props = defineProps({
   my: { type: Number, default: 0 },
   rain: { type: Boolean, default: false },
   snow: { type: Boolean, default: false },
+  waterIntro: { type: Boolean, default: false }, // inkfill: 수면에서 해·달이 떠오르는 도입부
 })
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v))
@@ -63,21 +64,51 @@ function cutStyle(c) {
 }
 
 // ── inkfill ──
-const fillR = computed(() => easeOut(clamp01((props.p - 0.05) / 0.4)) * 165)
+// waterIntro면 해·달이 물에서 떠오른 뒤(p~0.24)에야 물감이 번지기 시작한다
+const fillStart = computed(() => (props.waterIntro ? 0.24 : 0.05))
+const fillR = computed(() => easeOut(clamp01((props.p - fillStart.value) / 0.36)) * 165)
 const fillStyle = computed(() => {
   const g = `radial-gradient(ellipse 85% 90% at 46% 38%, #000 ${Math.max(0, fillR.value - 34)}%, transparent ${fillR.value}%)`
   return { maskImage: g, WebkitMaskImage: g }
 })
 const dropsDone = computed(() => fillR.value > 150)
 
+// 수면 도입 — 해·달이 물에서 떠오르고, 물은 서서히 걷힌다
+const riseT = computed(() => easeOut(clamp01((props.p - 0.02) / 0.26)))
+const introWaterStyle = computed(() => ({
+  opacity: (0.95 * (1 - clamp01((props.p - 0.34) / 0.24))).toFixed(3),
+}))
+function celestialStyle(c) {
+  const land = clamp01((props.p - 0.58) / 0.18) // 화폭이 다 차면 원화의 해·달 위에서 스러진다
+  // cover 크롭 보정: 화면비에 따라 원화 속 해·달의 실제 화면 좌표를 계산
+  const imgAR = c.imgAR ?? 2.315
+  const vis = Math.min(1, window.innerWidth / window.innerHeight / imgAR)
+  const x0 = 0.5 - vis / 2
+  const leftPct = ((c.ix - x0) / vis) * 100
+  return {
+    left: leftPct.toFixed(2) + '%',
+    top: (c.iy * 100).toFixed(2) + '%',
+    width: c.dvh + 'vh',
+    opacity: (riseT.value * (1 - land)).toFixed(3),
+    transform: `translate(-50%, -50%) translateY(${((1 - riseT.value) * 62).toFixed(2)}vh) translate3d(${(props.mx * (c.depth ?? 10) * 0.4).toFixed(1)}px, ${(props.my * 5).toFixed(1)}px, 0)`,
+  }
+}
+
 // ── water ──
-const wobble = computed(() => 6 + clamp01(props.p / 0.42) * 110)
+// 그림이 일찍 자리잡고(비 소개), 말미에 물결로 퍼지며 흐려진다
+const wobble = computed(() => 14 + clamp01(props.p / 0.8) * 80)
+const melt = computed(() => clamp01((props.p - 0.62) / 0.28))
+const mainWobble = computed(() => (melt.value * 75).toFixed(1))
 const reflStyle = computed(() => ({
-  opacity: (1 - clamp01((props.p - 0.1) / 0.34)).toFixed(3),
+  opacity: (0.3 + melt.value * 0.7).toFixed(3),
 }))
 const mainRise = computed(() => {
-  const t = easeOut(clamp01((props.p - 0.16) / 0.3))
-  return { opacity: t.toFixed(3), transform: `translateY(${((1 - t) * 6).toFixed(2)}%)` }
+  const t = easeOut(clamp01((props.p - 0.02) / 0.14))
+  return {
+    opacity: (t * (1 - melt.value * 0.92)).toFixed(3),
+    transform: `translateY(${((1 - t) * 5 + melt.value * 7).toFixed(2)}%)`,
+    filter: melt.value > 0.01 ? 'url(#wobmain)' : 'none',
+  }
 })
 
 const rainDrops = Array.from({ length: 30 }, (_, i) => ({
@@ -99,6 +130,16 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
     <div class="cam" :style="camStyle">
       <!-- ══ 수면 반영 ══ -->
       <template v-if="effect === 'water'">
+        <!-- 본화용 물결 필터 — 말미에 그림이 수면처럼 일렁이며 풀어진다 -->
+        <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+          <filter id="wobmain" x="-15%" y="-15%" width="130%" height="130%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.008 0.045" numOctaves="2" seed="9" result="n2">
+              <animate attributeName="baseFrequency" values="0.008 0.045;0.01 0.055;0.008 0.045" dur="6s" repeatCount="indefinite" />
+            </feTurbulence>
+            <feDisplacementMap in="SourceGraphic" in2="n2" :scale="mainWobble" xChannelSelector="R" yChannelSelector="G" />
+            <feGaussianBlur :stdDeviation="(melt * 2.2).toFixed(2)" />
+          </filter>
+        </svg>
         <div class="w-main" :style="mainRise">
           <img :src="img" alt="" class="art-img" draggable="false" />
         </div>
@@ -123,10 +164,22 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
       <template v-else-if="effect === 'inkfill'">
         <img :src="img" alt="" class="art-img gray" draggable="false" />
         <img :src="img" alt="" class="art-img colorized" draggable="false" :style="fillStyle" />
-        <span v-for="(c, i) in cuts" :key="'c' + i" class="cut-wrap" :style="cutStyle(c)">
-          <MinhwaCut :src="c.src" :parts="c.parts ?? []" :idle="c.idle" />
-        </span>
-        <div v-if="!dropsDone" class="paint-drops">
+        <!-- 수면 도입: 해·달이 물에서 떠오르고, 화폭이 차면 제 자리에 스며든다 -->
+        <template v-if="waterIntro">
+          <span v-for="(c, i) in cuts" :key="'cel' + i" class="celestial" :style="celestialStyle(c)">
+            <img :src="c.src" alt="" draggable="false" />
+            <span class="cel-glow"></span>
+          </span>
+          <div class="intro-water" :style="introWaterStyle">
+            <div class="iw-shimmer"></div>
+          </div>
+        </template>
+        <template v-else>
+          <span v-for="(c, i) in cuts" :key="'c' + i" class="cut-wrap" :style="cutStyle(c)">
+            <MinhwaCut :src="c.src" :parts="c.parts ?? []" :idle="c.idle" />
+          </span>
+        </template>
+        <div v-if="!dropsDone && p > fillStart" class="paint-drops">
           <span class="pd pd1"></span>
           <span class="pd pd2"></span>
           <span class="pd pd3"></span>
@@ -329,6 +382,55 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   62% { top: 37%; opacity: 0.95; transform: scaleY(1.25); }
   70% { top: 38%; opacity: 0; transform: scaleY(0.4) scaleX(1.8); }
   100% { opacity: 0; }
+}
+
+/* ── 수면 도입 : 해·달의 상승 ── */
+.celestial {
+  position: absolute;
+  z-index: 4;
+  will-change: transform, opacity;
+}
+.celestial img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+.cel-glow {
+  position: absolute;
+  inset: -55%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 244, 214, 0.5), transparent 65%);
+  animation: celPulse 5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes celPulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 0.9; transform: scale(1.08); }
+}
+.intro-water {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 22%;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(47, 86, 122, 0.5) 30%, rgba(36, 67, 95, 0.85));
+}
+.iw-shimmer {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0 9px,
+    rgba(251, 246, 234, 0.09) 9px 11px
+  );
+  animation: iwFlow 5s ease-in-out infinite alternate;
+}
+@keyframes iwFlow {
+  from { transform: translateY(0); }
+  to { transform: translateY(6px); }
 }
 
 /* ── 날씨 기운 ── */
