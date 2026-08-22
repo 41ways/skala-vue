@@ -8,6 +8,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import InkRipple from '@/components/minhwa/InkRipple.vue'
 import ScrollHint from '@/components/minhwa/ScrollHint.vue'
+import ScrollSheet from '@/components/minhwa/ScrollSheet.vue'
 import { useWorldWeather } from '@/composables/useWeather.js'
 
 import heroImg from '@/assets/world-art/hero.jpg'
@@ -21,6 +22,8 @@ import sydneyImg from '@/assets/world-art/sydney.jpg'
 const { cities, loading, error, fetchLive } = useWorldWeather()
 
 const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
+// 두루마리 날씨첩 — 도시 이름을 누르면 펼쳐진다
+const sheetCity = ref(null)
 
 // 도시 = 그 나라의 그림
 const artMap = {
@@ -119,13 +122,26 @@ onBeforeUnmount(() => {
   window.removeEventListener('pointermove', onMove)
 })
 
-// 그림 — 켄 번즈 다이브: 넓게 들어와 초점으로 빠져들고, 다음 폭에 어둠으로 내준다
+// 선묘 에칭 — 챕터 초입에 백색 선으로 떠올랐다가 원색이 번지면 물러난다
+function etchStyle(i) {
+  const p = progress.value[i] ?? 0
+  return {
+    opacity: (easeOut(clamp01(p / 0.08)) * (1 - clamp01((p - 0.3) / 0.12))).toFixed(3),
+    transform: `scale(${(1.2 - easeOut(clamp01(p / 0.6)) * 0.14).toFixed(4)})`,
+  }
+}
+// 그림 — 선묘 위로 원색이 중심에서 번져 나오고, 초점으로 빠져들다 다음 폭에 어둠으로 내준다
 function paintStyle(i, art) {
   const p = progress.value[i] ?? 0
   const enter = easeOut(clamp01(p / 0.14))
+  const reveal = easeOut(clamp01((p - 0.06) / 0.26))
+  const r = reveal * 125
+  const mask = `radial-gradient(circle at ${art.focal}, #000 ${Math.max(0, r - 28).toFixed(1)}%, transparent ${r.toFixed(1)}%)`
   const dive = easeOut(clamp01(p / 0.6))
   const leave = clamp01((p - 0.86) / 0.12)
   return {
+    maskImage: mask,
+    WebkitMaskImage: mask,
     opacity: (enter * (1 - leave * 0.4)).toFixed(3),
     transform: `scale(${(1.18 - dive * 0.14 + leave * 0.08).toFixed(4)}) translate3d(${(mx.value * -10).toFixed(1)}px, ${(my.value * -7).toFixed(1)}px, 0)`,
     transformOrigin: art.focal,
@@ -192,7 +208,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
     <!-- 필름 그레인 -->
     <div class="grain" aria-hidden="true"></div>
     <!-- 상주 브랜드 마크 (챕터 진입 후) -->
-    <p v-show="activeIdx >= 0" class="brand util">만국청우록 <span>萬國晴雨錄</span></p>
+    <p v-show="activeIdx >= 0" class="brand">만국청우록<span>萬國晴雨錄</span></p>
 
     <!-- ══ 좌측 상주 차례 레일 ══ -->
     <nav v-show="activeIdx >= 0" class="rail util" aria-label="도시 차례">
@@ -208,6 +224,16 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
       </button>
     </nav>
 
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <filter id="wEdge">
+        <feColorMatrix type="saturate" values="0" />
+        <feConvolveMatrix order="3" kernelMatrix="-1 -1 -1 -1 8 -1 -1 -1 -1" preserveAlpha="true" />
+        <feComponentTransfer>
+          <feFuncR type="linear" slope="2.2" /><feFuncG type="linear" slope="2.2" /><feFuncB type="linear" slope="2.2" />
+        </feComponentTransfer>
+      </filter>
+    </svg>
+
     <!-- ══ 히어로 : 손끝이 닿는 순간 ══ -->
     <section ref="heroEl" class="hero-wrap">
       <div class="hero-stage">
@@ -219,8 +245,8 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 
         <div class="hero-inner" :style="heroStyle">
           <div class="title-box">
-            <h1 class="ed-title">만국<em>청우</em>록</h1>
-            <p class="ed-sub util">The Cheongurok Edition</p>
+            <h1 class="ed-title">만국청우록</h1>
+            <p class="ed-hanja">萬 國 晴 雨 錄</p>
             <p class="hero-sub util">
               새로운 하늘의 기록 — 바다 건너 여섯 도시의 지금.
               <span v-if="loading"> 살피는 중…</span>
@@ -251,6 +277,9 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
       :id="c.id"
     >
       <div class="scene-sticky">
+        <div class="etch" :style="etchStyle(i)">
+          <img :src="artMap[c.id].img" alt="" loading="lazy" decoding="async" draggable="false" />
+        </div>
         <div class="paint" :style="paintStyle(i, artMap[c.id])">
           <img :src="artMap[c.id].img" :alt="artMap[c.id].caption" loading="lazy" decoding="async" draggable="false" />
         </div>
@@ -280,8 +309,8 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
         <span v-for="(m, k) in motes" :key="'mo' + k" class="mote" :style="m"></span>
         <!-- 초대형 헤드라인 -->
         <h2 class="mega" :style="headStyle(i)">
-          {{ c.name }}
-          <small>{{ c.hanja }} · {{ c.country }}</small>
+          <button class="mega-btn" @click="sheetCity = c">{{ c.name }}</button>
+          <small>{{ c.hanja }} · {{ c.country }} · <u @click="sheetCity = c">날씨첩 펼치기</u></small>
         </h2>
 
         <!-- 드롭캡 + 간이 독법 + 그림 캡션 -->
@@ -297,6 +326,8 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
         </div>
       </div>
     </section>
+
+    <ScrollSheet :city="sheetCity" @close="sheetCity = null" />
 
     <!-- ══ 발문 ══ -->
     <section class="outro">
@@ -436,27 +467,23 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   display: block;
 }
 .ed-title {
-  font-family: var(--font-body);
-  font-size: clamp(44px, 6.4vw, 64px);
+  font-family: var(--font-display);
+  font-size: clamp(46px, 7vw, 76px);
   font-weight: 700;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.16em;
   line-height: 1.05;
   text-align: center;
   color: #fff;
   margin: 0;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.6);
 }
-.ed-title em {
-  font-style: italic;
-  font-weight: 400;
-  color: #d9d3c6;
-}
-.ed-sub {
+.ed-hanja {
   text-align: center;
-  font-size: 11px;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-  margin: 8px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(12px, 1.4vw, 15px);
+  letter-spacing: 0.5em;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 10px 0 0;
 }
 
 .hero-sub {
@@ -553,6 +580,36 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   height: 100%;
   object-fit: cover;
   user-select: none;
+}
+/* 선묘 에칭 — 엣지 추출 백선 */
+.etch {
+  position: absolute;
+  inset: -3%;
+  will-change: transform, opacity;
+}
+.etch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: url(#wEdge) brightness(1.1);
+  mix-blend-mode: screen;
+  user-select: none;
+}
+.mega-btn {
+  all: unset;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color 0.2s;
+}
+.mega-btn:hover,
+.mega-btn:focus-visible {
+  color: #ffd9a3;
+}
+.mega small u {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  pointer-events: auto;
+  cursor: pointer;
 }
 .paint-shade {
   position: absolute;
@@ -685,20 +742,30 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 /* 상주 브랜드 마크 */
 .brand {
   position: fixed;
-  left: 20px;
-  top: 74px;
+  left: 22px;
+  top: 90px;
   z-index: 30;
   margin: 0;
+  writing-mode: vertical-rl;
   font-family: var(--font-display);
-  font-size: 15px;
-  letter-spacing: 0.14em;
-  color: rgba(251, 246, 234, 0.85);
+  font-size: clamp(24px, 2.4vw, 34px);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: var(--baek);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 14px rgba(0, 0, 0, 0.6);
+  animation: brandIn 0.8s ease-out backwards;
 }
 .brand span {
-  font-size: 10px;
-  letter-spacing: 0.3em;
-  color: rgba(251, 246, 234, 0.45);
-  margin-left: 6px;
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 0.38em;
+  font-weight: 400;
+  letter-spacing: 0.5em;
+  color: rgba(251, 246, 234, 0.6);
+}
+@keyframes brandIn {
+  from { opacity: 0; transform: translateY(-18px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* 유령 숫자 */
@@ -758,7 +825,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 }
 
 @media (max-width: 860px) {
-  .rail { display: none; }
+  .rail, .brand { display: none; }
   .mega { top: 24%; }
 }
 
