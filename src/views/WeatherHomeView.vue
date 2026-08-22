@@ -89,12 +89,6 @@ const goDetail = (city) => {
       <p>기온, 습도, 바람, 하늘 상태를 합쳐 100점으로 계산합니다.</p>
     </header>
 
-    <button class="banner" @click="router.push('/sky')">
-      <span class="btitle">별 보러 가기</span>
-      <span class="bsub">도시를 고르면 그 하늘로 내려갑니다</span>
-      <span class="barrow">→</span>
-    </button>
-
     <BaseDashboardCard title="도시 검색">
       <SearchBar :query="searchQuery" @update-query="updateQuery" />
     </BaseDashboardCard>
@@ -150,49 +144,6 @@ const goDetail = (city) => {
   color: var(--ink-soft);
 }
 
-.banner {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  margin-bottom: 14px;
-  padding: 14px 18px;
-  border: 1px solid rgba(251, 246, 234, 0.18);
-  border-radius: 4px;
-  /* 밤하늘: 먹빛에서 쪽빛으로 */
-  background:
-    radial-gradient(circle at 12% 30%, rgba(251, 246, 234, 0.9) 0 1px, transparent 2px),
-    radial-gradient(circle at 38% 70%, rgba(251, 246, 234, 0.7) 0 1px, transparent 2px),
-    radial-gradient(circle at 71% 25%, rgba(251, 246, 234, 0.8) 0 1.2px, transparent 2.4px),
-    radial-gradient(circle at 88% 62%, rgba(251, 246, 234, 0.6) 0 1px, transparent 2px),
-    linear-gradient(100deg, var(--ink), #1c2a3e 60%, var(--cheong));
-  color: var(--baek);
-  cursor: pointer;
-  text-align: left;
-  transition: filter 0.2s;
-}
-
-.banner:hover {
-  filter: brightness(1.15);
-}
-
-.btitle {
-  font-family: var(--font-display);
-  font-size: 16px;
-  letter-spacing: 0.14em;
-  color: var(--baek);
-}
-
-.bsub {
-  font-size: 12px;
-  color: rgba(251, 246, 234, 0.7);
-}
-
-.barrow {
-  margin-left: auto;
-  font-size: 16px;
-  color: rgba(251, 246, 234, 0.7);
-}
 
 .list {
   margin-top: 14px;

@@ -75,7 +75,6 @@ onBeforeUnmount(() => {
       <RouterLink to="/edition">에디션</RouterLink>
       <RouterLink to="/guide">빨래 지침</RouterLink>
       <RouterLink to="/classic">실습 대시보드</RouterLink>
-      <RouterLink to="/sky">하늘 드라이브</RouterLink>
       <RouterLink to="/about">소개</RouterLink>
     </nav>
     <!-- 단위 토글은 실습 화면(대시보드/상세)에서만 -->

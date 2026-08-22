@@ -7,5 +7,5 @@
 - `exercise-standalone/` — 뷰 라우트에서 쓰지 않는 과제 컴포넌트 (WeatherMockup / WeatherComposition / WeatherParent)
 - `scaffold/` — create-vue 기본 데모 (HelloWorld, TheWelcome 등)
 
-※ `src/components/exercise/`에 남아 있는 컴포넌트(CityMap, DrivingScene, SearchBar 등)는
-   /sky, /classic 라우트가 실제 사용 중이라 본편에 유지.
+※ `src/components/exercise/`에 남아 있는 컴포넌트(SearchBar, WeatherCard 등)는
+   /classic 라우트가 실제 사용 중이라 본편에 유지.

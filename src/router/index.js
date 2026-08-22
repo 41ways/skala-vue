@@ -39,11 +39,6 @@ const router = createRouter({
       component: () => import('../views/WeatherAboutView.vue'),
     },
     {
-      path: '/sky',
-      name: 'sky-drive',
-      component: () => import('../views/SkyDriveView.vue'),
-    },
-    {
       path: '/guide',
       name: 'guide',
       component: () => import('../views/LaundryGuideView.vue'),
