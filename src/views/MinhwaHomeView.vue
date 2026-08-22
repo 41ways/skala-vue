@@ -39,11 +39,6 @@ const chapters = [
     wHanja: '晴',
     effect: 'inkfill',
     focal: '50% 44%',
-    // 해와 달만 화폭에서 떠올라 은은히 유영한다
-    cuts: [
-      { src: cut('obongdo_moon'), left: '23.5%', top: '9%', w: '10%', depth: 16, oy: -10, ds: 0.05, idle: 'drift', z: 3 },
-      { src: cut('obongdo_sun'), left: '76%', top: '18%', w: '10%', depth: 22, oy: -16, ds: 0.08, idle: 'drift', z: 3 },
-    ],
     line: '해와 달이 함께 뜬 다섯 봉우리 — 볕이 좋은 고을들입니다.',
     empty: '오늘은 맑게 갠 고을이 없습니다.',
   },
@@ -286,7 +281,7 @@ function jump(i) {
         />
 
         <!-- 화제(畫題) + 날씨 도시 -->
-        <div class="ch-info">
+        <div class="ch-info" :style="{ opacity: infoStyle(i, 0).opacity }">
           <p class="idx util" :style="infoStyle(i, 0)">
             제{{ i + 1 }}폭 · {{ ch.era }}
           </p>
