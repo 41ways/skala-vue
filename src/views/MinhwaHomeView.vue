@@ -154,7 +154,22 @@ const chapters = [
     snow: true,
     cuts: [
       // 까치 — 솔가지에 앉아 까딱인다
-      { src: cut('tiger_magpie'), left: '64%', top: '8%', w: '24%', depth: 10, ox: 14, oy: -14, ds: 0.03, idle: 'bob', z: 1 },
+      {
+        src: cut('tiger_magpie'),
+        left: '64%',
+        top: '8%',
+        w: '24%',
+        depth: 10,
+        ox: 14,
+        oy: -14,
+        ds: 0.03,
+        idle: 'bob',
+        z: 1,
+        parts: [
+          { src: cut('magpie_head'), left: '0%', top: '6.9%', w: '40%', anim: 'p-head', origin: '85% 80%' },
+          { src: cut('magpie_tail'), left: '47.3%', top: '46.6%', w: '52.7%', anim: 'p-tail', origin: '10% 15%' },
+        ],
+      },
       // 호랑이 — 개별로 숨쉬며 앞으로 나온다
       // 호랑이 — 몸은 숨쉬고, 머리·꼬리·앞발은 저마다 따로 움직인다
       {
