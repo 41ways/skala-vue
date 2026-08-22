@@ -88,6 +88,7 @@ export function useWorldWeather() {
     try {
       const results = await Promise.all(
         cities.value.map(async (c) => {
+          if (c.demo) return { ...c, live: false, localTime: '' } // 시연 도시는 고정값 유지
           const { data } = await axios.get('https://api.open-meteo.com/v1/forecast', {
             params: {
               latitude: c.lat,

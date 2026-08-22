@@ -136,7 +136,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               <p class="col"><span class="k">기온</span><b>{{ tempTxt }}</b></p>
               <p class="col"><span class="k">습도</span><b>{{ humTxt }}</b></p>
               <p class="col"><span class="k">바람</span><b>{{ windTxt }}</b><span class="sub">{{ windWord }}</span></p>
-              <p class="col date">{{ today }} · {{ city.live ? '실측' : '표본' }}</p>
+              <p class="col date">{{ today }} · {{ city.demo ? '시연' : city.live ? '실측' : '표본' }}</p>
               <template v-if="forecast.length">
                 <span class="col divider" aria-hidden="true"></span>
                 <p v-for="f in forecast" :key="f.label" class="col fc">

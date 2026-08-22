@@ -21,10 +21,13 @@ import sydneyImg from '@/assets/world-art/sydney.jpg'
 import romeImg from '@/assets/world-art/rome.jpg'
 import istanbulImg from '@/assets/world-art/istanbul.jpg'
 import cairoImg from '@/assets/world-art/cairo.jpg'
+// 스칼라 시연 사진 — src/assets/world-art/skala.jpg 를 넣으면 자동 연결, 없으면 먹빛 폭풍 배경
+const skalaFiles = import.meta.glob('@/assets/world-art/skala.{jpg,jpeg,png,webp}', { eager: true, import: 'default' })
+const skalaImg = Object.values(skalaFiles)[0] ?? ''
 
 const { cities, loading, error, fetchLive } = useWorldWeather()
 
-const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX']
+const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
 // 두루마리 날씨첩 — 도시 이름을 누르면 펼쳐진다
 const sheetCity = ref(null)
 
@@ -38,7 +41,8 @@ const artMap = {
   w_sydney: { img: sydneyImg, caption: '유진 폰 게라르 「시드니 헤즈」 1865', focal: '50% 45%' },
   w_rome: { img: romeImg, caption: '조반니 파올로 파니니 「로마 포룸」 1735', focal: '50% 48%' },
   w_istanbul: { img: istanbulImg, caption: '이반 아이바좁스키 「콘스탄티노플과 보스포루스」 1856', focal: '50% 50%' },
-  w_cairo: { img: cairoImg, caption: '데이비드 로버츠 「카이로 풍경」 1840', focal: '50% 45%' },
+  w_cairo: { img: cairoImg, caption: '장레옹 제롬 「카이로의 저녁 기도」 1865', focal: '50% 42%' },
+  w_skala: { img: skalaImg, caption: 'SKALA 캠퍼스 · 시연용 사진 (고정 기상: 뇌우 21° · 풍속 11.4m/s)', focal: '50% 40%' },
 }
 
 
@@ -205,6 +209,7 @@ const fxMap = {
   w_paris: { kind: 'water', clip: 'polygon(0 48%, 100% 48%, 100% 100%, 0 100%)', sun: { left: '49%', top: '34%' } },
   w_london: { kind: 'sky', clip: 'polygon(0 0, 100% 0, 100% 70%, 0 70%)', mist: true, mistTop: 22 },
   w_newyork: { kind: 'sky', clip: 'polygon(0 0, 100% 0, 100% 58%, 0 58%)', lightning: true },
+  w_skala: { kind: 'sky', clip: 'polygon(0 0, 100% 0, 100% 55%, 0 55%)', lightning: true, storm: true },
 }
 // 안개 띠 — 산허리·강물 위로 천천히 흐른다
 const mists = Array.from({ length: 4 }, (_, i) => ({
@@ -316,8 +321,8 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
         <div class="etch" :style="etchStyle(i)">
           <img :src="artMap[c.id].img" alt="" loading="lazy" decoding="async" draggable="false" />
         </div>
-        <div class="paint" :class="{ windy: c.wind >= 6 }" :style="paintStyle(i, artMap[c.id])">
-          <img :src="artMap[c.id].img" :alt="artMap[c.id].caption" loading="lazy" decoding="async" draggable="false" />
+        <div class="paint" :class="{ windy: c.wind >= 6, blank: !artMap[c.id].img }" :style="paintStyle(i, artMap[c.id])">
+          <img v-if="artMap[c.id].img" :src="artMap[c.id].img" :alt="artMap[c.id].caption" loading="lazy" decoding="async" draggable="false" />
         </div>
         <!-- 실황 연동 — 흐리거나 구름 끼면 안개 띠가 지나간다 (고정 효과가 없는 도시) -->
         <template v-if="!fxMap[c.id]?.mist && (c.status === '흐림' || c.status === '구름' || c.status === '안개')">
@@ -332,6 +337,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
             <span v-for="(m, j) in mists" :key="'m' + j" class="mistband" :style="[m, { top: fxMap[c.id].mistTop + j * 9 + '%' }]"></span>
           </template>
           <span v-if="fxMap[c.id].sun" class="sunglow" :style="fxMap[c.id].sun"></span>
+          <span v-if="fxMap[c.id].storm" class="storm"></span>
           <span v-if="fxMap[c.id].lightning" class="lightning"></span>
         </template>
         <div class="paint-shade"></div>
@@ -371,7 +377,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
           </p>
           <p class="reading util">
             {{ c.temp }}° · {{ c.status }} · 습도 {{ c.humidity }}% ·
-            {{ c.live && c.localTime ? `현지 ${c.localTime}` : '표본' }} · {{ c.isDay ? '낮' : '밤' }}
+            {{ c.demo ? '시연 · 고정값' : c.live && c.localTime ? `현지 ${c.localTime}` : '표본' }} · {{ c.isDay ? '낮' : '밤' }}
           </p>
           <p class="credit util">{{ artMap[c.id].caption }}</p>
         </div>
@@ -638,6 +644,26 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   height: 100%;
   object-fit: cover;
   user-select: none;
+}
+/* 사진 미첨부 시 — 먹구름 폭풍 하늘 */
+.paint.blank {
+  background:
+    radial-gradient(ellipse at 60% 20%, rgba(120, 130, 150, 0.5), transparent 55%),
+    linear-gradient(180deg, #20242c, #0b0d12 70%);
+}
+/* 폭풍 어둠 — 빗줄기 뒤로 하늘이 무겁게 가라앉는다 */
+.storm {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(10, 12, 20, 0.55), rgba(10, 12, 20, 0.25) 50%, rgba(10, 12, 20, 0.5));
+  mix-blend-mode: multiply;
+  animation: stormBreath 6s ease-in-out infinite;
+}
+@keyframes stormBreath {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
 }
 /* 바람 ≥ 6m/s — 걸어 둔 화폭이 바람에 살짝 휘날린다 (translate/rotate 대신 별도 속성으로 흔들어 인라인 transform과 충돌 없음) */
 .paint.windy {

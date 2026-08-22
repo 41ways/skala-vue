@@ -27,6 +27,8 @@ export const worldList = [
   { id: 'w_sydney', name: '시드니', hanja: '雪梨', country: '호주', lat: -33.87, lon: 151.21, temp: 16, status: '맑음', humidity: 58, wind: 6.1, genre: 'ssireum', line: '남반구의 바람이 항구의 물빛을 고르게 폅니다' },
   { id: 'w_rome', name: '로마', hanja: '羅馬', country: '이탈리아', lat: 41.9, lon: 12.5, temp: 30, status: '맑음', humidity: 45, wind: 2.8, genre: 'seodang', line: '천 년 폐허 위로 오늘의 볕이 고르게 내립니다' },
   { id: 'w_istanbul', name: '이스탄불', hanja: '伊斯坦堡', country: '튀르키예', lat: 41.01, lon: 28.98, temp: 27, status: '구름', humidity: 60, wind: 4.2, genre: 'mudong', line: '보스포루스의 물결 위로 두 대륙의 하늘이 만납니다' },
+  // 시연용 — 실황 대신 고정값: 뇌우·비바람 (demo: true 이면 API를 건너뛴다)
+  { id: 'w_skala', name: '스칼라', hanja: 'SKALA', country: '시연', lat: 37.5, lon: 127.04, temp: 21, status: '뇌우', humidity: 93, wind: 11.4, genre: 'inwang', demo: true, line: '시연의 하늘 — 번개가 치고 비바람이 유리 벽을 두드립니다' },
   { id: 'w_cairo', name: '카이로', hanja: '開羅', country: '이집트', lat: 30.04, lon: 31.24, temp: 35, status: '맑음', humidity: 30, wind: 3.5, genre: 'tiger', line: '사막의 바람이 첨탑 사이로 마른 볕을 실어 옵니다' },
 ]
 
