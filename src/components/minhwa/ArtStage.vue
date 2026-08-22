@@ -170,8 +170,8 @@ const mkSat = (seed, n) =>
     return { dx: Math.cos(a) * d, dy: Math.sin(a) * d * 0.85, r: 10 + ((seed * 11 + k * 41) % 34) }
   })
 const inkBlots = [
-  { x: 430, y: 400, t: 0.05, max: 980, sat: mkSat(3, 10) },
-  { x: 600, y: 500, t: 0.18, max: 860, sat: mkSat(8, 8) },
+  { x: 300, y: 330, t: 0.05, max: 820, sat: mkSat(3, 10) },
+  { x: 705, y: 560, t: 0.2, max: 760, sat: mkSat(8, 8) },
 ]
 const blotT = (b) => easeOut(clamp01((wprog.value - b.t) / 0.4))
 const blotR = (b) => (blotT(b) * b.max).toFixed(1)
@@ -521,8 +521,8 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   background: radial-gradient(circle at 40% 28%, #4a4038, #221c16);
   animation: inkFall 2.1s cubic-bezier(0.5, 0, 0.9, 0.4) infinite;
 }
-.wd1 { left: 43%; animation-delay: 0s; }
-.wd2 { left: 60%; animation-delay: 0.9s; }
+.wd1 { left: 30%; animation-delay: 0s; }
+.wd2 { left: 70%; animation-delay: 1.1s; }
 .wd3 { left: 46%; animation-delay: 1.2s; }
 .wd4 { left: 63%; animation-delay: 1.7s; width: 6px; height: 10px; }
 @keyframes inkFall {
