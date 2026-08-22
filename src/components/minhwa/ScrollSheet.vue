@@ -453,8 +453,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   z-index: 4; /* 세로글 영역 위 - 실제 클릭이 닿아야 한다 */
   right: 36px;
   bottom: 30px;
-  width: 68px;
-  height: 78px;
+  width: 74px;
+  height: 84px;
   display: grid;
   place-items: center;
   gap: 0;
@@ -471,7 +471,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='72' viewBox='0 0 64 72'%3E%3Cfilter id='r' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.16' numOctaves='3' seed='7'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='5'/%3E%3C/filter%3E%3Crect x='3' y='3' width='58' height='66' rx='2' fill='%23fff' filter='url(%23r)'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
   /* 인주(印朱) - 고르지 않게 찍힌 붉은 면 + 안쪽 이중 테 */
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.96 0 0 0 0 0.9 0 0 0 7 -4.4'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23s)'/%3E%3C/svg%3E") 0 0 / 90px 90px repeat, /* 인주가 덜 묻어 종이가 비치는 점들 */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.96 0 0 0 0 0.9 0 0 0 4 -2.6'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23s)'/%3E%3C/svg%3E") 0 0 / 90px 90px repeat, /* 인주가 덜 묻어 종이가 비치는 점들 */
     radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.12), transparent 40%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.08 0 0 0 0 0.05 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='80' height='80' filter='url(%23n)'/%3E%3C/svg%3E"),
     radial-gradient(circle at 70% 80%, rgba(60, 10, 6, 0.35), transparent 55%),
@@ -481,7 +481,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     inset 0 0 0 3px rgba(251, 246, 234, 0.7),
     inset 0 0 0 5px rgba(150, 42, 30, 1),
     inset 0 0 0 6px rgba(251, 246, 234, 0.38);
-  mix-blend-mode: multiply;
+  mix-blend-mode: normal;
   transition: transform 0.2s, box-shadow 0.2s;
   animation: stampIn 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) 1.35s both;
 }
@@ -499,27 +499,27 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .seal-face {
   font-family: var(--font-display);
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 900;
   line-height: 1;
-  opacity: 0.32;
+  opacity: 0.55;
   transform: scaleX(1.08); /* 전서처럼 넓적하게 */
   letter-spacing: 0.1em;
   color: rgba(251, 246, 234, 0.95);
-  -webkit-text-stroke: 0.6px rgba(251, 246, 234, 0.9);
+  -webkit-text-stroke: 1px rgba(251, 246, 234, 0.95);
   filter: drop-shadow(0 0 0.6px rgba(90, 20, 12, 0.8));
   transition: opacity 0.2s;
 }
 .seal-arrow {
   font-family: var(--font-util);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1;
   opacity: 0.85;
   margin: -2px 0;
 }
 .seal-face.num {
   font-family: var(--font-util);
-  font-size: 16px;
+  font-size: 17px;
   letter-spacing: 0.04em;
 }
 .seal-face.on {
