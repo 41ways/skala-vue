@@ -65,8 +65,9 @@ const chapters = [
     tone: 'light',
     cuts: [
       // ix/iy = 원화(2560x1106) 속 해·달의 좌표 비율, dvh = 지름(vh)
-      { src: cut('obongdo_moon'), ix: 0.277, iy: 0.1293, dvh: 10.3, depth: 10 },
-      { src: cut('obongdo_sun'), ix: 0.7172, iy: 0.1212, dvh: 12.7, depth: 14 },
+      // riseX = 떠오를 때의 화면 x(%), 이후 원화 좌표로 미끄러져 정렬
+      { src: cut('obongdo_moon'), ix: 0.277, iy: 0.1293, dvh: 10.3, depth: 10, riseX: 24 },
+      { src: cut('obongdo_sun'), ix: 0.7172, iy: 0.1212, dvh: 12.7, depth: 14, riseX: 76, warm: true },
     ],
     line: '비 갠 물 위로 해와 달이 떠오릅니다 — 볕이 좋은 고을들입니다.',
     empty: '오늘은 맑게 갠 고을이 없습니다.',

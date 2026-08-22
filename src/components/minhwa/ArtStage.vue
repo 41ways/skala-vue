@@ -96,13 +96,33 @@ const introWaterStyle = computed(() => ({
 const introReflStyle = computed(() => ({
   opacity: ((1 - riseT.value) * 0.55).toFixed(3),
 }))
+// 상승 중 물방울이 듣는 구간
+const dripping = computed(() => riseT.value > 0.1 && riseT.value < 0.82)
+// 윤슬 기둥 — 디스크 아래에서 수면까지 잇는 빛 반사
+function glintStyle(c) {
+  const waterTopVh = 56 + riseT.value * 20
+  const discCenterVh = c.iy * 100 + (1 - riseT.value) * 72
+  const h = Math.max(0, waterTopVh - discCenterVh)
+  const waterAlive = 1 - clamp01((props.p - 0.36) / 0.24)
+  return {
+    height: h.toFixed(1) + 'vh',
+    opacity: (0.6 * riseT.value * waterAlive).toFixed(3),
+  }
+}
+// 수면에 물드는 노을
+const dawnStyle = computed(() => ({
+  opacity: (riseT.value * 0.75 * (1 - clamp01((props.p - 0.36) / 0.24))).toFixed(3),
+}))
 function celestialStyle(c) {
   const land = clamp01((props.p - 0.58) / 0.18) // 화폭이 다 차면 원화의 해·달 위에서 스러진다
-  // cover 크롭 보정: 화면비에 따라 원화 속 해·달의 실제 화면 좌표를 계산
+  // 2단 모션: 보기 좋은 자리(riseX)에서 수직으로 떠오른 뒤,
+  // 옆으로 미끄러져 원화 속 해·달의 실제 좌표(cover 크롭 보정)에 정렬한다
   const imgAR = c.imgAR ?? 2.315
   const vis = Math.min(1, window.innerWidth / window.innerHeight / imgAR)
   const x0 = 0.5 - vis / 2
-  const leftPct = ((c.ix - x0) / vis) * 100
+  const targetX = Math.min(95, Math.max(5, ((c.ix - x0) / vis) * 100))
+  const slideT = easeOut(clamp01((props.p - 0.42) / 0.16))
+  const leftPct = (c.riseX ?? targetX) + (targetX - (c.riseX ?? targetX)) * slideT
   return {
     left: leftPct.toFixed(2) + '%',
     top: (c.iy * 100).toFixed(2) + '%',
@@ -116,6 +136,10 @@ function celestialStyle(c) {
 // 물 위에 떠 있는 그림을 내려다본다 — 항상 잔물결, 말미엔 배경만 남기고 일렁이며 사라진다
 const melt = computed(() => clamp01((props.p - 0.62) / 0.28))
 const mainWobble = computed(() => (7 + melt.value * 85).toFixed(1))
+// 퇴장 수면 — 그림이 풀어지며 하단에 물이 고인다 (다음 폭의 도입 수면과 같은 모습으로 이어진다)
+const exitWaterStyle = computed(() => ({
+  opacity: melt.value.toFixed(3),
+}))
 // 빗방울 파문 고리 위치 (마운트 시 고정)
 const rainRings = Array.from({ length: 7 }, (_, i) => ({
   left: 8 + ((i * 137) % 84) + '%',
@@ -219,6 +243,20 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
             />
           </svg>
         </div>
+        <!-- 퇴장 수면 — 그림이 풀어지며 고이는 물 (다음 폭의 수면으로 이어진다) -->
+        <div class="exit-water" :style="exitWaterStyle">
+          <svg class="iw-svg" preserveAspectRatio="xMidYMin slice">
+            <defs>
+              <filter id="wobexit" x="-15%" y="-15%" width="130%" height="130%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.011 0.05" numOctaves="2" seed="4" result="ne">
+                  <animate attributeName="baseFrequency" values="0.011 0.05;0.014 0.06;0.011 0.05" dur="7s" repeatCount="indefinite" />
+                </feTurbulence>
+                <feDisplacementMap in="SourceGraphic" in2="ne" scale="55" xChannelSelector="R" yChannelSelector="G" />
+              </filter>
+            </defs>
+            <image :href="img" x="0" y="0" width="100%" height="100%" preserveAspectRatio="xMidYMin slice" filter="url(#wobexit)" transform="scale(1,-1)" transform-origin="center" />
+          </svg>
+        </div>
         <!-- 빗방울 파문 — 표면에 고리가 퍼진다 -->
         <template v-if="rain && melt < 0.7">
           <span
@@ -248,10 +286,20 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
         <!-- 수면 도입: 해·달이 물에서 떠오르고, 화폭이 차면 제 자리에 스며든다 -->
         <template v-if="waterIntro">
           <span v-for="(c, i) in cuts" :key="'cel' + i" class="celestial" :style="celestialStyle(c)">
+            <!-- 윤슬 기둥 — 수면까지 빛이 잇닿는다 -->
+            <span class="cel-glint" :class="c.warm ? 'warm' : 'cool'" :style="glintStyle(c)"></span>
             <img :src="c.src" alt="" draggable="false" />
             <span class="cel-glow"></span>
+            <!-- 물을 벗어나며 듣는 물방울 -->
+            <template v-if="dripping">
+              <span class="cel-drip d1"></span>
+              <span class="cel-drip d2"></span>
+              <span class="cel-drip d3"></span>
+            </template>
           </span>
           <div class="intro-water" :style="introWaterStyle">
+            <!-- 해가 뜨며 수면에 물드는 노을 -->
+            <div class="iw-dawn" :style="dawnStyle"></div>
             <!-- 앞 폭이 풀어진 물의 잔영 — 같은 물결로 일렁인다 -->
             <svg v-if="introWaterImg" class="iw-svg" preserveAspectRatio="xMidYMin slice" :style="introReflStyle">
               <defs>
@@ -493,6 +541,82 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   62% { top: 37%; opacity: 0.95; transform: scaleY(1.25); }
   70% { top: 38%; opacity: 0; transform: scaleY(0.4) scaleX(1.8); }
   100% { opacity: 0; }
+}
+
+/* 퇴장 수면 — 도입 수면과 같은 얼굴 */
+.exit-water {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 44%;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    rgba(96, 102, 106, 0.6),
+    rgba(80, 86, 92, 0.8) 35%,
+    rgba(62, 68, 74, 0.96)
+  );
+  box-shadow: 0 -6px 22px rgba(80, 86, 92, 0.35);
+}
+
+/* 수면에 물드는 노을 */
+.iw-dawn {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 46%;
+  background: linear-gradient(180deg, rgba(224, 138, 78, 0.5), rgba(224, 138, 78, 0.14) 60%, transparent);
+  pointer-events: none;
+}
+
+/* 윤슬 기둥 — 디스크에서 수면까지 */
+.cel-glint {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 46%;
+  transform: translateX(-50%);
+  border-radius: 40%;
+  filter: blur(6px);
+  animation: glintFlicker 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+.cel-glint.warm {
+  background: linear-gradient(180deg, rgba(255, 178, 106, 0.85), rgba(255, 178, 106, 0.25) 55%, transparent);
+}
+.cel-glint.cool {
+  background: linear-gradient(180deg, rgba(252, 248, 235, 0.75), rgba(252, 248, 235, 0.22) 55%, transparent);
+}
+@keyframes glintFlicker {
+  0%, 100% { transform: translateX(-50%) scaleX(1); }
+  35% { transform: translateX(-50%) scaleX(0.82); }
+  65% { transform: translateX(-50%) scaleX(1.12); }
+}
+
+/* 물을 벗어나며 듣는 물방울 */
+.cel-drip {
+  position: absolute;
+  left: 50%;
+  top: 88%;
+  width: 5px;
+  height: 9px;
+  border-radius: 50% 50% 60% 60%;
+  background: rgba(210, 216, 220, 0.85);
+  animation: dripFall 1.5s cubic-bezier(0.4, 0, 0.9, 0.5) infinite;
+  pointer-events: none;
+}
+.cel-drip.d1 { margin-left: -26%; animation-delay: 0s; }
+.cel-drip.d2 { margin-left: 14%; animation-delay: 0.55s; }
+.cel-drip.d3 { margin-left: -6%; animation-delay: 1.05s; width: 4px; height: 7px; }
+@keyframes dripFall {
+  0% { opacity: 0; transform: translateY(0) scaleY(0.7); }
+  12% { opacity: 0.9; }
+  85% { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(16vh) scaleY(1.25); }
 }
 
 /* ── 수면 도입 : 해·달의 상승 ── */
