@@ -10,6 +10,7 @@ import InkRipple from '@/components/minhwa/InkRipple.vue'
 import ScrollHint from '@/components/minhwa/ScrollHint.vue'
 import ScrollSheet from '@/components/minhwa/ScrollSheet.vue'
 import { useWorldWeather } from '@/composables/useWeather.js'
+import { toHanja, tempHanja, STATUS_HANJA } from '@/utils/hanja.js'
 
 import heroImg from '@/assets/world-art/hero.jpg'
 import tokyoImg from '@/assets/world-art/tokyo.jpg'
@@ -42,7 +43,7 @@ const artMap = {
   w_rome: { img: romeImg, caption: '조반니 파올로 파니니 「로마 포룸」 1735', focal: '50% 48%' },
   w_istanbul: { img: istanbulImg, caption: '이반 아이바좁스키 「콘스탄티노플과 보스포루스」 1856', focal: '50% 50%' },
   w_cairo: { img: cairoImg, caption: '장레옹 제롬 「카이로의 저녁 기도」 1865', focal: '50% 42%' },
-  w_skala: { img: skalaImg, caption: 'SKALA 캠퍼스 · 시연용 사진 (고정 기상: 뇌우 21° · 풍속 11.4m/s)', focal: '50% 40%' },
+  w_skala: { img: skalaImg, caption: 'SKALA 캠퍼스 · 시연 기상 — 뇌우 21° · 풍속 11.4m/s', focal: '50% 40%' },
 }
 
 
@@ -204,12 +205,29 @@ const rainDrops = Array.from({ length: 26 }, (_, i) => ({
   opacity: 0.2 + ((i * 11) % 10) / 26,
 }))
 // 도시별 효과 — 어느 부위를 오려 어떻게 흔들지
+// 효과 영역은 칼로 자르지 않고 — 가장자리를 흐려 그림에 스미게 한다 (mask)
+const SKY = (to) => `linear-gradient(180deg, #000 0%, #000 ${to - 18}%, transparent ${to}%)`
+const WATER = (from) => `linear-gradient(0deg, #000 0%, #000 ${100 - from - 18}%, transparent ${100 - from}%)`
 const fxMap = {
-  w_beijing: { kind: 'sky', clip: 'polygon(0 0, 100% 0, 100% 62%, 0 62%)', mist: true, mistTop: 28 },
-  w_paris: { kind: 'water', clip: 'polygon(0 48%, 100% 48%, 100% 100%, 0 100%)', sun: { left: '49%', top: '34%' } },
-  w_london: { kind: 'sky', clip: 'polygon(0 0, 100% 0, 100% 70%, 0 70%)', mist: true, mistTop: 22 },
-  w_newyork: { kind: 'sky', clip: 'polygon(0 0, 100% 0, 100% 58%, 0 58%)', lightning: true },
-  w_skala: { kind: 'sky', clip: 'polygon(0 0, 100% 0, 100% 55%, 0 55%)', lightning: true, storm: true },
+  w_beijing: { kind: 'sky', mask: SKY(64), mist: true, mistTop: 28 },
+  w_paris: { kind: 'water', mask: WATER(46), sun: { left: '49%', top: '34%' } },
+  w_london: { kind: 'sky', mask: SKY(72), mist: true, mistTop: 22 },
+  w_newyork: { kind: 'sky', mask: SKY(60), lightning: true },
+  w_skala: { kind: 'sky', mask: SKY(58), lightning: true, storm: true },
+}
+// 효과는 그림과 함께 떠오르고 함께 물러난다 — 미리 보이지 않게
+function fxVis(i) {
+  const p = progress.value[i] ?? 0
+  return { opacity: (easeOut(clamp01((p - 0.06) / 0.16)) * (1 - clamp01((p - 0.84) / 0.12))).toFixed(3) }
+}
+// 고풍 독법 — 氣溫 二十二度 · 濕度 四十一分 · 風 四米
+function readingOf(c) {
+  const parts = [`氣溫 ${tempHanja(c.temp)}`, `濕度 ${toHanja(c.humidity)}分`, `風 ${toHanja(Math.round(c.wind))}米`]
+  if (c.demo) parts.push('示演 固定')
+  else if (c.live && c.localTime) parts.push(`現地 ${c.localTime}`)
+  else parts.push('標本')
+  parts.push(c.isDay ? '晝' : '夜')
+  return parts.join(' · ')
 }
 // 안개 띠 — 산허리·강물 위로 천천히 흐른다
 const mists = Array.from({ length: 4 }, (_, i) => ({
@@ -321,7 +339,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
         <div class="etch" :style="etchStyle(i)">
           <img :src="artMap[c.id].img" alt="" loading="lazy" decoding="async" draggable="false" />
         </div>
-        <div class="paint" :class="{ windy: c.wind >= 6, blank: !artMap[c.id].img }" :style="paintStyle(i, artMap[c.id])">
+        <div class="paint" :class="{ windy: c.wind >= 6, gale: c.wind >= 10, blank: !artMap[c.id].img }" :style="paintStyle(i, artMap[c.id])">
           <img v-if="artMap[c.id].img" :src="artMap[c.id].img" :alt="artMap[c.id].caption" loading="lazy" decoding="async" draggable="false" />
         </div>
         <!-- 실황 연동 — 흐리거나 구름 끼면 안개 띠가 지나간다 (고정 효과가 없는 도시) -->
@@ -340,25 +358,40 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
           <span v-if="fxMap[c.id].storm" class="storm"></span>
           <span v-if="fxMap[c.id].lightning" class="lightning"></span>
         </template>
+        <!-- 날씨 기운 + 도시별 효과 — 그림과 함께 나타난다 -->
+        <div class="fx-group" :style="fxVis(i)">
+          <template v-if="c.status === '비' || c.status === '뇌우'">
+            <span
+              v-for="(d, j) in rainDrops"
+              :key="'r' + j"
+              class="w-drop"
+              :style="{ left: d.left, animationDuration: d.duration, animationDelay: d.delay, opacity: d.opacity }"
+            ></span>
+          </template>
+          <template v-if="c.status === '눈' || c.snowAlways">
+            <span
+              v-for="(f, j) in snowFlakes"
+              :key="'s' + j"
+              class="w-flake"
+              :style="{ left: f.left, width: f.size, height: f.size, animationDuration: f.duration, animationDelay: f.delay }"
+            ></span>
+          </template>
+          <template v-if="!fxMap[c.id]?.mist && (c.status === '흐림' || c.status === '구름' || c.status === '안개')">
+            <span v-for="(m, j) in mists" :key="'wm' + j" class="mistband" :style="[m, { top: 26 + j * 9 + '%' }]"></span>
+          </template>
+          <template v-if="fxMap[c.id]">
+            <div class="fx" :class="fxMap[c.id].kind" :style="[paintStyle(i, artMap[c.id]), { maskImage: fxMap[c.id].mask, WebkitMaskImage: fxMap[c.id].mask }]">
+              <img :src="artMap[c.id].img" alt="" loading="lazy" decoding="async" draggable="false" />
+            </div>
+            <template v-if="fxMap[c.id].mist">
+              <span v-for="(m, j) in mists" :key="'m' + j" class="mistband" :style="[m, { top: fxMap[c.id].mistTop + j * 9 + '%' }]"></span>
+            </template>
+            <span v-if="fxMap[c.id].sun" class="sunglow" :style="fxMap[c.id].sun"></span>
+            <span v-if="fxMap[c.id].storm" class="storm"></span>
+            <span v-if="fxMap[c.id].lightning" class="lightning"></span>
+          </template>
+        </div>
         <div class="paint-shade"></div>
-
-        <!-- 날씨 기운 -->
-        <template v-if="c.status === '비' || c.status === '뇌우'">
-          <span
-            v-for="(d, j) in rainDrops"
-            :key="'r' + j"
-            class="w-drop"
-            :style="{ left: d.left, animationDuration: d.duration, animationDelay: d.delay, opacity: d.opacity }"
-          ></span>
-        </template>
-        <template v-if="c.status === '눈' || c.snowAlways">
-          <span
-            v-for="(f, j) in snowFlakes"
-            :key="'s' + j"
-            class="w-flake"
-            :style="{ left: f.left, width: f.size, height: f.size, animationDuration: f.duration, animationDelay: f.delay }"
-          ></span>
-        </template>
 
         <!-- 유령 숫자 — 화폭 뒤 거대한 차례 -->
         <span class="ghost-num" aria-hidden="true" :style="ghostStyle(i)">{{ numerals[i] }}</span>
@@ -375,9 +408,9 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
           <p class="narrative">
             <span class="dcap">{{ firstChar(c.line) }}</span>{{ restChars(c.line) }}
           </p>
-          <p class="reading util">
-            {{ c.temp }}° · {{ c.status }} · 습도 {{ c.humidity }}% ·
-            {{ c.demo ? '시연 · 고정값' : c.live && c.localTime ? `현지 ${c.localTime}` : '표본' }} · {{ c.isDay ? '낮' : '밤' }}
+          <p class="reading">
+            <i class="r-seal">{{ STATUS_HANJA[c.status] ?? '天' }}</i>
+            <span class="r-text">{{ readingOf(c) }}</span>
           </p>
           <p class="credit util">{{ artMap[c.id].caption }}</p>
         </div>
@@ -670,6 +703,16 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   animation: windFlutter 3.6s ease-in-out infinite;
   transform-origin: 50% 0%;
 }
+.paint.gale {
+  animation: galeFlutter 2.3s ease-in-out infinite;
+}
+@keyframes galeFlutter {
+  0%, 100% { rotate: 0deg; translate: 0 0; }
+  20% { rotate: 1.3deg; translate: 14px 6px; }
+  45% { rotate: -0.9deg; translate: -10px 2px; }
+  70% { rotate: 1deg; translate: 8px 5px; }
+  85% { rotate: -0.6deg; translate: -5px 1px; }
+}
 @keyframes windFlutter {
   0%, 100% { rotate: 0deg; translate: 0 0; }
   25% { rotate: 0.5deg; translate: 6px 2px; }
@@ -818,6 +861,12 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   to { transform: translateY(110vh) translateX(24px); }
 }
 
+.fx-group {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
 .mega {
   position: absolute;
   left: 5%;
@@ -870,14 +919,32 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   margin: 0.04em 0.14em 0 0;
   color: #ffffff;
 }
+/* 독법 — 낙관 한 방 + 한자 기문, 위아래 괘선 */
 .reading {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 9px;
-  margin: 12px 0 0;
-  font-size: 13px;
-  color: rgba(251, 246, 234, 0.88);
+  gap: 12px;
+  margin: 14px 0 0;
+  padding: 8px 0;
+  border-top: 1px solid rgba(251, 246, 234, 0.35);
+  border-bottom: 1px solid rgba(251, 246, 234, 0.35);
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  letter-spacing: 0.2em;
+  color: rgba(251, 246, 234, 0.92);
   clear: left;
+}
+.r-seal {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  background: var(--jeok);
+  color: var(--baek);
+  font-style: normal;
+  font-size: 16px;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1.5px rgba(251, 246, 234, 0.4);
 }
 .r-hanja {
   display: inline-grid;
@@ -1022,6 +1089,6 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
     fill-opacity: 1;
     stroke-dashoffset: 0;
   }
-  .spark, .w-drop, .w-flake, .fx, .mistband, .sunglow, .lightning, .paint.windy { animation: none !important; }
+  .spark, .w-drop, .w-flake, .fx, .mistband, .sunglow, .lightning, .paint.windy, .paint.gale { animation: none !important; }
 }
 </style>

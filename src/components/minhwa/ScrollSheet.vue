@@ -2,8 +2,10 @@
 // ScrollSheet — 두루마리(卷軸) 날씨첩.
 // 고을을 누르면 옻칠 축 사이로 시전지(詩箋紙)가 펼쳐지고, 그 고을의 하늘을 세로 기문으로 적는다.
 import { computed, watch, onBeforeUnmount, nextTick, ref } from 'vue'
+import { RouterLink } from 'vue-router'
 import axios from 'axios'
 import { cityCoords, codeToStatus } from '@/composables/useWeather.js'
+import { toHanja, STATUS_HANJA as HANJA } from '@/utils/hanja.js'
 import hanjiImg from '@/assets/minhwa-art/bg/mudong.jpg'
 import rodImg from '@/assets/minhwa-art/rod.png'
 import silkImg from '@/assets/minhwa-art/silk.jpg'
@@ -13,22 +15,10 @@ const props = defineProps({
 })
 const emit = defineEmits(['close'])
 
-const HANJA = { 맑음: '晴', 구름: '雲', 흐림: '陰', 비: '雨', 눈: '雪', 바람: '風', 뇌우: '雷', 안개: '霧' }
 const statusHanja = computed(() => HANJA[props.city?.status] ?? '天')
 const CITY_HANJA = { 서울: '漢城', 수원: '水原', 부산: '釜山', 광주: '光州', 강릉: '江陵', 제주: '濟州', 인천: '仁川', 대전: '大田', 대구: '大邱', 춘천: '春川', 세종기지: '世宗基地' }
 const cityHanja = computed(() => props.city?.hanja ?? CITY_HANJA[props.city?.name] ?? '')
 
-// 한자 숫자 — 二十五 식
-const DIG = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九']
-function toHanja(n) {
-  n = Math.round(Math.abs(n))
-  if (n < 10) return DIG[n]
-  if (n < 100) {
-    const t = Math.floor(n / 10), o = n % 10
-    return (t > 1 ? DIG[t] : '') + '十' + (o ? DIG[o] : '')
-  }
-  return String(n)
-}
 // 숫자 표기 — 한자 ⇄ 아라비아 (낙관 버튼으로 전환)
 const hanjaMode = ref(true)
 const num = (n) => (hanjaMode.value ? toHanja(n) : String(Math.round(n)))
@@ -37,7 +27,7 @@ const tempTxt = computed(() => {
   return hanjaMode.value ? (t < 0 ? '零下' : '') + toHanja(t) + '度' : `${Math.round(t)}°`
 })
 const humTxt = computed(() => (hanjaMode.value ? num(props.city?.humidity ?? 0) + '分' : `${Math.round(props.city?.humidity ?? 0)}%`))
-const windTxt = computed(() => (hanjaMode.value ? num(props.city?.wind ?? 0) + '米' : `${props.city?.wind ?? 0} m/s`))
+const windTxt = computed(() => (hanjaMode.value ? num(props.city?.wind ?? 0) + '米' : `${props.city?.wind ?? 0}`))
 const today = computed(() => {
   const d = new Date()
   return hanjaMode.value
@@ -135,7 +125,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               <p class="col sky"><i class="sky-hanja">{{ statusHanja }}</i>{{ city.status }} · {{ city.isDay ? '낮' : '밤' }}</p>
               <p class="col"><span class="k">기온</span><b>{{ tempTxt }}</b></p>
               <p class="col"><span class="k">습도</span><b>{{ humTxt }}</b></p>
-              <p class="col"><span class="k">바람</span><b>{{ windTxt }}</b><span class="sub">{{ windWord }}</span></p>
+              <p class="col"><span class="k">바람</span><b>{{ windTxt }}<small v-if="!hanjaMode" class="unit">m/s</small></b><span class="sub">{{ windWord }}</span></p>
               <p class="col date">{{ today }} · {{ city.demo ? '시연' : city.live ? '실측' : '표본' }}</p>
               <template v-if="forecast.length">
                 <span class="col divider" aria-hidden="true"></span>
@@ -160,7 +150,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               <span class="seal-arrow" aria-hidden="true">⇅</span>
               <span class="seal-face num" :class="{ on: !hanjaMode }">123</span>
             </button>
-            <button ref="closeBtn" class="close" @click="emit('close')">거두기</button>
+            <button ref="closeBtn" class="close" @click="emit('close')">✕ 닫기</button>
+            <RouterLink to="/guide" class="guide-link" @click="emit('close')">빨래 지침 보기 →</RouterLink>
           </div>
         </div>
       </div>
@@ -341,12 +332,20 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   font-size: 1.25em;
   letter-spacing: 0.08em;
 }
-/* 아라비아 숫자 모드 — 세로글 속 숫자는 반대 방향(아래→위)으로 눕힌다 */
-.columns.arabic .col b,
-.columns.arabic .col.date,
-.columns.arabic .col.fc .sub {
+/* 아라비아 숫자 모드 — 기온·습도·바람 값은 작게, 글자를 눕히지 않고 똑바로 세운다 */
+.columns.arabic .col b {
+  text-orientation: upright;
+  font-size: 1em;
+  letter-spacing: 0.04em;
+}
+.columns.arabic .col b .unit {
   display: inline-block;
-  rotate: 180deg;
+  margin-top: 4px;
+  font-family: var(--font-util);
+  font-size: 0.6em;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+  text-orientation: sideways;
 }
 .col .k {
   display: inline-block;
@@ -494,6 +493,26 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   color: var(--jeok);
   outline: none;
 }
+/* 빨래 지침 — 닫기 아래 세로 링크 */
+.guide-link {
+  position: absolute;
+  right: 34px;
+  top: 110px;
+  z-index: 2;
+  writing-mode: vertical-lr;
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 0.3em;
+  color: var(--jeok);
+  text-decoration: none;
+  border-left: 1px solid rgba(178, 58, 44, 0.45);
+  padding-left: 6px;
+}
+.guide-link:hover,
+.guide-link:focus-visible {
+  color: #8e2a22;
+  outline: none;
+}
 .sheet-enter-active,
 .sheet-leave-active {
   transition: opacity 0.4s ease;
@@ -525,6 +544,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .seal { right: 18px; bottom: 18px; width: 52px; height: 62px; }
   .seal-face { font-size: 16px; }
   .close { right: 18px; top: 18px; }
+  .guide-link { right: 18px; top: 96px; font-size: 12px; }
   .rules { inset: 12px 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
