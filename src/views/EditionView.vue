@@ -766,6 +766,15 @@ function toTop() {
 
 @media (max-width: 860px) {
   .sidebar { display: none; }
+  .ch-body { padding: 40px 6vw 36px; }
+  .ch-head { font-size: clamp(26px, 8vw, 40px); }
+  .ft-copy { font-size: 18px; max-width: none; }
+  .media-card img { height: 42vh; }
+  .big-title { left: 8vw; font-size: clamp(30px, 9vw, 48px); }
+  .parch-inner { padding: 28px 6vw 32px; max-width: none; }
+  .menu-item { font-size: 16px; }
+  .ch-mark { font-size: 13px; }
+  .sidebar { display: none; }
   .big-title { left: 8%; font-size: clamp(34px, 9vw, 64px); }
   .parch-inner { padding: 6vh 7vw 32px; max-width: none; }
   .ch-body { padding-left: 7vw; padding-right: 7vw; }

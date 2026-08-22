@@ -1134,6 +1134,14 @@ function jumpTo(r) {
   .side-title {
     display: none;
   }
+  .hero-copy { font-size: 15px; padding: 0 16px; }
+  .hero-note { font-size: 11px; }
+  .mega { font-size: clamp(48px, 17vw, 96px); }
+  .mega small { font-size: 10px; letter-spacing: 0.2em; }
+  .narrative { font-size: 15px; line-height: 1.6; }
+  .dcap { font-size: 2.4em; }
+  .vc { font-size: 20px; }
+  .vc span { font-size: 0.7em; }
   .mega {
     top: 22%;
     left: 5%;

@@ -128,6 +128,14 @@ nav a:hover {
   color: var(--jeok);
 }
 
+@media (max-width: 600px) {
+  .top { padding: 10px 14px; gap: 8px; }
+  .logo { font-size: 19px; }
+  .logo small { display: none; }
+  nav { gap: 14px; font-size: 13px; width: 100%; padding-bottom: 2px; }
+  .totop { right: 14px; bottom: 16px; width: 40px; height: 40px; }
+}
+
 /* ── 맨 위로 ── */
 .totop {
   position: fixed;

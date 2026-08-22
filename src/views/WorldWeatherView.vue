@@ -940,7 +940,15 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 
 @media (max-width: 860px) {
   .rail, .brand { display: none; }
-  .mega { top: 24%; }
+  .mega { top: 22%; font-size: clamp(52px, 17vw, 96px); }
+  .mega small { font-size: 11px; letter-spacing: 0.24em; }
+  .foot { left: 5%; right: 5%; bottom: 5%; }
+  .narrative { font-size: 16px; line-height: 1.55; }
+  .dcap { font-size: 2.4em; }
+  .credit { font-size: 10px; }
+  .ed-title { font-size: clamp(34px, 11vw, 56px); letter-spacing: 0.1em; }
+  .title-box { padding: 20px 18px; }
+  .hero-credit { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
