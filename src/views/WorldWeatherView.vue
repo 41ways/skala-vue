@@ -213,7 +213,7 @@ const fxMap = {
   w_paris: { kind: 'water', mask: WATER(46), sun: { left: '49%', top: '34%' } },
   w_london: { kind: 'sky', mask: SKY(72), mist: true, mistTop: 22 },
   w_newyork: { kind: 'sky', mask: SKY(60), lightning: true },
-  w_skala: { kind: 'sky', mask: SKY(58), lightning: true, storm: true },
+  w_skala: { kind: null, lightning: true, storm: true }, // 그림은 통째로 국기처럼 펄럭인다
 }
 // 효과는 그림과 함께 떠오르고 함께 물러난다 — 미리 보이지 않게
 function fxVis(i) {
@@ -280,6 +280,16 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
     </nav>
 
     <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <!-- 강풍 — 천이 펄럭이듯 그림 전체가 물결친다 (국기) -->
+      <filter id="flagWave" x="-6%" y="-6%" width="112%" height="112%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.028" numOctaves="2" seed="6" result="w">
+          <animate attributeName="baseFrequency" values="0.012 0.028;0.017 0.022;0.012 0.028" dur="2.6s" repeatCount="indefinite" />
+          <animate attributeName="seed" values="6;7;8;9;6" dur="5.2s" repeatCount="indefinite" calcMode="discrete" />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="w" scale="26" xChannelSelector="R" yChannelSelector="G">
+          <animate attributeName="scale" values="18;30;18" dur="2.6s" repeatCount="indefinite" />
+        </feDisplacementMap>
+      </filter>
       <!-- 물결 — 가로로 긴 잔물결이 흐른다 -->
       <filter id="fxWater" x="-10%" y="-10%" width="120%" height="120%">
         <feTurbulence type="fractalNoise" baseFrequency="0.008 0.04" numOctaves="2" seed="8" result="n">
@@ -376,7 +386,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
             <span v-for="(m, j) in mists" :key="'wm' + j" class="mistband" :style="[m, { top: 26 + j * 9 + '%' }]"></span>
           </template>
           <template v-if="fxMap[c.id]">
-            <div class="fx" :class="fxMap[c.id].kind" :style="[fxPaintStyle(i, artMap[c.id]), { maskImage: fxMap[c.id].mask, WebkitMaskImage: fxMap[c.id].mask }]">
+            <div v-if="fxMap[c.id].kind" class="fx" :class="fxMap[c.id].kind" :style="[fxPaintStyle(i, artMap[c.id]), { maskImage: fxMap[c.id].mask, WebkitMaskImage: fxMap[c.id].mask }]">
               <img :src="artMap[c.id].img" alt="" loading="lazy" decoding="async" draggable="false" />
             </div>
             <template v-if="fxMap[c.id].mist">
@@ -695,6 +705,9 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 }
 .paint.gale {
   animation: galeFlutter 2.3s ease-in-out infinite;
+}
+.paint.gale img {
+  filter: url(#flagWave); /* 천 결이 바람에 일렁인다 */
 }
 @keyframes galeFlutter {
   0%, 100% { rotate: 0deg; translate: 0 0; }

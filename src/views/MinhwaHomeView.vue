@@ -18,6 +18,10 @@ import ssireumImg from '@/assets/minhwa-art/ssireum.jpg'
 import seodangImg from '@/assets/minhwa-art/seodang.jpg'
 import inwangImg from '@/assets/minhwa-art/inwang.jpg'
 import tigerImg from '@/assets/minhwa-art/tiger.jpg'
+// 대청 분합문 — 오리 이원익 종택 (문화재청, 공공누리 1유형) 사진을 문틀/문짝으로 가공
+import dcBase from '@/assets/minhwa-art/daecheong/base.webp'
+import dcDoorL from '@/assets/minhwa-art/daecheong/door_l.webp'
+import dcDoorR from '@/assets/minhwa-art/daecheong/door_r.webp'
 
 // 누끼 PNG 일괄 로드 — cut('tiger_body') 식으로 꺼내 쓴다
 const cutFiles = import.meta.glob('@/assets/minhwa-art/cut/*.png', {
@@ -226,6 +230,8 @@ const citiesFor = (ch, i) =>
 
 // ── 스크롤 진행도 + 마우스 시차 ──────────────────────────
 const heroEl = ref(null)
+const dcEl = ref(null) // 대청 — 문이 열리는 구간
+const dcP = ref(0)
 const chapterEls = ref([])
 const progress = ref([])
 const heroP = ref(0)
@@ -245,6 +251,10 @@ function measure() {
   if (heroEl.value) {
     const r = heroEl.value.getBoundingClientRect()
     heroP.value = clamp01(-r.top / (r.height - vh || 1))
+  }
+  if (dcEl.value) {
+    const r = dcEl.value.getBoundingClientRect()
+    dcP.value = clamp01(-r.top / (r.height - vh || 1))
   }
   let act = -1
   progress.value = chapterEls.value.map((el, i) => {
@@ -316,6 +326,14 @@ onBeforeUnmount(() => {
 // 정보 오버레이 : 그림이 자리잡은 뒤 순차 등장
 // 두루마리 날씨첩 — 화기의 고을을 누르면 펼쳐진다
 const sheetCity = ref(null)
+// 대청 — 스크롤하면 분합문이 양쪽으로 열리고, 문밖에 인왕제색도가 선다
+const dcOpen = computed(() => easeOut(clamp01((dcP.value - 0.1) / 0.62)))
+const dcPhotoStyle = computed(() => ({ '--o': dcOpen.value.toFixed(3) }))
+const dcViewStyle = computed(() => ({
+  transform: `scale(${(1.14 - dcOpen.value * 0.1).toFixed(3)})`,
+  filter: `brightness(${(0.55 + dcOpen.value * 0.45).toFixed(3)}) saturate(${(0.8 + dcOpen.value * 0.2).toFixed(2)})`,
+}))
+const dcLabelStyle = computed(() => ({ opacity: (1 - clamp01((dcP.value - 0.05) / 0.2)).toFixed(3) }))
 const activeToneLight = computed(() => {
   const i = activeIdx.value
   if (i < 0) return false
@@ -415,6 +433,23 @@ function jumpTo(r) {
           <path d="M640 200 L860 80 L1080 200 Z" fill="rgba(34,28,22,.07)" />
           <path d="M920 200 L1090 110 L1240 200 Z" fill="rgba(34,28,22,.05)" />
         </svg>
+      </div>
+    </section>
+
+    <!-- ══ 대청 — 분합문이 열리면 오늘의 하늘 ══ -->
+    <section ref="dcEl" class="daecheong" aria-label="대청 — 문을 열면 오늘의 하늘">
+      <div class="dc-stage">
+        <div class="dc-view" :style="dcViewStyle">
+          <img :src="inwangImg" alt="" draggable="false" />
+          <span class="dc-haze"></span>
+        </div>
+        <div class="dc-photo" :style="dcPhotoStyle">
+          <img class="dc-base" :src="dcBase" alt="" draggable="false" />
+          <img class="dc-door l" :src="dcDoorL" alt="" draggable="false" />
+          <img class="dc-door r" :src="dcDoorR" alt="" draggable="false" />
+        </div>
+        <p class="dc-label" :style="dcLabelStyle">大廳 — 문을 열면, 오늘의 하늘</p>
+        <p class="dc-cap util">오리 이원익 종택 분합문 · 문화재청 (공공누리 제1유형)</p>
       </div>
     </section>
 
@@ -890,6 +925,98 @@ function jumpTo(r) {
   font-family: var(--font-display);
   font-size: 13px;
   color: rgba(34, 28, 22, 0.4);
+}
+
+/* ── 대청 ── */
+.daecheong {
+  height: 240vh;
+}
+.dc-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #2a211a;
+}
+.dc-view {
+  position: absolute;
+  inset: -4%;
+  will-change: transform, filter;
+}
+.dc-view img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 40%;
+  user-select: none;
+}
+.dc-haze {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 55%, transparent 45%, rgba(42, 33, 26, 0.55));
+}
+/* 사진(3:2)을 화면에 cover — 문짝 좌표는 사진 기준 % */
+.dc-photo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100vw, 150vh);
+  aspect-ratio: 3 / 2;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.dc-base {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+.dc-door {
+  position: absolute;
+  top: 9%;
+  height: 83.28%;
+  z-index: 1;
+  backface-visibility: hidden;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
+  filter: brightness(calc(1 - var(--o) * 0.3));
+  will-change: transform;
+}
+.dc-door.l {
+  left: 8.28%;
+  width: 41.73%;
+  transform-origin: left center;
+  transform: perspective(1600px) rotateY(calc(var(--o) * -96deg));
+}
+.dc-door.r {
+  left: 50%;
+  width: 41.42%;
+  transform-origin: right center;
+  transform: perspective(1600px) rotateY(calc(var(--o) * 96deg));
+}
+.dc-label {
+  position: absolute;
+  left: 50%;
+  top: 7%;
+  transform: translateX(-50%);
+  margin: 0;
+  z-index: 3;
+  font-family: var(--font-display);
+  font-size: clamp(15px, 1.8vw, 21px);
+  letter-spacing: 0.3em;
+  color: var(--baek);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+}
+.dc-cap {
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  margin: 0;
+  z-index: 3;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: rgba(251, 246, 234, 0.6);
 }
 
 /* ── 다음 폭 버튼 ── */
