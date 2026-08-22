@@ -423,9 +423,11 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   color: #ffffff;
 }
 .rail-num {
-  font-family: var(--font-util);
-  font-size: 10px;
-  color: rgba(251, 246, 234, 0.4);
+  font-family: 'Cinzel', 'Times New Roman', serif;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: rgba(251, 246, 234, 0.5);
 }
 
 /* ── 히어로 ── */
@@ -577,10 +579,15 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   border-bottom: 1px dotted rgba(251, 246, 234, 0.28);
 }
 .m-num {
-  font-family: var(--font-util);
-  font-weight: 400;
+  font-family: 'Cinzel', 'Times New Roman', serif;
+  font-weight: 500;
   font-size: 0.62em;
-  color: rgba(251, 246, 234, 0.55);
+  letter-spacing: 0.16em;
+  color: rgba(251, 246, 234, 0.7);
+  /* 비문(碑文)처럼 위아래 가는 줄 */
+  border-top: 1px solid rgba(251, 246, 234, 0.35);
+  border-bottom: 1px solid rgba(251, 246, 234, 0.35);
+  padding: 1px 4px;
 }
 .hero-credit {
   position: absolute;
@@ -888,11 +895,13 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   right: 4%;
   top: 8%;
   z-index: 1;
-  font-family: 'Helvetica Neue', Helvetica, Arial, var(--font-util);
-  font-weight: 800;
-  font-size: clamp(280px, 55vh, 620px);
+  font-family: 'Cinzel', 'Times New Roman', serif;
+  font-weight: 700;
+  font-size: clamp(260px, 52vh, 600px);
   line-height: 1;
-  color: var(--baek);
+  letter-spacing: 0.04em;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(251, 246, 234, 0.9);
   pointer-events: none;
   will-change: transform, opacity;
 }
