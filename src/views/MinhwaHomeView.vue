@@ -528,6 +528,8 @@ function jumpTo(r) {
     >
       <div class="stage">
         <ArtStage
+          role="img"
+          :aria-label="`${fld(ch, i, 'title')} (${fld(ch, i, 'era')})`"
           :img="ch.img"
           :img2="ch.img2 ?? ''"
           :bg="ch.bg ?? ''"
