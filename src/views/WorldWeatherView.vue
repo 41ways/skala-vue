@@ -291,7 +291,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
             <h1 class="ed-title">만국청우록</h1>
             <p class="ed-hanja">萬 國 晴 雨 錄</p>
             <p class="hero-sub util">
-              새로운 하늘의 기록 — 바다 건너 여섯 도시의 지금.
+              새로운 하늘의 기록 — 바다 건너 열한 곳의 지금.
               <span v-if="loading"> 살피는 중…</span>
             </p>
             <ol class="menu util">
@@ -390,7 +390,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 
     <!-- ══ 발문 ══ -->
     <section class="outro">
-      <p class="outro-copy">여섯 도시의 하늘을 모두 거두었습니다.</p>
+      <p class="outro-copy">열한 곳의 하늘을 모두 거두었습니다.</p>
       <router-link to="/" class="outro-link util">국내 화폭 — 팔도청우록으로 →</router-link>
       <p v-if="error" class="err util">실시간 조회 실패 — 표본 자료로 표시 중입니다.</p>
     </section>
