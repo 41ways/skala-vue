@@ -119,12 +119,18 @@ const mainWobble = computed(() => (melt.value * 75).toFixed(1))
 const reflStyle = computed(() => ({
   opacity: (0.3 + melt.value * 0.7).toFixed(3),
 }))
+// 먹이 번지며 그림이 채워진다 — 빗속에 먹물이 떨어져 화폭이 살아나는 도입
+const inkFillR = computed(() => easeOut(clamp01((props.p - 0.03) / 0.44)) * 170)
+const inkDropsDone = computed(() => inkFillR.value > 160)
 const mainRise = computed(() => {
-  const t = easeOut(clamp01((props.p - 0.02) / 0.14))
+  const t = easeOut(clamp01((props.p - 0.02) / 0.1))
+  const g = `radial-gradient(ellipse 80% 95% at 48% 30%, #000 ${Math.max(0, inkFillR.value - 40)}%, transparent ${inkFillR.value}%)`
   return {
     opacity: (t * (1 - melt.value * 0.92)).toFixed(3),
-    transform: `translateY(${((1 - t) * 5 + melt.value * 7).toFixed(2)}%)`,
+    transform: `translateY(${((1 - t) * 4 + melt.value * 7).toFixed(2)}%)`,
     filter: melt.value > 0.01 ? 'url(#wobmain)' : 'none',
+    maskImage: g,
+    WebkitMaskImage: g,
   }
 })
 
@@ -159,6 +165,13 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
         </svg>
         <div class="w-main" :style="mainRise">
           <img :src="img" alt="" class="art-img" draggable="false" />
+        </div>
+        <!-- 먹물 방울 — 비에 섞여 떨어지며 화폭을 적신다 -->
+        <div v-if="!inkDropsDone" class="ink-drops">
+          <span class="wd wd1"></span>
+          <span class="wd wd2"></span>
+          <span class="wd wd3"></span>
+          <span class="wd wd4"></span>
         </div>
         <div class="w-line"></div>
         <div class="w-refl" :style="reflStyle">
@@ -380,6 +393,33 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
 @keyframes sheen {
   from { transform: translateY(0); }
   to { transform: translateY(4px); }
+}
+
+/* ── 먹물 낙하 (인왕 도입) ── */
+.ink-drops {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+.wd {
+  position: absolute;
+  width: 8px;
+  height: 13px;
+  border-radius: 50% 50% 58% 58%;
+  background: radial-gradient(circle at 40% 28%, #4a4038, #221c16);
+  animation: inkFall 2.1s cubic-bezier(0.5, 0, 0.9, 0.4) infinite;
+}
+.wd1 { left: 38%; animation-delay: 0s; }
+.wd2 { left: 55%; animation-delay: 0.6s; }
+.wd3 { left: 46%; animation-delay: 1.2s; }
+.wd4 { left: 63%; animation-delay: 1.7s; width: 6px; height: 10px; }
+@keyframes inkFall {
+  0% { top: -4%; opacity: 0; transform: scaleY(1); }
+  10% { opacity: 0.9; }
+  58% { top: 40%; opacity: 0.9; transform: scaleY(1.3); }
+  66% { top: 41%; opacity: 0; transform: scaleY(0.4) scaleX(1.9); }
+  100% { opacity: 0; }
 }
 
 /* ── 물감 낙하 채색 ── */
