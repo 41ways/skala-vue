@@ -1138,10 +1138,13 @@ function jumpTo(r) {
   .hero-note { font-size: 11px; }
   .mega { font-size: clamp(48px, 17vw, 96px); }
   .mega small { font-size: 10px; letter-spacing: 0.2em; }
-  .narrative { font-size: 15px; line-height: 1.6; }
-  .dcap { font-size: 2.4em; }
-  .vc { font-size: 20px; }
+  .narrative { font-size: 14.5px; line-height: 1.55; }
+  .dcap { font-size: 2.2em; }
+  .foot { bottom: 17%; }
+  .side-cities { bottom: 2.5%; gap: 10px; }
+  .vc { font-size: 18px; }
   .vc span { font-size: 0.7em; }
+  .vc-empty { font-size: 14px; font-weight: 400; }
   .mega {
     top: 22%;
     left: 5%;
