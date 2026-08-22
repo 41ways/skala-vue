@@ -716,10 +716,12 @@ function jumpTo(r) {
   text-shadow: 0 0 10px rgba(241, 231, 208, 0.9), 0 0 3px rgba(241, 231, 208, 0.9);
 }
 .foot.light .narrative {
-  color: var(--baek);
-  background: rgba(18, 16, 24, 0.24);
-  box-shadow: 0 0 14px 8px rgba(18, 16, 24, 0.24);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6), 0 0 3px rgba(0, 0, 0, 0.7);
+  /* 어두운 화폭(일월오봉도)은 먹빛 바탕을 더 진하게 — 흰 글자가 또렷해야 한다 */
+  color: #fff;
+  padding: 8px 14px;
+  background: rgba(12, 10, 18, 0.58);
+  box-shadow: 0 0 22px 14px rgba(12, 10, 18, 0.58);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 2px 14px rgba(0, 0, 0, 0.7);
 }
 .dcap {
   float: left;
