@@ -321,10 +321,10 @@ onBeforeUnmount(() => {
 // 두루마리 날씨첩 — 화기의 고을을 누르면 펼쳐진다
 const sheetCity = ref(null)
 // 대청 — 스크롤하면 분합문이 양쪽으로 열리고, 문밖에 인왕제색도가 선다
-// 처음엔 흐린 대청 — 제목이 물러나는 동안 진해지고 → 문이 열리면 빈 마당에 비 → 틀이 걷히며 인왕제색도가 선염된다
+// 처음엔 흐린 대청 — 제목이 물러나는 동안 진해지고 → 문이 열리면 빈 마당에 비 → 틀이 걷히며 인왕제색도 화폭으로 넘어간다
 const dcFocus = computed(() => easeOut(clamp01((heroP.value - 0.04) / 0.3)))
 const dcOpen = computed(() => easeOut(clamp01((heroP.value - 0.28) / 0.4)))
-const dcWash = computed(() => easeOut(clamp01((heroP.value - 0.64) / 0.34)))
+const dcWash = computed(() => easeOut(clamp01((heroP.value - 0.7) / 0.3)))
 const dcRain = computed(() => clamp01((dcOpen.value - 0.1) / 0.4) * (1 - dcWash.value * 0.45))
 const dcPhotoStyle = computed(() => ({
   '--o': dcOpen.value.toFixed(3),
@@ -334,12 +334,6 @@ const dcPhotoStyle = computed(() => ({
 const dcViewStyle = computed(() => ({
   transform: `scale(${(1.14 - dcOpen.value * 0.1).toFixed(3)})`,
   opacity: (0.25 + dcFocus.value * 0.75).toFixed(3),
-}))
-// 선염 — 먹이 번지듯 흐림·무채색에서 천천히 또렷해진다
-const dcInwangStyle = computed(() => ({
-  opacity: dcWash.value.toFixed(3),
-  filter: `blur(${((1 - dcWash.value) * 16).toFixed(1)}px) saturate(${dcWash.value.toFixed(2)}) contrast(${(0.78 + dcWash.value * 0.22).toFixed(2)}) brightness(${(1.15 - dcWash.value * 0.15).toFixed(2)})`,
-  transform: `scale(${(1.06 - dcWash.value * 0.06).toFixed(3)})`,
 }))
 const dcCapStyle = computed(() => ({ opacity: (1 - dcWash.value).toFixed(3) }))
 const heroDrops = Array.from({ length: 36 }, (_, i) => ({
@@ -427,7 +421,6 @@ function jumpTo(r) {
         <!-- 대청 — 문밖엔 오늘의 하늘(인왕제색도), 앞엔 분합문. 스크롤하면 문이 열린다 -->
         <div class="dc-view" :style="dcViewStyle">
           <span class="dc-blank"></span>
-          <img :src="inwangImg" alt="" draggable="false" :style="dcInwangStyle" />
           <span class="dc-rain" :style="{ opacity: dcRain.toFixed(3) }">
             <span v-for="(d, j) in heroDrops" :key="j" class="dc-drop" :style="d"></span>
           </span>
@@ -578,7 +571,7 @@ function jumpTo(r) {
 
 /* ── 표제 (만국청우록 스타일 이식) ── */
 .hero-wrap {
-  height: 380vh; /* 제목 → 문 열림 → 빈 마당의 비 → 인왕제색도 선염 */
+  height: 340vh; /* 제목 → 문 열림 → 빈 마당의 비 → 틀이 걷힘 */
 }
 .hero-stage {
   position: sticky;
