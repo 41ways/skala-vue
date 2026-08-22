@@ -45,14 +45,14 @@ ink_lines = ImageOps.invert(edges).point(lambda v: 90 + int(v * 0.65))  # 선=�
 ink = ImageChops.multiply(tone, ink_lines)
 # 먹의 결: 미세 노이즈
 noise = Image.effect_noise((W, H), 18).filter(ImageFilter.GaussianBlur(0.6))
-ink = ImageChops.multiply(ink, noise.point(lambda v: 205 + v // 5))
+ink = ImageChops.multiply(ink, noise.point(lambda v: 228 + v // 9))
 
 # 4) 한지 착색 + 종이 결
 paper_col = (241, 231, 208)
 ink_col = (38, 32, 28)
 tinted = ImageOps.colorize(ink, black=ink_col, white=paper_col, mid=(120, 108, 96))
 grain = Image.effect_noise((W, H), 30).filter(ImageFilter.GaussianBlur(1.4))
-grain = ImageOps.autocontrast(grain).point(lambda v: 225 + v // 9)
+grain = ImageOps.autocontrast(grain).point(lambda v: 236 + v // 13)
 tinted = ImageChops.multiply(tinted, Image.merge('RGB', (grain, grain, grain)))
 
 # 5) 여백 바램 — 가장자리로 갈수록 종이에 스민다
