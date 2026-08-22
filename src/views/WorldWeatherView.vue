@@ -193,6 +193,15 @@ const rainDrops = Array.from({ length: 26 }, (_, i) => ({
   delay: -((i * 7) % 20) / 10 + 's',
   opacity: 0.2 + ((i * 11) % 10) / 26,
 }))
+// 도쿄 파도 물보라 — 물마루 언저리에서 튀어 오르는 포말
+const spray = Array.from({ length: 16 }, (_, i) => ({
+  left: 40 + ((i * 53) % 24) + '%',
+  top: 14 + ((i * 37) % 16) + '%',
+  width: 3 + ((i * 7) % 5) + 'px',
+  height: 3 + ((i * 7) % 5) + 'px',
+  animationDuration: (1.6 + ((i * 11) % 10) / 8).toFixed(2) + 's',
+  animationDelay: -(((i * 19) % 20) / 8).toFixed(2) + 's',
+}))
 const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   left: ((i * 41) % 100) + '%',
   duration: 7 + ((i * 17) % 50) / 10 + 's',
@@ -225,6 +234,15 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
     </nav>
 
     <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <!-- 도쿄 — 파도 너울: 저주파 난류가 물마루를 밀어 올리고 끌어내린다 -->
+      <filter id="waveSwell" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.004 0.012" numOctaves="2" seed="4" result="n">
+          <animate attributeName="baseFrequency" values="0.004 0.012;0.006 0.016;0.004 0.012" dur="6.5s" repeatCount="indefinite" />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="22" xChannelSelector="R" yChannelSelector="G">
+          <animate attributeName="scale" values="14;26;14" dur="5.2s" repeatCount="indefinite" />
+        </feDisplacementMap>
+      </filter>
       <filter id="wEdge">
         <feColorMatrix type="saturate" values="0" />
         <feConvolveMatrix order="3" kernelMatrix="-1 -1 -1 -1 8 -1 -1 -1 -1" preserveAlpha="true" />
@@ -283,6 +301,14 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
         <div class="paint" :style="paintStyle(i, artMap[c.id])">
           <img :src="artMap[c.id].img" :alt="artMap[c.id].caption" loading="lazy" decoding="async" draggable="false" />
         </div>
+        <!-- 도쿄 — 살아 움직이는 파도 -->
+        <template v-if="c.id === 'w_tokyo'">
+          <div class="wave" :style="paintStyle(i, artMap[c.id])">
+            <img :src="artMap[c.id].img" alt="" loading="lazy" decoding="async" draggable="false" />
+          </div>
+          <span v-for="(sp, j) in spray" :key="'sp' + j" class="spray" :style="sp"></span>
+          <span class="mist"></span>
+        </template>
         <div class="paint-shade"></div>
 
         <!-- 날씨 기운 -->
@@ -581,6 +607,61 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   object-fit: cover;
   user-select: none;
 }
+/* ── 도쿄 파도 ── */
+.wave {
+  position: absolute;
+  inset: -3%;
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform, opacity, filter;
+  /* 큰 파도 부분만 오려낸다 (cover 크롭 기준 근사) */
+  clip-path: polygon(0% 4%, 26% 2%, 46% 9%, 60% 24%, 66% 44%, 60% 64%, 44% 76%, 22% 80%, 0% 72%);
+  animation: waveHeave 5.2s ease-in-out infinite;
+  transform-origin: 10% 90%;
+}
+.wave img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: url(#waveSwell);
+  user-select: none;
+}
+@keyframes waveHeave {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  50% { translate: 6px -10px; rotate: 0.7deg; }
+}
+.spray {
+  position: absolute;
+  z-index: 2;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.55);
+  filter: blur(0.4px);
+  animation: sprayFly ease-out infinite;
+  pointer-events: none;
+}
+@keyframes sprayFly {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.6); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translate(46px, -70px) scale(1.3); }
+}
+.mist {
+  position: absolute;
+  z-index: 2;
+  left: 34%;
+  top: 8%;
+  width: 34%;
+  height: 30%;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 55% 60%, rgba(255, 255, 255, 0.28), transparent 60%);
+  filter: blur(10px);
+  animation: mistPulse 5.2s ease-in-out infinite;
+}
+@keyframes mistPulse {
+  0%, 100% { opacity: 0.35; transform: translate(0, 0); }
+  50% { opacity: 0.8; transform: translate(10px, -12px); }
+}
+
 /* 선묘 에칭 — 엣지 추출 백선 */
 .etch {
   position: absolute;
@@ -835,6 +916,6 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
     fill-opacity: 1;
     stroke-dashoffset: 0;
   }
-  .spark, .w-drop, .w-flake { animation: none !important; }
+  .spark, .w-drop, .w-flake, .wave, .spray, .mist { animation: none !important; }
 }
 </style>
