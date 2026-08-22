@@ -349,9 +349,12 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
         <div class="backdrop" :style="backdropStyle">
           <img :src="bg || img" alt="" draggable="false" />
         </div>
-        <span v-for="(c, i) in cuts" :key="'k' + i" class="cut-wrap" :style="cutStyle(c)">
-          <MinhwaCut :src="c.src" :parts="c.parts ?? []" :idle="c.idle" />
-        </span>
+        <!-- 누끼 배치판 — 세로 화면에선 원화 비율 상자로 모아 한 폭처럼 보이게 -->
+        <div class="cut-field">
+          <span v-for="(c, i) in cuts" :key="'k' + i" class="cut-wrap" :style="cutStyle(c)">
+            <MinhwaCut :src="c.src" :parts="c.parts ?? []" :idle="c.idle" />
+          </span>
+        </div>
       </template>
     </div>
 
@@ -414,6 +417,20 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   object-fit: cover;
   /* 누끼 자리는 이미 종이로 메워져 있으니 흐림 없이 또렷하게 */
   filter: saturate(0.97);
+}
+.cut-field {
+  position: absolute;
+  inset: 0;
+}
+/* 세로(모바일) 화면 — 가로 화면 기준 %좌표가 세로로 흩어지지 않게,
+   원화 비율(약 1:1.1)의 상자를 가운데 띄우고 그 안에 배치한다 */
+@media (max-width: 760px) and (orientation: portrait) {
+  .cut-field {
+    inset: auto 0;
+    top: 50%;
+    height: min(118vw, 82vh);
+    transform: translateY(-54%);
+  }
 }
 .cut-wrap {
   position: absolute;
