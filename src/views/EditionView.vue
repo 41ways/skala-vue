@@ -93,14 +93,33 @@ onBeforeUnmount(() => {
   window.removeEventListener('pointermove', onMove)
 })
 
-// 간주 그림 — 선묘로 머물다 스크롤 중반 원색으로 차오른다
+// 간주 그림 — 선묘로 머물다 원색이 중심에서 원형으로 번져 나온다 (리빌 마스크)
 function chColorStyle(i) {
   const p = progress.value[i] ?? 0
+  const t = easeOut(clamp01((p - 0.12) / 0.26))
+  const r = (t * 120).toFixed(1)
+  const mask = `radial-gradient(circle at 50% 44%, #000 ${Math.max(0, r - 26)}%, transparent ${r}%)`
   return {
-    opacity: easeOut(clamp01((p - 0.14) / 0.2)).toFixed(3),
-    transform: `scale(${(1.08 - clamp01(p / 0.6) * 0.06).toFixed(4)}) translate3d(${(mx.value * -8).toFixed(1)}px, ${(my.value * -6).toFixed(1)}px, 0)`,
+    opacity: t > 0.01 ? 1 : 0,
+    maskImage: mask,
+    WebkitMaskImage: mask,
   }
 }
+// 간주 카메라 — 스크롤을 따라 시점이 천천히 도는 3D 오빗
+function chCamStyle(i) {
+  const p = progress.value[i] ?? 0
+  const drift = (p - 0.5) * 2
+  return {
+    transform: `perspective(1100px) rotateY(${(drift * 5 + mx.value * 2.4).toFixed(2)}deg) rotateX(${(-drift * 2.4 + my.value * -1.6).toFixed(2)}deg) scale(${(1.12 - clamp01(p / 0.6) * 0.07).toFixed(4)}) translate3d(${(mx.value * -10).toFixed(1)}px, ${(my.value * -7).toFixed(1)}px, 0)`,
+  }
+}
+// 별 입자 — 선묘 어둠 위 잔반짝임 (레퍼런스의 스파클)
+const stars = Array.from({ length: 22 }, (_, i) => ({
+  left: 4 + ((i * 137) % 92) + '%',
+  top: 6 + ((i * 71) % 82) + '%',
+  animationDelay: -(((i * 23) % 40) / 10).toFixed(1) + 's',
+  animationDuration: (2 + ((i * 13) % 25) / 10).toFixed(1) + 's',
+}))
 // 히어로 3막: 먹빛 선묘 -> 에칭 그림 -> 양피지 차례
 const geomStyle = computed(() => ({
   opacity: (0.85 * (1 - clamp01((heroP.value - 0.3) / 0.25))).toFixed(3),
@@ -114,9 +133,20 @@ const sketchStyle = computed(() => ({
   opacity: (easeOut(clamp01((heroP.value - 0.12) / 0.22)) * (1 - clamp01((heroP.value - 0.66) / 0.14))).toFixed(3),
   transform: `scale(${(1.12 - clamp01(heroP.value / 0.7) * 0.1).toFixed(4)}) translate3d(${(mx.value * -12).toFixed(1)}px, ${(my.value * -8).toFixed(1)}px, 0)`,
 }))
-const colorStyle = computed(() => ({
-  opacity: (easeOut(clamp01((heroP.value - 0.42) / 0.18)) * (1 - clamp01((heroP.value - 0.72) / 0.12))).toFixed(3),
-  transform: `scale(${(1.1 - clamp01(heroP.value / 0.8) * 0.08).toFixed(4)}) translate3d(${(mx.value * -12).toFixed(1)}px, ${(my.value * -8).toFixed(1)}px, 0)`,
+const colorStyle = computed(() => {
+  const t = easeOut(clamp01((heroP.value - 0.4) / 0.2))
+  const r = (t * 125).toFixed(1)
+  const mask = `radial-gradient(circle at 46% 40%, #000 ${Math.max(0, t * 125 - 24).toFixed(1)}%, transparent ${r}%)`
+  return {
+    opacity: (t > 0.01 ? 1 - clamp01((heroP.value - 0.72) / 0.12) : 0).toFixed(3),
+    maskImage: mask,
+    WebkitMaskImage: mask,
+    transform: `scale(${(1.1 - clamp01(heroP.value / 0.8) * 0.08).toFixed(4)}) translate3d(${(mx.value * -12).toFixed(1)}px, ${(my.value * -8).toFixed(1)}px, 0)`,
+  }
+})
+// 히어로 3D 카메라 — 마우스·스크롤에 무대 전체가 은근히 돈다
+const heroCamStyle = computed(() => ({
+  transform: `perspective(1100px) rotateY(${(mx.value * 3 + (heroP.value - 0.3) * 4).toFixed(2)}deg) rotateX(${(my.value * -2).toFixed(2)}deg)`,
 }))
 const parchStyle = computed(() => ({
   transform: `translateY(${((1 - easeOut(clamp01((heroP.value - 0.62) / 0.3))) * 104).toFixed(2)}%)`,
@@ -168,12 +198,15 @@ function toTop() {
           </g>
         </svg>
 
-        <!-- 2막: 백색 선묘 에칭 → 원색 -->
-        <div class="etch" :style="sketchStyle">
-          <img :src="heroImg" alt="" draggable="false" />
-        </div>
-        <div class="etch-color" :style="colorStyle">
-          <img :src="heroImg" alt="미켈란젤로, 아담의 창조" draggable="false" />
+        <!-- 2막: 백색 선묘 에칭 → 원색 (3D 무대) -->
+        <div class="depth" :style="heroCamStyle">
+          <div class="etch" :style="sketchStyle">
+            <img :src="heroImg" alt="" draggable="false" />
+          </div>
+          <div class="etch-color" :style="colorStyle">
+            <img :src="heroImg" alt="미켈란젤로, 아담의 창조" draggable="false" />
+          </div>
+          <span v-for="(st, k) in stars" :key="'hs' + k" class="star" :style="[st, { opacity: sketchStyle.opacity }]"></span>
         </div>
 
         <!-- 표제 — ai만 세리프 이탤릭 (레퍼런스의 말장난) -->
@@ -230,11 +263,14 @@ function toTop() {
         <!-- 그림 간주 — 에칭으로 떠올라 원색이 되는 순간 -->
         <div class="ch-art">
           <div class="ch-art-sticky">
-            <div class="etch"><img :src="ch.img" alt="" loading="lazy" decoding="async" draggable="false" /></div>
-            <div class="etch-color" :style="chColorStyle(i)">
-              <img :src="ch.img" :alt="ch.caption" loading="lazy" decoding="async" draggable="false" />
+            <div class="depth" :style="chCamStyle(i)">
+              <div class="etch"><img :src="ch.img" alt="" loading="lazy" decoding="async" draggable="false" /></div>
+              <div class="etch-color" :style="chColorStyle(i)">
+                <img :src="ch.img" :alt="ch.caption" loading="lazy" decoding="async" draggable="false" />
+              </div>
+              <span v-for="(st, k) in stars" :key="'cs' + k" class="star" :style="st"></span>
             </div>
-            <span v-if="ch.parcel" class="parcel" :style="chColorStyle(i)">Editions<br />特急</span>
+            <span v-if="ch.parcel" class="parcel">Editions<br />特急</span>
             <p class="ch-mark">{{ numerals[i] }} — {{ ch.name }}</p>
           </div>
         </div>
@@ -295,6 +331,28 @@ function toTop() {
   width: 108%;
   height: 108%;
   will-change: transform, opacity;
+}
+/* 3D 무대 — 원근 카메라가 마우스·스크롤을 따라 돈다 */
+.depth {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+/* 별 입자 — 선묘 위 잔반짝임 */
+.star {
+  position: absolute;
+  width: 2.5px;
+  height: 2.5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px 1.5px rgba(255, 255, 255, 0.7);
+  animation: starTwinkle ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 0.95; transform: scale(1.2); }
 }
 /* 에칭 — 엣지 추출로 백색 선묘가 어둠 속에 떠오른다 */
 .etch,
@@ -514,6 +572,7 @@ function toTop() {
   top: 0;
   height: 100vh;
   overflow: hidden;
+  background: #0a0a0a;
 }
 .ch-art .etch,
 .ch-art .etch-color {
@@ -643,6 +702,11 @@ function toTop() {
   right: 8%;
   top: 12%;
   box-shadow: 0 0 0 22px rgba(108, 92, 231, 0.12) inset;
+  border-style: dashed;
+  animation: ringSpin 26s linear infinite;
+}
+@keyframes ringSpin {
+  to { transform: rotate(360deg); }
 }
 .ring-b {
   width: 54px;
@@ -705,6 +769,10 @@ function toTop() {
   .parcel { left: 52%; top: 42%; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .star,
+  .ring-a {
+    animation: none !important;
+  }
   .hero-art, .menu li, .ed-title, .ed-sub { animation: none !important; opacity: 1; }
 }
 </style>
