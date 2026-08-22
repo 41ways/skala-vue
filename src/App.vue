@@ -49,6 +49,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <a class="skip util" href="#main">본문으로 건너뛰기</a>
   <header class="top" :class="{ dark: route.path.startsWith('/world') || route.path.startsWith('/edition') }">
     <RouterLink to="/" class="logo">청우<em>록</em><small>晴雨錄</small></RouterLink>
     <nav class="util">
@@ -64,6 +65,7 @@ onBeforeUnmount(() => {
     <UnitToggler v-if="route.path === '/classic' || route.path.startsWith('/weather/')" class="unit" />
   </header>
   <div class="saekdong"></div>
+  <div id="main"></div>
   <RouterView v-slot="{ Component }">
     <Transition name="page" mode="out-in">
       <component :is="Component" />
@@ -75,6 +77,22 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.skip {
+  position: fixed;
+  top: -60px;
+  left: 12px;
+  z-index: 200;
+  padding: 8px 14px;
+  background: var(--ink);
+  color: var(--baek);
+  border-radius: 3px;
+  font-size: 13px;
+  text-decoration: none;
+  transition: top 0.2s;
+}
+.skip:focus {
+  top: 12px;
+}
 /* 화폭 전환: 먹이 마르듯 잠깐 옅어졌다 다음 폭이 든다 */
 .page-enter-active,
 .page-leave-active {

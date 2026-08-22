@@ -1,28 +1,34 @@
 <script setup>
-// 소개 — 청우록이 무엇이고, 무엇으로 만들었는지 (제출·검수용 설명)
+// 소개: 어떤 서비스인지, 무엇으로 만들었는지
 import { RouterLink } from 'vue-router'
+import inwang from '@/assets/minhwa-art/inwang.jpg'
+import obongdo from '@/assets/minhwa-art/obongdo.jpg'
+import mudong from '@/assets/minhwa-art/mudong.jpg'
+import ssireum from '@/assets/minhwa-art/ssireum.jpg'
+import seodang from '@/assets/minhwa-art/seodang.jpg'
+import tiger from '@/assets/minhwa-art/tiger.jpg'
 
 const menus = [
-  { to: '/', name: '국내 화폭 · 팔도청우록', desc: '첫 화면의 한옥 분합문이 스크롤로 열리며 시작. 국내 열 고을과 남극 세종기지의 오늘 날씨를 여섯 폭 민화가 대신 전합니다.' },
-  { to: '/world', name: '세계화폭 · 만국청우록', desc: '바다 건너 열 곳. 각 나라의 명화 위에 현지 시각·낮밤과 실황 효과(비·안개·바람 휘날림)가 얹힙니다.' },
-  { to: '/guide', name: '빨래 지침', desc: '기온·습도·바람·하늘을 100점으로 환산하는 빨래 지수의 규칙.' },
-  { to: '/classic', name: '실습 대시보드', desc: '수업 실습으로 만든 카드형 대시보드. 표본 데이터로 동작합니다.' },
+  { to: '/', name: '국내 화폭', hanja: '八道晴雨錄', desc: '한옥 분합문이 열리며 시작. 국내 열 고을과 남극 세종기지의 오늘 하늘을 여섯 폭 민화가 대신 전합니다.' },
+  { to: '/world', name: '세계화폭', hanja: '萬國晴雨錄', desc: '바다 건너 열 곳. 그 나라의 명화 위에 현지 시각과 실황 효과(비·안개·바람)가 얹힙니다.' },
+  { to: '/guide', name: '빨래 지침', hanja: '洗濯指針', desc: '기온·습도·바람·하늘을 100점으로 환산하는 규칙.' },
+  { to: '/classic', name: '실습 대시보드', hanja: '實習', desc: '수업 실습으로 만든 카드형 대시보드. 단위 전환(℃/℉)과 검색이 됩니다.' },
 ]
 
 const pairs = [
-  ['비 · 뇌우', '인왕제색도 — 정선'],
-  ['맑음', '일월오봉도'],
-  ['바람', '무동 — 김홍도'],
-  ['구름', '씨름 — 김홍도'],
-  ['흐림 · 안개', '서당 — 김홍도'],
-  ['눈', '작호도 — 까치호랑이'],
+  { w: '비 · 뇌우', h: '雨', img: inwang, title: '인왕제색도', by: '정선 · 1751' },
+  { w: '맑음', h: '晴', img: obongdo, title: '일월오봉도', by: '조선 궁중' },
+  { w: '바람', h: '風', img: mudong, title: '무동', by: '김홍도' },
+  { w: '구름', h: '雲', img: ssireum, title: '씨름', by: '김홍도' },
+  { w: '흐림 · 안개', h: '曇', img: seodang, title: '서당', by: '김홍도' },
+  { w: '눈', h: '雪', img: tiger, title: '작호도', by: '민화 · 세화' },
 ]
 </script>
 
 <template>
   <main class="about">
     <header class="head">
-      <p class="eyebrow">晴雨錄 · 서비스 소개</p>
+      <p class="eyebrow util">晴雨錄 · 서비스 소개</p>
       <h1>화폭을 내리면 팔도의 날씨가 펼쳐집니다</h1>
       <p class="lead">
         청우록(晴雨錄)은 조선의 민화·풍속화가 지금의 날씨를 대신 말해 주는 스크롤 화폭입니다. 비가 드는 고을은 「인왕제색도」에,
@@ -34,7 +40,10 @@ const pairs = [
       <h2>화폭</h2>
       <ul class="menus">
         <li v-for="m in menus" :key="m.to">
-          <RouterLink :to="m.to">{{ m.name }}</RouterLink>
+          <RouterLink :to="m.to">
+            <span class="mn">{{ m.name }}</span>
+            <span class="mh">{{ m.hanja }}</span>
+          </RouterLink>
           <p>{{ m.desc }}</p>
         </li>
       </ul>
@@ -42,14 +51,15 @@ const pairs = [
 
     <section>
       <h2>하늘과 그림의 대응</h2>
-      <table class="pairs">
-        <tbody>
-          <tr v-for="[w, p] in pairs" :key="w">
-            <th>{{ w }}</th>
-            <td>{{ p }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <ul class="pairs">
+        <li v-for="p in pairs" :key="p.w">
+          <img :src="p.img" :alt="p.title" loading="lazy" decoding="async" />
+          <i class="seal">{{ p.h }}</i>
+          <b>{{ p.w }}</b>
+          <span class="t">{{ p.title }}</span>
+          <span class="by">{{ p.by }}</span>
+        </li>
+      </ul>
     </section>
 
     <section>
@@ -64,26 +74,25 @@ const pairs = [
     <section>
       <h2>만든 재료</h2>
       <ul class="plain">
-        <li>Vue 3 (Composition API) · Vite · Vue Router · Pinia · Axios · Lenis(스무스 스크롤)</li>
+        <li>Vue 3 (Composition API) · Vite · Vue Router · Pinia · Axios · Element Plus · Lenis</li>
         <li>연출은 CSS/SVG 필터로 — 먹 번짐, 수면 흩어짐, 선묘 에칭, 종이 질감</li>
         <li>민화·명화: 위키미디어 공용 퍼블릭 도메인 스캔 · 분합문 사진: 오리 이원익 종택, 문화재청(공공누리 제1유형) · 두루마리 질감: Poly Haven(CC0)</li>
       </ul>
     </section>
 
-    <p class="back"><RouterLink to="/">← 국내 화폭으로</RouterLink></p>
+    <p class="back util"><RouterLink to="/">← 국내 화폭으로</RouterLink></p>
   </main>
 </template>
 
 <style scoped>
 .about {
-  max-width: 720px;
+  max-width: 760px;
   margin: 0 auto;
   padding: 48px 24px 96px;
   color: var(--ink);
 }
 .eyebrow {
   margin: 0 0 8px;
-  font-family: var(--font-util);
   font-size: 12px;
   letter-spacing: 0.3em;
   color: var(--jeok);
@@ -107,7 +116,7 @@ section {
   border-top: 1px solid var(--line);
 }
 h2 {
-  margin: 0 0 12px;
+  margin: 0 0 14px;
   font-family: var(--font-display);
   font-size: 18px;
   letter-spacing: 0.16em;
@@ -123,23 +132,104 @@ section p {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px 28px;
 }
 .menus a {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 17px;
   color: var(--ink);
   text-decoration: none;
-  border-bottom: 1px solid var(--jeok);
 }
-.menus a:hover { color: var(--jeok); }
-.menus p { margin: 4px 0 0; }
-.pairs { border-collapse: collapse; width: 100%; font-size: 14.5px; }
-.pairs th, .pairs td { text-align: left; padding: 7px 0; border-bottom: 1px dotted var(--line); }
-.pairs th { font-family: var(--font-display); font-weight: 700; width: 120px; color: var(--jeok); }
-.plain { margin: 0; padding-left: 18px; font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); }
-code { font-family: var(--font-util); font-size: 0.9em; }
-a { color: var(--jeok); }
-.back { margin-top: 48px; font-family: var(--font-util); font-size: 14px; }
-.back a { text-decoration: none; }
+.menus .mh {
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: var(--jeok);
+}
+.menus a:hover .mn {
+  color: var(--jeok);
+}
+.menus p {
+  margin: 4px 0 0;
+}
+/* 화폭 여섯 장의 작은 도록 */
+.pairs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 18px 14px;
+}
+.pairs li {
+  position: relative;
+  display: grid;
+  gap: 3px;
+  font-size: 13px;
+}
+.pairs img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  padding: 4px;
+  background: var(--baek);
+  box-shadow: 0 6px 16px -10px rgba(34, 28, 22, 0.5);
+  transition: transform 0.4s ease;
+}
+.pairs li:hover img {
+  transform: translateY(-3px) rotate(-0.6deg);
+}
+.pairs .seal {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  background: var(--jeok);
+  color: var(--baek);
+  font-style: normal;
+  font-size: 13px;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1.5px rgba(251, 246, 234, 0.4);
+}
+.pairs b {
+  margin-top: 6px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--jeok);
+}
+.pairs .t {
+  font-family: var(--font-display);
+}
+.pairs .by {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+.plain {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14.5px;
+  line-height: 1.8;
+  color: var(--ink-soft);
+}
+code {
+  font-family: var(--font-util);
+  font-size: 0.9em;
+}
+a {
+  color: var(--jeok);
+}
+.back {
+  margin-top: 48px;
+  font-size: 14px;
+}
+.back a {
+  text-decoration: none;
+}
 </style>
