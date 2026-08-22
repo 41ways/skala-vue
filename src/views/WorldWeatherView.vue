@@ -900,7 +900,8 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   font-size: clamp(260px, 52vh, 600px);
   line-height: 1;
   letter-spacing: 0.04em;
-  color: transparent;
+  /* 새김 윤곽 + 옅은 채움 */
+  color: rgba(251, 246, 234, 0.38);
   -webkit-text-stroke: 2px rgba(251, 246, 234, 0.9);
   pointer-events: none;
   will-change: transform, opacity;
