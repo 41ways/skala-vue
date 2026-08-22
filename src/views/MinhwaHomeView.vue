@@ -18,6 +18,13 @@ import seodangImg from '@/assets/minhwa-art/seodang.jpg'
 import inwangImg from '@/assets/minhwa-art/inwang.jpg'
 import tigerImg from '@/assets/minhwa-art/tiger.jpg'
 
+// 누끼 PNG 일괄 로드 — cut('tiger_body') 식으로 꺼내 쓴다
+const cutFiles = import.meta.glob('@/assets/minhwa-art/cut/*.png', {
+  eager: true,
+  import: 'default',
+})
+const cut = (name) => cutFiles[Object.keys(cutFiles).find((k) => k.includes(name))]
+
 const { cities, loading, error, fetchLive } = useWeather()
 
 // 화폭 차례 — 그림과 날씨의 궁합
@@ -32,6 +39,11 @@ const chapters = [
     wHanja: '晴',
     effect: 'inkfill',
     focal: '50% 44%',
+    // 해와 달만 화폭에서 떠올라 은은히 유영한다
+    cuts: [
+      { src: cut('obongdo_moon'), left: '23.5%', top: '9%', w: '10%', depth: 16, oy: -10, ds: 0.05, idle: 'drift', z: 3 },
+      { src: cut('obongdo_sun'), left: '76%', top: '18%', w: '10%', depth: 22, oy: -16, ds: 0.08, idle: 'drift', z: 3 },
+    ],
     line: '해와 달이 함께 뜬 다섯 봉우리 — 볕이 좋은 고을들입니다.',
     empty: '오늘은 맑게 갠 고을이 없습니다.',
   },
@@ -57,13 +69,15 @@ const chapters = [
     era: '김홍도 · 풍속화첩 · 보물',
     weather: ['바람'],
     wHanja: '風',
-    effect: 'parallax',
-    focal: '34% 66%',
-    layers: [
-      // 악단 (위쪽 반원) — 얕은 깊이
-      { clip: 'polygon(0% 0%, 100% 0%, 100% 55%, 0% 55%)', depth: 9, ox: -6, oy: -8, ds: 0.02, idle: 'bob' },
-      // 무동 (좌하단) — 깊게 분리되어 앞으로 나온다
-      { clip: 'polygon(0% 52%, 55% 52%, 55% 100%, 0% 100%)', depth: 26, ox: 10, oy: 14, ds: 0.09, idle: 'sway' },
+    effect: 'collage',
+    focal: '38% 62%',
+    cuts: [
+      // 악단 반원 — 뒤에서 가락을 탄다
+      { src: cut('mudong_band'), left: '16%', top: '3%', w: '64%', depth: 8, ox: -8, oy: -12, ds: 0.02, idle: 'bob', z: 1 },
+      // 대금·해금 — 오른쪽 아래
+      { src: cut('mudong_bottomright'), left: '58%', top: '38%', w: '27%', depth: 14, ox: 12, oy: 6, ds: 0.04, idle: 'bob', z: 2 },
+      // 무동 — 앞으로 크게 나서며 춤춘다
+      { src: cut('mudong_dancer'), left: '20%', top: '30%', w: '31%', depth: 28, ox: -14, oy: 18, ds: 0.12, idle: 'sway', z: 3 },
     ],
     line: '소매가 바람을 탑니다 — 바람 부는 고을들입니다.',
     empty: '오늘은 바람 든 고을이 없습니다.',
@@ -76,13 +90,16 @@ const chapters = [
     era: '김홍도 · 풍속화첩 · 보물',
     weather: ['구름'],
     wHanja: '雲',
-    effect: 'parallax',
-    focal: '50% 50%',
-    layers: [
-      // 구경꾼 (테두리) — 뒤로 물러난다
-      { clip: 'polygon(0% 0%, 100% 0%, 100% 30%, 0% 30%)', depth: 8, ox: 0, oy: -10, ds: 0.015, idle: 'bob' },
-      // 씨름꾼 (중앙) — 힘겨루기 잔모션
-      { clip: 'polygon(28% 30%, 74% 30%, 74% 76%, 28% 76%)', depth: 22, ox: 0, oy: 10, ds: 0.08, idle: 'tussle' },
+    effect: 'collage',
+    focal: '50% 48%',
+    cuts: [
+      // 구경꾼 네 무리 — 판 가장자리에서 들썩인다
+      { src: cut('ssireum_crowd_tl'), left: '2%', top: '1%', w: '36%', depth: 7, ox: -12, oy: -10, ds: 0.015, idle: 'bob', z: 1 },
+      { src: cut('ssireum_crowd_tr'), left: '62%', top: '2%', w: '34%', depth: 8, ox: 12, oy: -10, ds: 0.015, idle: 'bob', z: 1 },
+      { src: cut('ssireum_crowd_bl'), left: '2%', top: '62%', w: '33%', depth: 10, ox: -12, oy: 10, ds: 0.02, idle: 'bob', z: 2 },
+      { src: cut('ssireum_crowd_br'), left: '66%', top: '60%', w: '30%', depth: 10, ox: 12, oy: 10, ds: 0.02, idle: 'bob', z: 2 },
+      // 씨름꾼 — 판 한가운데서 힘겨루기
+      { src: cut('ssireum_wrestlers'), left: '36%', top: '22%', w: '28%', depth: 24, oy: 12, ds: 0.11, idle: 'tussle', z: 3 },
     ],
     line: '구름처럼 모여든 판 — 구름 낀 고을들입니다.',
     empty: '오늘은 구름 든 고을이 없습니다.',
@@ -95,13 +112,17 @@ const chapters = [
     era: '김홍도 · 풍속화첩 · 보물',
     weather: ['흐림'],
     wHanja: '陰',
-    effect: 'parallax',
-    focal: '44% 52%',
-    layers: [
-      // 훈장님 (상단) — 지긋이 흔들
-      { clip: 'polygon(30% 0%, 92% 0%, 92% 40%, 30% 40%)', depth: 10, ox: -4, oy: -8, ds: 0.02, idle: 'bob' },
-      // 우는 아이 (중앙) — 앞으로
-      { clip: 'polygon(26% 38%, 64% 38%, 64% 76%, 26% 76%)', depth: 24, ox: 6, oy: 12, ds: 0.08, idle: 'sway' },
+    effect: 'collage',
+    focal: '44% 50%',
+    cuts: [
+      // 훈장님 — 서안 뒤에서 지긋이
+      { src: cut('seodang_hunjang'), left: '32%', top: '4%', w: '40%', depth: 8, oy: -12, ds: 0.02, idle: 'bob', z: 2 },
+      // 학동들 — 양쪽 줄
+      { src: cut('seodang_students_l'), left: '4%', top: '16%', w: '25%', depth: 12, ox: -12, ds: 0.03, idle: 'bob', z: 1 },
+      { src: cut('seodang_students_r'), left: '66%', top: '32%', w: '25%', depth: 12, ox: 12, ds: 0.03, idle: 'bob', z: 1 },
+      { src: cut('seodang_back'), left: '40%', top: '66%', w: '21%', depth: 16, oy: 12, ds: 0.05, idle: 'bob', z: 2 },
+      // 우는 아이 — 한가운데 앞으로
+      { src: cut('seodang_crier'), left: '33%', top: '40%', w: '18%', depth: 26, oy: 16, ds: 0.12, idle: 'sway', z: 3 },
     ],
     line: '하늘이 낮은 날은 글 읽기 좋은 날 — 흐린 고을들입니다.',
     empty: '오늘은 흐린 고을이 없습니다.',
@@ -114,14 +135,14 @@ const chapters = [
     era: '조선 민화 · 세화(歲畫)',
     weather: ['눈'],
     wHanja: '雪',
-    effect: 'parallax',
-    focal: '38% 46%',
+    effect: 'collage',
+    focal: '40% 48%',
     snow: true,
-    layers: [
-      // 소나무와 까치 (상단) — 살랑
-      { clip: 'polygon(40% 0%, 100% 0%, 100% 42%, 40% 42%)', depth: 10, ox: 6, oy: -8, ds: 0.02, idle: 'bob' },
-      // 호랑이 (본체) — 숨쉬며 앞으로
-      { clip: 'polygon(0% 18%, 78% 18%, 78% 100%, 0% 100%)', depth: 20, ox: -6, oy: 10, ds: 0.07, idle: 'breathe' },
+    cuts: [
+      // 까치 — 솔가지에 앉아 까딱인다
+      { src: cut('tiger_magpie'), left: '64%', top: '8%', w: '24%', depth: 10, ox: 14, oy: -14, ds: 0.03, idle: 'bob', z: 1 },
+      // 호랑이 — 개별로 숨쉬며 앞으로 나온다
+      { src: cut('tiger_body'), left: '16%', top: '12%', w: '45%', depth: 22, ox: -10, oy: 10, ds: 0.08, idle: 'breathe', z: 3 },
     ],
     line: '궂은 하늘을 막아서는 세화 — 눈 오는 고을을 지킵니다.',
     empty: '오늘 눈 내리는 고을은 없습니다. 호랑이가 잘 막고 있습니다.',
@@ -256,7 +277,7 @@ function jump(i) {
           :img="ch.img"
           :effect="ch.effect"
           :focal="ch.focal"
-          :layers="ch.layers ?? []"
+          :cuts="ch.cuts ?? []"
           :p="progress[i] ?? 0"
           :mx="mx"
           :my="my"
@@ -447,6 +468,13 @@ function jump(i) {
   bottom: 7%;
   z-index: 5;
   max-width: min(560px, 82vw);
+  /* 한지 반투명 받침 — 그림 위에서도 화제(畫題)가 또렷하게 */
+  padding: 18px 22px;
+  background: rgba(251, 246, 234, 0.72);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(34, 28, 22, 0.12);
+  border-radius: 4px;
+  box-shadow: 0 12px 34px rgba(34, 28, 22, 0.14);
 }
 .ch-info > * {
   will-change: transform, opacity;

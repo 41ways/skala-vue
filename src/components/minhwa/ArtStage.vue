@@ -1,17 +1,17 @@
 <script setup>
 // ArtStage — 실제 민화 스캔을 움직이는 화폭으로 올리는 무대
-//  · 누끼: multiply 블렌딩(한지 바탕 소거) + clip-path 레이어 분리
+//  · 누끼: 알파 키잉으로 잘라낸 개별 인물 PNG가 저마다 따로 움직인다 (레퍼런스: Editions의 치타 콜라주)
+//  · 배경: 원화를 크게 흐려 화폭의 색면(色面)으로 깐다
 //  · 카메라: 스크롤 진행도(p)에 따라 그림 속으로 빠져드는 줌인
-//  · 선염(渲染): 가장자리가 물기로 풀린 라디얼 마스크가 번지며 그림이 나타나고 사라진다
-//  · 마우스 시차: mx/my(-1..1)로 레이어별 미세 좌우 시차
-//  · effect: 'parallax' | 'inkfill'(물감 낙하 수묵 채색) | 'water'(수면 반영 → 흐트러짐)
+//  · 선염(渲染): 가장자리가 물기로 풀린 라디얼 마스크가 번지며 나타나고, 먹이 적시며 사라진다
+//  · effect: 'collage'(누끼 콜라주) | 'inkfill'(물감 낙하 수묵 채색) | 'water'(수면 반영)
 import { computed } from 'vue'
 
 const props = defineProps({
   img: { type: String, required: true },
-  effect: { type: String, default: 'parallax' },
-  focal: { type: String, default: '50% 50%' }, // 빠져들 때 카메라가 향하는 지점
-  layers: { type: Array, default: () => [] }, // {clip, depth, ox, oy, ds, idle}
+  effect: { type: String, default: 'collage' },
+  focal: { type: String, default: '50% 50%' },
+  cuts: { type: Array, default: () => [] }, // {src,left,top,w,depth,ox,oy,ds,idle,z}
   p: { type: Number, default: 0 },
   mx: { type: Number, default: 0 },
   my: { type: Number, default: 0 },
@@ -22,63 +22,61 @@ const props = defineProps({
 const clamp01 = (v) => Math.min(1, Math.max(0, v))
 const easeOut = (t) => 1 - Math.pow(1 - t, 3)
 
-// 빠져드는 정도 : 그림이 자리잡은 뒤(p 0.22~) 카메라가 안으로 민다
+// 빠져드는 정도
 const dive = computed(() => easeOut(clamp01((props.p - 0.22) / 0.5)))
 
-// 카메라 — focal을 향해 줌인
 const camStyle = computed(() => ({
-  transform: `scale(${(0.94 + dive.value * 0.82).toFixed(4)})`,
+  transform: `scale(${(0.94 + dive.value * 0.66).toFixed(4)})`,
   transformOrigin: props.focal,
 }))
 
-// 선염 등장 마스크 — 넓은 페더(35%)가 젖은 먹 번짐처럼 퍼진다
+// 선염 등장 마스크
 const veilStyle = computed(() => {
   const r = 24 + easeOut(clamp01(props.p / 0.24)) * 150
-  return {
-    maskImage: `radial-gradient(ellipse 90% 75% at 50% 45%, #000 ${Math.max(0, r - 38)}%, transparent ${r}%)`,
-    WebkitMaskImage: `radial-gradient(ellipse 90% 75% at 50% 45%, #000 ${Math.max(0, r - 38)}%, transparent ${r}%)`,
-  }
+  const g = `radial-gradient(ellipse 90% 75% at 50% 45%, #000 ${Math.max(0, r - 38)}%, transparent ${r}%)`
+  return { maskImage: g, WebkitMaskImage: g }
 })
-
-// 퇴장 — 먹이 화면을 적시며 다음 폭으로
 const washStyle = computed(() => ({
   opacity: clamp01((props.p - 0.87) / 0.12).toFixed(3),
 }))
 
-// 레이어 시차 : 마우스 + 빠져들수록 깊이 분리
-function layerStyle(l) {
-  const d = l.depth ?? 12
-  const x = props.mx * d * 0.55 + dive.value * (l.ox ?? 0)
-  const y = props.my * d * 0.4 + dive.value * (l.oy ?? 0)
-  const s = 1 + dive.value * (l.ds ?? 0.05)
+// 흐린 원화 색면 배경 — 빠져들수록 살짝 커지고 어두워진다
+const backdropStyle = computed(() => ({
+  transform: `scale(${(1.35 + dive.value * 0.2).toFixed(3)}) translate3d(${(-props.mx * 8).toFixed(1)}px, ${(-props.my * 6).toFixed(1)}px, 0)`,
+  opacity: (0.5 - dive.value * 0.12).toFixed(3),
+}))
+
+// 누끼 인물 — 깊이별 시차 + 빠져들 때 분리
+function cutStyle(c) {
+  const d = c.depth ?? 14
+  const x = props.mx * d * 0.6 + dive.value * (c.ox ?? 0)
+  const y = props.my * d * 0.45 + dive.value * (c.oy ?? 0)
+  const s = 1 + dive.value * (c.ds ?? 0.06)
   return {
-    clipPath: l.clip,
+    left: c.left,
+    top: c.top,
+    width: c.w,
+    zIndex: c.z ?? 2,
     transform: `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${s.toFixed(4)})`,
   }
 }
-const baseStyle = computed(() => ({
-  transform: `translate3d(${(-props.mx * 5).toFixed(1)}px, ${(-props.my * 3.5).toFixed(1)}px, 0)`,
-}))
 
-// ── inkfill : 물감이 떨어지며 수묵→채색 ──
+// ── inkfill ──
 const fillR = computed(() => easeOut(clamp01((props.p - 0.05) / 0.4)) * 165)
-const fillStyle = computed(() => ({
-  maskImage: `radial-gradient(ellipse 85% 90% at 46% 38%, #000 ${Math.max(0, fillR.value - 34)}%, transparent ${fillR.value}%)`,
-  WebkitMaskImage: `radial-gradient(ellipse 85% 90% at 46% 38%, #000 ${Math.max(0, fillR.value - 34)}%, transparent ${fillR.value}%)`,
-}))
+const fillStyle = computed(() => {
+  const g = `radial-gradient(ellipse 85% 90% at 46% 38%, #000 ${Math.max(0, fillR.value - 34)}%, transparent ${fillR.value}%)`
+  return { maskImage: g, WebkitMaskImage: g }
+})
 const dropsDone = computed(() => fillR.value > 150)
 
-// ── water : 수면 위 반영 → 스크롤하면 물이 흐트러지며 사라진다 ──
-const wobble = computed(() => 6 + clamp01(props.p / 0.42) * 110) // 물결 강도
+// ── water ──
+const wobble = computed(() => 6 + clamp01(props.p / 0.42) * 110)
 const reflStyle = computed(() => ({
   opacity: (1 - clamp01((props.p - 0.1) / 0.34)).toFixed(3),
 }))
 const mainRise = computed(() => {
   const t = easeOut(clamp01((props.p - 0.16) / 0.3))
-  return {
-    opacity: t.toFixed(3),
-    transform: `translateY(${((1 - t) * 6).toFixed(2)}%)`,
-  }
+  return { opacity: t.toFixed(3), transform: `translateY(${((1 - t) * 6).toFixed(2)}%)` }
 })
 
 const rainDrops = Array.from({ length: 30 }, (_, i) => ({
@@ -98,7 +96,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
 <template>
   <div class="art-stage" :style="veilStyle">
     <div class="cam" :style="camStyle">
-      <!-- ══ 수면 반영 연출 ══ -->
+      <!-- ══ 수면 반영 ══ -->
       <template v-if="effect === 'water'">
         <div class="w-main" :style="mainRise">
           <img :src="img" alt="" class="art-img" draggable="false" />
@@ -120,10 +118,13 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
         </div>
       </template>
 
-      <!-- ══ 물감 낙하 수묵 채색 ══ -->
+      <!-- ══ 물감 낙하 수묵 채색 (+ 해·달 누끼 부유) ══ -->
       <template v-else-if="effect === 'inkfill'">
-        <img :src="img" alt="" class="art-img gray" draggable="false" :style="baseStyle" />
-        <img :src="img" alt="" class="art-img colorized" draggable="false" :style="[baseStyle, fillStyle]" />
+        <img :src="img" alt="" class="art-img gray" draggable="false" />
+        <img :src="img" alt="" class="art-img colorized" draggable="false" :style="fillStyle" />
+        <span v-for="(c, i) in cuts" :key="'c' + i" class="cut-wrap" :style="cutStyle(c)">
+          <img :src="c.src" alt="" class="cut-img" :class="c.idle" draggable="false" />
+        </span>
         <div v-if="!dropsDone" class="paint-drops">
           <span class="pd pd1"></span>
           <span class="pd pd2"></span>
@@ -131,19 +132,14 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
         </div>
       </template>
 
-      <!-- ══ 레이어 분리 패럴랙스 (기본) ══ -->
+      <!-- ══ 누끼 콜라주 (기본) ══ -->
       <template v-else>
-        <div class="art-base" :style="baseStyle">
-          <img :src="img" alt="" class="art-img" draggable="false" />
+        <div class="backdrop" :style="backdropStyle">
+          <img :src="img" alt="" draggable="false" />
         </div>
-        <div
-          v-for="(l, i) in layers"
-          :key="i"
-          class="art-layer"
-          :style="layerStyle(l)"
-        >
-          <img :src="img" alt="" class="art-img" :class="l.idle" draggable="false" />
-        </div>
+        <span v-for="(c, i) in cuts" :key="'k' + i" class="cut-wrap" :style="cutStyle(c)">
+          <img :src="c.src" alt="" class="cut-img" :class="c.idle" draggable="false" />
+        </span>
       </template>
     </div>
 
@@ -180,8 +176,8 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
 }
 .cam {
   position: relative;
-  width: min(88vw, 1150px);
-  height: min(78vh, 820px);
+  width: min(90vw, 1200px);
+  height: min(80vh, 860px);
   will-change: transform;
 }
 .art-img {
@@ -190,50 +186,74 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   width: 100%;
   height: 100%;
   object-fit: contain;
-  /* 누끼: 스캔의 밝은 한지 바탕이 우리 배경에 녹아든다 */
   mix-blend-mode: multiply;
   filter: sepia(0.08) contrast(1.02);
   user-select: none;
 }
-.art-base,
-.art-layer {
+
+/* ── 콜라주 ── */
+.backdrop {
   position: absolute;
-  inset: 0;
+  inset: -6%;
+  will-change: transform, opacity;
+}
+.backdrop img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(30px) saturate(0.85);
+}
+.cut-wrap {
+  position: absolute;
   will-change: transform;
+  filter: drop-shadow(0 18px 30px rgba(34, 28, 22, 0.28));
+}
+.cut-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
 }
 
-/* 레이어 고유의 잔모션 — 그림 자체가 숨쉰다 */
-.art-img.sway {
+/* 누끼 인물 고유의 잔모션 — 그림 자체가 살아 있다 */
+.cut-img.sway {
   animation: idleSway 4.6s ease-in-out infinite alternate;
-  transform-origin: 40% 85%;
+  transform-origin: 45% 88%;
 }
 @keyframes idleSway {
-  from { transform: rotate(-0.9deg); }
-  to { transform: rotate(1.1deg) translateY(-3px); }
+  from { transform: rotate(-1.6deg); }
+  to { transform: rotate(2deg) translateY(-4px); }
 }
-.art-img.bob {
+.cut-img.bob {
   animation: idleBob 3.6s ease-in-out infinite alternate;
 }
 @keyframes idleBob {
   from { transform: translateY(0); }
-  to { transform: translateY(-5px); }
+  to { transform: translateY(-6px); }
 }
-.art-img.breathe {
+.cut-img.breathe {
   animation: idleBreathe 4.8s ease-in-out infinite;
-  transform-origin: 45% 60%;
+  transform-origin: 45% 65%;
 }
 @keyframes idleBreathe {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.014); }
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.02) rotate(0.5deg); }
 }
-.art-img.tussle {
+.cut-img.tussle {
   animation: idleTussle 3.8s ease-in-out infinite;
-  transform-origin: 50% 78%;
+  transform-origin: 50% 80%;
 }
 @keyframes idleTussle {
-  0%, 100% { transform: translateX(-4px) rotate(-0.7deg); }
-  45% { transform: translateX(5px) rotate(0.8deg); }
-  70% { transform: translateX(2px) translateY(-4px) rotate(0.4deg); }
+  0%, 100% { transform: translateX(-6px) rotate(-1.2deg); }
+  45% { transform: translateX(7px) rotate(1.4deg); }
+  70% { transform: translateX(3px) translateY(-6px) rotate(0.6deg); }
+}
+.cut-img.drift {
+  animation: idleDrift 6s ease-in-out infinite alternate;
+}
+@keyframes idleDrift {
+  from { transform: translateY(0) rotate(-0.4deg); }
+  to { transform: translateY(-8px) rotate(0.6deg); }
 }
 
 /* ── 수면 반영 ── */
@@ -242,7 +262,6 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   inset: 0 0 44% 0;
 }
 .w-main .art-img {
-  object-fit: contain;
   object-position: bottom center;
 }
 .w-line {
@@ -351,7 +370,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .art-img,
+  .cut-img,
   .pd,
   .stage-drop,
   .stage-flake,
