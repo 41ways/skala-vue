@@ -350,22 +350,6 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
         <div class="paint" :class="{ windy: c.wind >= 6, gale: c.wind >= 10, blank: !artMap[c.id].img }" :style="paintStyle(i, artMap[c.id])">
           <img v-if="artMap[c.id].img" :src="artMap[c.id].img" :alt="artMap[c.id].caption" loading="lazy" decoding="async" draggable="false" />
         </div>
-        <!-- 실황 연동 — 흐리거나 구름 끼면 안개 띠가 지나간다 (고정 효과가 없는 도시) -->
-        <template v-if="!fxMap[c.id]?.mist && (c.status === '흐림' || c.status === '구름' || c.status === '안개')">
-          <span v-for="(m, j) in mists" :key="'wm' + j" class="mistband" :style="[m, { top: 26 + j * 9 + '%' }]"></span>
-        </template>
-        <!-- 도시별 — 구름·물결·안개·번개 -->
-        <template v-if="fxMap[c.id]">
-          <div class="fx" :class="fxMap[c.id].kind" :style="[paintStyle(i, artMap[c.id]), { clipPath: fxMap[c.id].clip }]">
-            <img :src="artMap[c.id].img" alt="" loading="lazy" decoding="async" draggable="false" />
-          </div>
-          <template v-if="fxMap[c.id].mist">
-            <span v-for="(m, j) in mists" :key="'m' + j" class="mistband" :style="[m, { top: fxMap[c.id].mistTop + j * 9 + '%' }]"></span>
-          </template>
-          <span v-if="fxMap[c.id].sun" class="sunglow" :style="fxMap[c.id].sun"></span>
-          <span v-if="fxMap[c.id].storm" class="storm"></span>
-          <span v-if="fxMap[c.id].lightning" class="lightning"></span>
-        </template>
         <!-- 날씨 기운 + 도시별 효과 — 그림과 함께 나타난다 -->
         <div class="fx-group" :style="fxVis(i)">
           <template v-if="c.status === '비' || c.status === '뇌우'">
