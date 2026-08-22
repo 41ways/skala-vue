@@ -7,6 +7,7 @@
 //  · 비 그림 챕터에는 비 오는 도시, 맑은 그림 챕터에는 맑은 도시
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import ArtStage from '@/components/minhwa/ArtStage.vue'
+import ScrollSheet from '@/components/minhwa/ScrollSheet.vue'
 import InkRipple from '@/components/minhwa/InkRipple.vue'
 import ScrollHint from '@/components/minhwa/ScrollHint.vue'
 import { useWeather } from '@/composables/useWeather.js'
@@ -308,6 +309,8 @@ onBeforeUnmount(() => {
 })
 
 // 정보 오버레이 : 그림이 자리잡은 뒤 순차 등장
+// 두루마리 날씨첩 — 화기의 고을을 누르면 펼쳐진다
+const sheetCity = ref(null)
 const activeToneLight = computed(() => {
   const i = activeIdx.value
   if (i < 0) return false
@@ -454,9 +457,9 @@ function jumpTo(r) {
         <aside class="side-cities" :class="{ light: fld(ch, i, 'tone') === 'light' }" :style="sideStyle(i)">
           <p class="side-cap"><i class="cap-seal">{{ fld(ch, i, 'wHanja') }}</i>이 화폭의 고을</p>
           <template v-if="citiesFor(ch, i).length">
-            <router-link v-for="c in citiesFor(ch, i)" :key="c.id" class="vc" :to="`/weather/${c.id}`">
+            <button v-for="c in citiesFor(ch, i)" :key="c.id" class="vc" @click="sheetCity = c">
               <b>{{ c.name }}</b><span>{{ c.temp }}° {{ c.status }}</span>
-            </router-link>
+            </button>
           </template>
           <p v-else class="vc vc-empty">{{ fld(ch, i, 'empty') }}</p>
         </aside>
@@ -473,6 +476,8 @@ function jumpTo(r) {
         </button>
       </div>
     </section>
+
+    <ScrollSheet :city="sheetCity" @close="sheetCity = null" />
 
     <!-- ══ 발문 ══ -->
     <section class="outro">
@@ -985,8 +990,8 @@ function jumpTo(r) {
   flex-direction: column;
   align-items: flex-start;
   gap: 15px;
-  max-height: 62vh;
-  padding: 16px 12px;
+  max-height: 72vh;
+  padding: 18px 14px;
   border-radius: 8px;
   color: var(--ink);
   /* 테두리 없는 종이 물결 — 부드럽게 번지는 한지 바탕이 글자를 받친다 */
@@ -1032,8 +1037,13 @@ function jumpTo(r) {
 /* 도시 한 줄 = 세로 글줄 하나 */
 .vc {
   pointer-events: auto;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
   font-family: var(--font-display);
-  font-size: 27px;
+  font-size: 32px;
   font-weight: 700;
   letter-spacing: 0.2em;
   color: inherit;
