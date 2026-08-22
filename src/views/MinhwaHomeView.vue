@@ -361,7 +361,7 @@ function infoStyle(i, order = 0) {
 const heroStyle = computed(() => ({
   pointerEvents: heroP.value > 0.3 ? 'none' : 'auto',
   transform: `scale(${(1 - heroP.value * 0.12).toFixed(4)}) translateY(${(heroP.value * -6).toFixed(2)}%)`,
-  opacity: clamp01((1 - heroP.value) / 0.5).toFixed(3),
+  opacity: (1 - clamp01((heroP.value - 0.12) / 0.28)).toFixed(3), // 문이 열리기 시작하면 제목이 먼저 물러난다
 }))
 
 // 레일: 병합 챕터는 두 항목(인왕/오봉)으로 나눠 표시
