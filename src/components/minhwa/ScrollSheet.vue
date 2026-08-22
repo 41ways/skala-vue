@@ -3,6 +3,8 @@
 // 고을을 누르면 옻칠 축 사이로 시전지(詩箋紙)가 펼쳐지고, 그 고을의 하늘을 세로 기문으로 적는다.
 import { computed, watch, onBeforeUnmount, nextTick, ref } from 'vue'
 import hanjiImg from '@/assets/minhwa-art/bg/mudong.jpg'
+import rodImg from '@/assets/minhwa-art/rod.png'
+import silkImg from '@/assets/minhwa-art/silk.jpg'
 
 const props = defineProps({
   city: { type: Object, default: null },
@@ -78,11 +80,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     <div v-if="city" class="sheet-veil" @click.self="emit('close')">
       <div class="scroll" role="dialog" aria-modal="true" :aria-label="city.name + ' 날씨첩'">
         <!-- 옻칠 축 — 옥 축두 -->
-        <span class="rod rod-l"></span>
-        <span class="rod rod-r"></span>
+        <span class="rod rod-l"><img :src="rodImg" alt="" draggable="false" /></span>
+        <span class="rod rod-r"><img :src="rodImg" alt="" draggable="false" /></span>
 
         <!-- 비단 표장(만자문) → 시전지 -->
-        <div class="silk">
+        <div class="silk" :style="{ backgroundImage: `url(${silkImg})` }">
           <div class="paper" :style="{ backgroundImage: `url(${hanjiImg})` }">
             <span class="roll roll-l"></span>
             <span class="roll roll-r"></span>
@@ -149,74 +151,57 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   filter: blur(6px);
   z-index: -1;
 }
-/* 축 — 옻칠 나무에 결 */
+/* 축 — 로즈우드 사진 텍스처 + 옥 축두 (rod.png) */
 .rod {
   position: relative;
   z-index: 3;
-  flex: 0 0 34px;
-  margin: -34px 0;
-  border-radius: 17px;
-  background:
-    /* 옻칠 광택 띠 */
-    linear-gradient(90deg, transparent 30%, rgba(255, 235, 210, 0.38) 40%, rgba(255, 245, 225, 0.55) 44%, rgba(255, 235, 210, 0.2) 50%, transparent 62%),
-    /* 세로 나뭇결 */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='200'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55 0.012' numOctaves='3' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.03 0 0 0 0 0.01 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='34' height='200' filter='url(%23w)'/%3E%3C/svg%3E"),
-    /* 원기둥 음영 */
-    linear-gradient(90deg, #1a0a06 0%, #4a2416 14%, #8a4a2c 38%, #b2673d 48%, #7d4226 66%, #3a1a10 86%, #140805 100%);
-  box-shadow:
-    inset 0 0 10px rgba(0, 0, 0, 0.6),
-    inset -4px 0 8px rgba(0, 0, 0, 0.45),
-    0 10px 18px rgba(0, 0, 0, 0.5);
+  flex: 0 0 44px;
+  margin: -44px 0;
   animation: rodIn 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.55));
+}
+.rod img {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: 100%;
+  width: auto;
+  transform: translateX(-50%);
+  user-select: none;
+  pointer-events: none;
 }
 .rod-l { --dir: 1; order: 1; }
 .rod-r { --dir: -1; order: 3; }
 .silk { order: 2; }
 /* 축 두 개가 아래서 함께 솟아오른 뒤, 양옆으로 벌어진다 */
 @keyframes rodIn {
-  0% { transform: translateX(calc(var(--dir) * (min(960px, 94vw) / 2 - 14px))) translateY(75vh); }
-  45% { transform: translateX(calc(var(--dir) * (min(960px, 94vw) / 2 - 14px))) translateY(0); }
+  0% { transform: translateX(calc(var(--dir) * (min(960px, 94vw) / 2 - 22px))) translateY(75vh); }
+  45% { transform: translateX(calc(var(--dir) * (min(960px, 94vw) / 2 - 22px))) translateY(0); }
   100% { transform: translateX(0) translateY(0); }
 }
-.rod::before,
-.rod::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  width: 46px;
-  height: 46px;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.95) 0 6%, transparent 18%),
-    radial-gradient(circle at 38% 36%, #eef0e0, #a9b99b 38%, #6f8262 62%, #3f4f37 84%, #25301f);
-  box-shadow:
-    0 6px 12px rgba(0, 0, 0, 0.5),
-    inset -5px -6px 10px rgba(0, 0, 0, 0.35),
-    inset 0 0 0 2px rgba(50, 30, 18, 0.45);
-}
-.rod::before { top: -23px; }
-.rod::after { bottom: -23px; }
 
 /* 비단 표장 — 쪽빛 명주 만자(卍)문 */
 .silk {
   flex: 1;
-  padding: 16px 18px;
+  padding: 18px 20px;
   background-color: #22345a;
-  background-image:
-    /* 비단 광택 */
-    linear-gradient(115deg, rgba(255, 255, 255, 0.16), transparent 28%, transparent 60%, rgba(255, 255, 255, 0.1) 78%, transparent),
-    /* 만자문 */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='1.2'%3E%3Cpath d='M4 4h8v8M12 4v8h8M4 12h8M20 12v8h-8M12 20v4M4 20h8'/%3E%3C/g%3E%3C/svg%3E"),
-    /* 직조 결 (씨실·날실) */
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 3px);
+  background-size: 360px 360px;
+  background-blend-mode: normal;
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
-    inset 0 0 46px rgba(0, 0, 0, 0.4),
-    inset 0 2px 0 rgba(255, 255, 255, 0.12);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+    inset 0 0 48px rgba(0, 0, 0, 0.45),
+    inset 0 2px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
   transform-origin: 50% 50%;
   animation: unroll 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.silk::before {
+  /* 비단 광택 */
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(112deg, rgba(255, 255, 255, 0.18), transparent 26%, transparent 58%, rgba(255, 255, 255, 0.12) 76%, transparent);
 }
 @keyframes unroll {
   0% { transform: translateY(75vh) scaleX(0.03); }
