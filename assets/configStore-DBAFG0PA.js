@@ -1,0 +1,1 @@
+import{g as e,x as t,z as n}from"./index-R6lKGPK1.js";var r=e(`config`,()=>{let e=n(`celsius`),r=n(``);return{unit:e,sortOrder:r,unitSymbol:t(()=>e.value===`celsius`?`℃`:`℉`),toggleUnit:()=>{e.value=e.value===`celsius`?`fahrenheit`:`celsius`},toTemp:t=>e.value===`fahrenheit`?Math.round(t*9/5+32):t,changeSort:e=>{r.value=r.value===e?``:e}}});export{r as t};
