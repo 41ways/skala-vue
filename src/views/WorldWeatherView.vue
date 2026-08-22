@@ -323,7 +323,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
               <span v-if="loading"> 살피는 중…</span>
             </p>
             <ol class="menu util">
-              <li v-for="(c, i) in cities" :key="c.id">
+              <li v-for="(c, i) in cities" :key="c.id" :style="{ animationDelay: (0.35 + i * 0.07).toFixed(2) + 's' }">
                 <button class="menu-item" @click="jump(i)">
                   <span class="m-name">{{ c.name }}</span>
                   <span class="m-dots"></span>
@@ -589,12 +589,6 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   opacity: 0;
   animation: menuIn 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
 }
-.menu li:nth-child(1) { animation-delay: 2.7s; }
-.menu li:nth-child(2) { animation-delay: 2.85s; }
-.menu li:nth-child(3) { animation-delay: 3s; }
-.menu li:nth-child(4) { animation-delay: 3.15s; }
-.menu li:nth-child(5) { animation-delay: 3.3s; }
-.menu li:nth-child(6) { animation-delay: 3.45s; }
 @keyframes menuIn {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
