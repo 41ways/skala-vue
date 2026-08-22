@@ -64,13 +64,16 @@ function cutStyle(c) {
   const d = c.depth ?? 14
   const x = props.mx * d * 0.6 + dive.value * (c.ox ?? 0)
   const y = props.my * d * 0.45 + dive.value * (c.oy ?? 0)
-  const s = 1 + dive.value * (c.ds ?? 0.06)
+  // 컷별 등장 순서(t): 무동 먼저, 악단이 시계방향으로 하나씩
+  const et = c.t === undefined ? 1 : easeOut(clamp01((props.p - c.t) / 0.09))
+  const s = (1 + dive.value * (c.ds ?? 0.06)) * (0.93 + et * 0.07)
   return {
     left: c.left,
     top: c.top,
     width: c.w,
     zIndex: c.z ?? 2,
-    transform: `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${s.toFixed(4)})`,
+    opacity: et.toFixed(3),
+    transform: `translate3d(${x.toFixed(1)}px, ${(y + (1 - et) * 26).toFixed(1)}px, 0) scale(${s.toFixed(4)})`,
   }
 }
 

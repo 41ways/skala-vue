@@ -80,16 +80,13 @@ const chapters = [
     effect: 'collage',
     focal: '38% 62%',
     cuts: [
-      // 악단 반원 — 뒤에서 가락을 탄다
-      { src: cut('mudong_band'), left: '16%', top: '3%', w: '64%', depth: 8, ox: -8, oy: -12, ds: 0.02, idle: 'bob', z: 1 },
-      // 대금·해금 — 오른쪽 아래
-      { src: cut('mudong_bottomright'), left: '58%', top: '38%', w: '27%', depth: 14, ox: 12, oy: 6, ds: 0.04, idle: 'bob', z: 2 },
-      // 무동 — 앞으로 크게 나서며 춤춘다
+      // 무동이 먼저 — 그 뒤 악단이 시계방향으로 한 명씩
       {
         src: cut('mudong_dancer'),
-        left: '20%',
+        t: 0.04,
+        left: '18%',
         top: '30%',
-        w: '31%',
+        w: '30%',
         depth: 28,
         ox: -14,
         oy: 18,
@@ -102,6 +99,12 @@ const chapters = [
           { src: cut('mudong_leg'), left: '42.4%', top: '52.2%', w: '27.2%', anim: 'p-kick', origin: '55% 6%' },
         ],
       },
+      { src: cut('mudong_buk'), t: 0.1, left: '5%', top: '3%', w: '21%', depth: 8, ox: -8, oy: -10, ds: 0.02, idle: 'bob', z: 1 },
+      { src: cut('mudong_janggu'), t: 0.16, left: '27%', top: '7%', w: '20%', depth: 8, oy: -12, ds: 0.02, idle: 'bob', z: 1 },
+      { src: cut('mudong_piri'), t: 0.22, left: '47%', top: '8%', w: '15%', depth: 9, oy: -10, ds: 0.02, idle: 'bob', z: 1 },
+      { src: cut('mudong_taepyeongso'), t: 0.28, left: '62%', top: '5%', w: '18%', depth: 9, ox: 8, oy: -10, ds: 0.02, idle: 'bob', z: 1 },
+      { src: cut('mudong_daegeum'), t: 0.34, left: '64%', top: '38%', w: '20%', depth: 12, ox: 12, ds: 0.03, idle: 'bob', z: 2 },
+      { src: cut('mudong_haegeum'), t: 0.4, left: '54%', top: '54%', w: '27%', depth: 14, ox: 12, oy: 10, ds: 0.04, idle: 'bob', z: 2 },
     ],
     line: '소매가 바람을 탑니다 — 바람 부는 고을들입니다.',
     empty: '오늘은 바람 든 고을이 없습니다.',
