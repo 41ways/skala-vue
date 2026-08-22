@@ -64,7 +64,7 @@ const emit = defineEmits(['change-sort', 'toggle-filter'])
   align-items: center;
   gap: 16px;
   font-size: 12px;
-  color: #6b7a80;
+  color: var(--ink-soft);
 }
 
 .stats {
@@ -98,23 +98,23 @@ const emit = defineEmits(['change-sort', 'toggle-filter'])
 .sort button {
   width: 24px;
   height: 24px;
-  border: 1px solid #ccd5d8;
-  background: white;
+  border: 1px solid var(--line);
+  background: var(--baek);
   border-radius: 3px;
   font-size: 13px;
   line-height: 1;
-  color: #7f8b92;
+  color: var(--ink-soft);
   cursor: pointer;
 }
 
 .sort button:hover {
-  border-color: #1e2f33;
-  color: #1e2f33;
+  border-color: var(--ink);
+  color: var(--ink);
 }
 
 .sort button.on {
-  background-color: #1e2f33;
-  border-color: #1e2f33;
+  background-color: var(--ink);
+  border-color: var(--ink);
   color: white;
 }
 </style>

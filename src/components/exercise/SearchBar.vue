@@ -32,19 +32,19 @@ const onInput = (e) => {
   border: none;
   outline: none;
   background: none;
-  border-bottom: 1px solid #ccd5da;
+  border-bottom: 1px solid var(--line);
   font-size: 16px;
   padding: 4px 0;
   color: inherit;
 }
 
 .search input:focus {
-  border-bottom-color: #22303a;
+  border-bottom-color: var(--ink);
 }
 
 .typing {
   font-size: 12px;
-  color: #9aa6ad;
+  color: var(--ink-soft);
   min-width: 40px;
   text-align: right;
 }

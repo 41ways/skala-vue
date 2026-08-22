@@ -16,17 +16,17 @@ defineProps({
 
 <style scoped>
 .panel {
-  border: 1px solid #e6ebee;
+  border: 1px solid var(--line);
   border-radius: 6px;
   padding: 16px 18px;
   margin-bottom: 14px;
-  background-color: #fbfcfd;
+  background-color: rgba(251, 246, 234, 0.7);
 }
 
 .panel h3 {
   margin: 0 0 12px;
   font-size: 12px;
-  color: #6b7a84;
+  color: var(--ink-soft);
   font-weight: 600;
 }
 </style>

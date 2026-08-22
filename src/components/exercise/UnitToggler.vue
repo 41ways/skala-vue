@@ -20,7 +20,7 @@ const { toggleUnit } = configStore
   display: flex;
   align-items: center;
   gap: 2px;
-  border: 1px solid #48626a;
+  border: 1px solid var(--ink-soft);
   background: none;
   border-radius: 3px;
   padding: 3px 4px;
@@ -31,12 +31,12 @@ const { toggleUnit } = configStore
   padding: 2px 7px;
   border-radius: 2px;
   font-size: 12px;
-  color: #8ba0a5;
+  color: var(--ink-soft);
 }
 
 .toggler span.on {
-  background-color: #dde8e9;
-  color: #1e2f33;
+  background-color: rgba(251, 246, 234, 0.7);
+  color: var(--ink);
 }
 
 .toggler .now {

@@ -132,7 +132,7 @@ const goDetail = (city) => {
 
 <style scoped>
 .laundry {
-  color: #1e2f33;
+  color: var(--ink);
 }
 
 .head {
@@ -147,7 +147,7 @@ const goDetail = (city) => {
 .head p {
   margin: 0;
   font-size: 12px;
-  color: #7f8b92;
+  color: var(--ink-soft);
 }
 
 .banner {
@@ -193,15 +193,15 @@ const goDetail = (city) => {
 .empty {
   padding: 28px 0;
   text-align: center;
-  color: #9aa6ab;
+  color: var(--ink-soft);
   font-size: 14px;
 }
 
 .bar {
   margin: 6px 0 0;
   padding: 11px 16px;
-  background-color: #1e2f33;
-  color: #dde8e9;
+  background-color: var(--ink);
+  color: var(--line);
   border-radius: 4px;
   font-size: 13px;
 }

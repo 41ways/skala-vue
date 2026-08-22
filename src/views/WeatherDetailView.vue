@@ -71,7 +71,7 @@ const goBack = () => {
 
 <style scoped>
 .detail {
-  color: #1e2f33;
+  color: var(--ink);
 }
 
 .back {
@@ -80,12 +80,12 @@ const goBack = () => {
   padding: 0;
   margin-bottom: 14px;
   font-size: 13px;
-  color: #6b7a80;
+  color: var(--ink-soft);
   cursor: pointer;
 }
 
 .back:hover {
-  color: #1e2f33;
+  color: var(--ink);
 }
 
 header {
@@ -96,24 +96,24 @@ header {
 }
 
 header.best {
-  background-color: #e0f1f2;
-  border-left-color: #1f8a8f;
-  color: #14666a;
+  background-color: rgba(47, 86, 122, 0.1);
+  border-left-color: var(--cheong);
+  color: var(--cheong);
 }
 header.good {
-  background-color: #e5f1ea;
-  border-left-color: #4a8f6b;
-  color: #326b4f;
+  background-color: rgba(63, 125, 82, 0.12);
+  border-left-color: var(--rok);
+  color: var(--rok);
 }
 header.fair {
-  background-color: #f6eeda;
-  border-left-color: #a8813c;
-  color: #7d5f24;
+  background-color: rgba(206, 155, 59, 0.16);
+  border-left-color: var(--hwang);
+  color: var(--hwang);
 }
 header.none {
-  background-color: #edf0f2;
-  border-left-color: #8b969d;
-  color: #5f6c74;
+  background-color: rgba(251, 246, 234, 0.7);
+  border-left-color: var(--ink-soft);
+  color: var(--ink-soft);
 }
 
 header p {
@@ -145,13 +145,13 @@ header p {
   gap: 10px 16px;
   margin: 0;
   padding: 16px 18px;
-  border: 1px solid #e4eaec;
+  border: 1px solid var(--line);
   border-radius: 4px;
   font-size: 13px;
 }
 
 .obs dt {
-  color: #7f8b92;
+  color: var(--ink-soft);
 }
 
 .obs dd {
@@ -161,6 +161,6 @@ header p {
 .none {
   padding: 40px 0;
   text-align: center;
-  color: #9aa6ab;
+  color: var(--ink-soft);
 }
 </style>

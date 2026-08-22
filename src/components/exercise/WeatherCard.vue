@@ -58,8 +58,8 @@ const { unitSymbol } = storeToRefs(configStore)
   align-items: center;
   gap: 16px;
   padding: 14px 18px;
-  background-color: white;
-  border: 1px solid #e4eaec;
+  background-color: var(--baek);
+  border: 1px solid var(--line);
   border-left-width: 5px;
   border-radius: 4px;
   margin-bottom: 8px;
@@ -67,56 +67,56 @@ const { unitSymbol } = storeToRefs(configStore)
 }
 
 .card:hover {
-  background-color: #fafcfc;
+  background-color: rgba(251, 246, 234, 0.75);
 }
 
 .card.on {
-  background-color: #f2f8f8;
-  border-color: #1e2f33;
+  background-color: rgba(206, 155, 59, 0.12);
+  border-color: var(--ink);
   border-left-width: 5px;
 }
 
 .card.best {
-  border-left-color: #1f8a8f;
+  border-left-color: var(--cheong);
 }
 .card.good {
-  border-left-color: #4a8f6b;
+  border-left-color: var(--rok);
 }
 .card.fair {
-  border-left-color: #a8813c;
+  border-left-color: var(--hwang);
 }
 .card.none {
-  border-left-color: #8b969d;
+  border-left-color: var(--ink-soft);
 }
 
 .card.best .score {
-  color: #1f8a8f;
+  color: var(--cheong);
 }
 .card.good .score {
-  color: #4a8f6b;
+  color: var(--rok);
 }
 .card.fair .score {
-  color: #a8813c;
+  color: var(--hwang);
 }
 .card.none .score {
-  color: #8b969d;
+  color: var(--ink-soft);
 }
 
 .card.best .tag {
-  background-color: #e0f1f2;
-  color: #14666a;
+  background-color: rgba(47, 86, 122, 0.1);
+  color: var(--cheong);
 }
 .card.good .tag {
-  background-color: #e5f1ea;
-  color: #326b4f;
+  background-color: rgba(63, 125, 82, 0.12);
+  color: var(--rok);
 }
 .card.fair .tag {
-  background-color: #f6eeda;
-  color: #7d5f24;
+  background-color: rgba(206, 155, 59, 0.16);
+  color: var(--hwang);
 }
 .card.none .tag {
-  background-color: #edf0f2;
-  color: #5f6c74;
+  background-color: rgba(251, 246, 234, 0.7);
+  color: var(--ink-soft);
 }
 
 .left p {
@@ -130,7 +130,7 @@ const { unitSymbol } = storeToRefs(configStore)
 
 .cond {
   font-size: 12px;
-  color: #7f8b92;
+  color: var(--ink-soft);
   margin-top: 3px;
 }
 
@@ -162,17 +162,17 @@ const { unitSymbol } = storeToRefs(configStore)
 }
 
 .right button {
-  border: 1px solid #ccd5d8;
-  background: white;
+  border: 1px solid var(--line);
+  background: var(--baek);
   border-radius: 3px;
   padding: 4px 10px;
   font-size: 12px;
-  color: #4a5860;
+  color: var(--ink-soft);
   cursor: pointer;
 }
 
 .right button:hover {
-  border-color: #1e2f33;
-  color: #1e2f33;
+  border-color: var(--ink);
+  color: var(--ink);
 }
 </style>
