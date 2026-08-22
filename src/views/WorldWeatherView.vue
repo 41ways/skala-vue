@@ -621,7 +621,7 @@ const restChars = (s) => s.slice(1)
 .flow {
   position: relative;
   z-index: 5;
-  padding: 108vh 5% 16vh;
+  padding: 168vh 5% 22vh; /* 화폭을 충분히 감상한 뒤에야 카드가 올라온다 */
   pointer-events: none;
 }
 .cards {
