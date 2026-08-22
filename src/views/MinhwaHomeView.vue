@@ -321,19 +321,32 @@ onBeforeUnmount(() => {
 // 두루마리 날씨첩 — 화기의 고을을 누르면 펼쳐진다
 const sheetCity = ref(null)
 // 대청 — 스크롤하면 분합문이 양쪽으로 열리고, 문밖에 인왕제색도가 선다
-// 처음엔 흐린 대청 — 제목이 물러나는 동안 진해지고, 그 다음 문이 열린다
+// 처음엔 흐린 대청 — 제목이 물러나는 동안 진해지고 → 문이 열리면 빈 마당에 비 → 틀이 걷히며 인왕제색도가 선염된다
 const dcFocus = computed(() => easeOut(clamp01((heroP.value - 0.04) / 0.3)))
-const dcOpen = computed(() => easeOut(clamp01((heroP.value - 0.3) / 0.5)))
+const dcOpen = computed(() => easeOut(clamp01((heroP.value - 0.28) / 0.4)))
+const dcWash = computed(() => easeOut(clamp01((heroP.value - 0.64) / 0.34)))
+const dcRain = computed(() => clamp01((dcOpen.value - 0.1) / 0.4) * (1 - dcWash.value * 0.45))
 const dcPhotoStyle = computed(() => ({
   '--o': dcOpen.value.toFixed(3),
-  opacity: (0.22 + dcFocus.value * 0.78).toFixed(3),
+  opacity: ((0.22 + dcFocus.value * 0.78) * (1 - dcWash.value)).toFixed(3),
   filter: `contrast(${(0.7 + dcFocus.value * 0.3).toFixed(3)}) brightness(${(1.4 - dcFocus.value * 0.4).toFixed(3)}) saturate(${(0.55 + dcFocus.value * 0.45).toFixed(2)})`,
 }))
 const dcViewStyle = computed(() => ({
   transform: `scale(${(1.14 - dcOpen.value * 0.1).toFixed(3)})`,
-  // 문 뒤 인왕은 대청이 흐릴 때 함께 옅게 — 흰 한지 톤으로 가라앉힌다
-  filter: `brightness(${(0.55 + dcOpen.value * 0.45).toFixed(3)}) saturate(${(0.8 + dcOpen.value * 0.2).toFixed(2)})`,
   opacity: (0.25 + dcFocus.value * 0.75).toFixed(3),
+}))
+// 선염 — 먹이 번지듯 흐림·무채색에서 천천히 또렷해진다
+const dcInwangStyle = computed(() => ({
+  opacity: dcWash.value.toFixed(3),
+  filter: `blur(${((1 - dcWash.value) * 16).toFixed(1)}px) saturate(${dcWash.value.toFixed(2)}) contrast(${(0.78 + dcWash.value * 0.22).toFixed(2)}) brightness(${(1.15 - dcWash.value * 0.15).toFixed(2)})`,
+  transform: `scale(${(1.06 - dcWash.value * 0.06).toFixed(3)})`,
+}))
+const dcCapStyle = computed(() => ({ opacity: (1 - dcWash.value).toFixed(3) }))
+const heroDrops = Array.from({ length: 36 }, (_, i) => ({
+  left: ((i * 37) % 100) + '%',
+  animationDuration: 0.85 + ((i * 13) % 10) / 11 + 's',
+  animationDelay: -((i * 7) % 20) / 10 + 's',
+  opacity: 0.3 + ((i * 11) % 10) / 20,
 }))
 const activeToneLight = computed(() => {
   const i = activeIdx.value
@@ -413,15 +426,19 @@ function jumpTo(r) {
       <div class="hero-stage">
         <!-- 대청 — 문밖엔 오늘의 하늘(인왕제색도), 앞엔 분합문. 스크롤하면 문이 열린다 -->
         <div class="dc-view" :style="dcViewStyle">
-          <img :src="inwangImg" alt="" draggable="false" />
-          <span class="dc-haze"></span>
+          <span class="dc-blank"></span>
+          <img :src="inwangImg" alt="" draggable="false" :style="dcInwangStyle" />
+          <span class="dc-rain" :style="{ opacity: dcRain.toFixed(3) }">
+            <span v-for="(d, j) in heroDrops" :key="j" class="dc-drop" :style="d"></span>
+          </span>
+          <span class="dc-haze" :style="{ opacity: (1 - dcWash * 0.7).toFixed(3) }"></span>
         </div>
         <div class="dc-photo" :style="dcPhotoStyle">
           <img class="dc-base" :src="dcBase" alt="" fetchpriority="high" decoding="async" draggable="false" />
           <img class="dc-door l" :src="dcDoorL" alt="" fetchpriority="high" decoding="async" draggable="false" />
           <img class="dc-door r" :src="dcDoorR" alt="" fetchpriority="high" decoding="async" draggable="false" />
         </div>
-        <p class="dc-cap util">오리 이원익 종택 분합문 · 문화재청 (공공누리 제1유형)</p>
+        <p class="dc-cap util" :style="dcCapStyle">오리 이원익 종택 분합문 · 문화재청 (공공누리 제1유형)</p>
         <div class="hero-inner" :style="heroStyle">
           <svg class="title-svg" viewBox="0 0 900 260">
             <text x="450" y="118" class="stroke-title t-main">팔도청우록</text>
@@ -561,7 +578,7 @@ function jumpTo(r) {
 
 /* ── 표제 (만국청우록 스타일 이식) ── */
 .hero-wrap {
-  height: 300vh; /* 제목 → 문 열림 → 인왕제색도 */
+  height: 380vh; /* 제목 → 문 열림 → 빈 마당의 비 → 인왕제색도 선염 */
 }
 .hero-stage {
   position: sticky;
@@ -927,11 +944,40 @@ function jumpTo(r) {
   will-change: transform, filter;
 }
 .dc-view img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: 50% 40%;
   user-select: none;
+  will-change: opacity, filter;
+}
+/* 문이 열리면 보이는 빈 마당 — 비 오는 날의 한지 빛 */
+.dc-blank {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(255, 252, 244, 0.55), transparent 60%),
+    linear-gradient(180deg, #e6e0d2 0%, #d4cdbd 55%, #bfb7a6 100%);
+}
+.dc-rain {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.dc-drop {
+  position: absolute;
+  top: -6%;
+  width: 1.5px;
+  height: 34px;
+  background: linear-gradient(180deg, transparent, rgba(62, 78, 96, 0.7));
+  transform: rotate(7deg);
+  animation: dcFall linear infinite;
+}
+@keyframes dcFall {
+  to { transform: translateY(112vh) rotate(7deg); }
 }
 .dc-haze {
   position: absolute;
@@ -1282,7 +1328,8 @@ function jumpTo(r) {
 
 @media (prefers-reduced-motion: reduce) {
   .side-title,
-  .rail-item {
+  .rail-item,
+  .dc-drop {
     animation: none !important;
   }
   .stroke-title {
