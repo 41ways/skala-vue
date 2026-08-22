@@ -15,6 +15,7 @@ export const cityCoords = {
   city_08: { lat: 36.35, lon: 127.38 }, // 대전
   city_09: { lat: 35.87, lon: 128.6 }, // 대구
   city_10: { lat: 37.88, lon: 127.73 }, // 춘천
+  city_11: { lat: -62.22, lon: -58.79 }, // 세종기지(남극)
 }
 
 // Open-Meteo weathercode → 민화 장면 상태

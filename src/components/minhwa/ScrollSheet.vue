@@ -15,7 +15,7 @@ const emit = defineEmits(['close'])
 
 const HANJA = { 맑음: '晴', 구름: '雲', 흐림: '陰', 비: '雨', 눈: '雪', 바람: '風', 뇌우: '雷', 안개: '霧' }
 const statusHanja = computed(() => HANJA[props.city?.status] ?? '天')
-const CITY_HANJA = { 서울: '漢城', 수원: '水原', 부산: '釜山', 광주: '光州', 강릉: '江陵', 제주: '濟州', 인천: '仁川', 대전: '大田', 대구: '大邱', 춘천: '春川' }
+const CITY_HANJA = { 서울: '漢城', 수원: '水原', 부산: '釜山', 광주: '光州', 강릉: '江陵', 제주: '濟州', 인천: '仁川', 대전: '大田', 대구: '大邱', 춘천: '春川', 세종기지: '世宗基地' }
 const cityHanja = computed(() => props.city?.hanja ?? CITY_HANJA[props.city?.name] ?? '')
 
 // 한자 숫자 — 二十五 식

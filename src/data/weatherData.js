@@ -9,6 +9,8 @@ export const weatherList = [
   { id: 'city_08', name: '대전', temp: 29, status: '맑음', humidity: 58, wind: 1.9, x: 40, y: 46 },
   { id: 'city_09', name: '대구', temp: 31, status: '맑음', humidity: 50, wind: 2.2, x: 66, y: 54 },
   { id: 'city_10', name: '춘천', temp: 26, status: '흐림', humidity: 72, wind: 1.4, x: 44, y: 14 },
+  // 남극 세종과학기지 — 국내 화폭의 마지막 폭 (눈은 늘 내린다)
+  { id: 'city_11', name: '세종기지', temp: -8, status: '눈', humidity: 85, wind: 9.5, x: 50, y: 99, snowAlways: true },
 ]
 
 // 해외 도시 — 세계화폭(스크롤텔링) 챕터. genre = 배정된 풍속화 장면
@@ -29,8 +31,6 @@ export const worldList = [
   { id: 'w_istanbul', name: '이스탄불', hanja: '伊斯坦堡', country: '튀르키예', lat: 41.01, lon: 28.98, temp: 27, status: '구름', humidity: 60, wind: 4.2, genre: 'mudong', line: '보스포루스의 물결 위로 두 대륙의 하늘이 만납니다' },
   // 시연용 — 실황 대신 고정값: 뇌우·비바람 (demo: true 이면 API를 건너뛴다)
   { id: 'w_skala', name: '스칼라', hanja: 'SKALA', country: '시연', lat: 37.5, lon: 127.04, temp: 21, status: '뇌우', humidity: 93, wind: 11.4, genre: 'inwang', demo: true, line: '시연의 하늘 — 번개가 치고 비바람이 유리 벽을 두드립니다' },
-  // 남극 세종과학기지 — 실황은 받되 눈은 늘 내린다(snowAlways)
-  { id: 'w_sejong', name: '세종기지', hanja: '世宗基地', country: '남극 킹조지섬', lat: -62.22, lon: -58.79, temp: -8, status: '눈', humidity: 85, wind: 9.5, genre: 'tiger', snowAlways: true, line: '빙산 사이로 눈발이 날리고, 기지 불빛만 깨어 있습니다' },
   { id: 'w_cairo', name: '카이로', hanja: '開羅', country: '이집트', lat: 30.04, lon: 31.24, temp: 35, status: '맑음', humidity: 30, wind: 3.5, genre: 'tiger', line: '사막의 바람이 첨탑 사이로 마른 볕을 실어 옵니다' },
 ]
 
