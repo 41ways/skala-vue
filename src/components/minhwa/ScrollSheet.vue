@@ -134,54 +134,93 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   display: flex;
   align-items: stretch;
   filter: drop-shadow(0 34px 50px rgba(0, 0, 0, 0.6));
+  transform: perspective(1400px) rotateX(3deg);
+}
+.scroll::after {
+  /* 바닥에 깔리는 그림자 */
+  content: '';
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -54px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0.55), transparent 70%);
+  filter: blur(6px);
+  z-index: -1;
 }
 /* 축 — 옻칠 나무에 결 */
 .rod {
   position: relative;
   z-index: 3;
-  flex: 0 0 24px;
-  margin: -30px 0;
-  border-radius: 12px;
+  flex: 0 0 34px;
+  margin: -34px 0;
+  border-radius: 17px;
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='120'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9 0.02' numOctaves='2' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.22 0'/%3E%3C/filter%3E%3Crect width='24' height='120' filter='url(%23w)'/%3E%3C/svg%3E"),
-    linear-gradient(90deg, #2a140d, #6d3b26 30%, #a3603f 48%, #6d3b26 70%, #22100a);
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.55), 0 6px 12px rgba(0, 0, 0, 0.45);
-  animation: rodIn 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    /* 옻칠 광택 띠 */
+    linear-gradient(90deg, transparent 30%, rgba(255, 235, 210, 0.38) 40%, rgba(255, 245, 225, 0.55) 44%, rgba(255, 235, 210, 0.2) 50%, transparent 62%),
+    /* 세로 나뭇결 */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='200'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55 0.012' numOctaves='3' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.03 0 0 0 0 0.01 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='34' height='200' filter='url(%23w)'/%3E%3C/svg%3E"),
+    /* 원기둥 음영 */
+    linear-gradient(90deg, #1a0a06 0%, #4a2416 14%, #8a4a2c 38%, #b2673d 48%, #7d4226 66%, #3a1a10 86%, #140805 100%);
+  box-shadow:
+    inset 0 0 10px rgba(0, 0, 0, 0.6),
+    inset -4px 0 8px rgba(0, 0, 0, 0.45),
+    0 10px 18px rgba(0, 0, 0, 0.5);
+  animation: rodIn 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 .rod-l { --dir: 1; }
 .rod-r { --dir: -1; }
+/* 축 두 개가 아래서 함께 솟아오른 뒤, 양옆으로 벌어진다 */
 @keyframes rodIn {
-  from { transform: translateX(calc(var(--dir) * (min(960px, 94vw) / 2 - 14px))); }
-  to { transform: translateX(0); }
+  0% { transform: translateX(calc(var(--dir) * (min(960px, 94vw) / 2 - 14px))) translateY(75vh); }
+  45% { transform: translateX(calc(var(--dir) * (min(960px, 94vw) / 2 - 14px))) translateY(0); }
+  100% { transform: translateX(0) translateY(0); }
 }
 .rod::before,
 .rod::after {
   content: '';
   position: absolute;
   left: 50%;
-  width: 34px;
-  height: 34px;
+  width: 46px;
+  height: 46px;
   transform: translateX(-50%);
   border-radius: 50%;
-  background: radial-gradient(circle at 36% 34%, #edead8, #9fb094 52%, #516045 86%);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45), inset 0 0 0 2px rgba(50, 30, 18, 0.55);
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.95) 0 6%, transparent 18%),
+    radial-gradient(circle at 38% 36%, #eef0e0, #a9b99b 38%, #6f8262 62%, #3f4f37 84%, #25301f);
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.5),
+    inset -5px -6px 10px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 2px rgba(50, 30, 18, 0.45);
 }
-.rod::before { top: -17px; }
-.rod::after { bottom: -17px; }
+.rod::before { top: -23px; }
+.rod::after { bottom: -23px; }
 
 /* 비단 표장 — 쪽빛 명주 만자(卍)문 */
 .silk {
   flex: 1;
   padding: 16px 18px;
-  background-color: #24365a;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.13)' stroke-width='1.2'%3E%3Cpath d='M4 4h8v8M12 4v8h8M4 12h8M20 12v8h-8M12 20v4M4 20h8'/%3E%3C/g%3E%3C/svg%3E");
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), inset 0 0 40px rgba(0, 0, 0, 0.35);
+  background-color: #22345a;
+  background-image:
+    /* 비단 광택 */
+    linear-gradient(115deg, rgba(255, 255, 255, 0.16), transparent 28%, transparent 60%, rgba(255, 255, 255, 0.1) 78%, transparent),
+    /* 만자문 */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.12)' stroke-width='1.2'%3E%3Cpath d='M4 4h8v8M12 4v8h8M4 12h8M20 12v8h-8M12 20v4M4 20h8'/%3E%3C/g%3E%3C/svg%3E"),
+    /* 직조 결 (씨실·날실) */
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 3px);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+    inset 0 0 46px rgba(0, 0, 0, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.12);
   transform-origin: 50% 50%;
-  animation: unroll 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: unroll 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 @keyframes unroll {
-  from { transform: scaleX(0.03); }
-  to { transform: scaleX(1); }
+  0% { transform: translateY(75vh) scaleX(0.03); }
+  45% { transform: translateY(0) scaleX(0.03); }
+  100% { transform: translateY(0) scaleX(1); }
 }
 /* 시전지 — 진짜 한지 결 위에 주홍 괘선 */
 .paper {
@@ -190,29 +229,56 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   padding: 26px 34px 26px 30px;
   background-size: cover;
   background-position: 50% 50%;
-  box-shadow: inset 0 0 0 1px rgba(120, 80, 40, 0.35), inset 0 0 50px rgba(120, 90, 50, 0.25);
+  box-shadow:
+    inset 0 0 0 1px rgba(120, 80, 40, 0.35),
+    inset 0 0 60px rgba(120, 90, 50, 0.28),
+    inset 0 -18px 30px -20px rgba(80, 55, 25, 0.35);
   overflow: hidden;
-  animation: inkIn 0.6s ease-out 0.5s both;
+  animation: inkIn 0.6s ease-out 1.15s both;
 }
 @keyframes inkIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+/* 종이 면의 미세한 굴곡 — 빛이 스치는 결 */
+.paper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.14) 18%, rgba(0, 0, 0, 0.05) 34%, rgba(255, 255, 255, 0.1) 52%, rgba(0, 0, 0, 0.05) 70%, rgba(255, 255, 255, 0.12) 86%, rgba(0, 0, 0, 0.06));
+  mix-blend-mode: soft-light;
+}
 .roll {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 46px;
+  top: -6px;
+  bottom: -6px;
+  width: 58px;
   pointer-events: none;
   z-index: 2;
 }
+/* 겹겹이 감긴 종이 — 밝고 어두운 띠가 원통처럼 반복 */
 .roll-l {
-  left: 0;
-  background: linear-gradient(90deg, rgba(60, 40, 20, 0.32), rgba(60, 40, 20, 0.08) 40%, transparent);
+  left: -10px;
+  background:
+    linear-gradient(90deg,
+      rgba(80, 55, 30, 0.55) 0, rgba(250, 242, 225, 0.85) 6px, rgba(120, 90, 55, 0.5) 11px,
+      rgba(250, 242, 225, 0.8) 17px, rgba(120, 90, 55, 0.42) 23px, rgba(250, 242, 225, 0.7) 30px,
+      rgba(120, 90, 55, 0.3) 38px, rgba(250, 242, 225, 0.35) 46px, transparent 58px);
+  box-shadow: 8px 0 14px -4px rgba(40, 25, 10, 0.35);
+  border-radius: 0 40% 40% 0 / 0 8% 8% 0;
 }
 .roll-r {
-  right: 0;
-  background: linear-gradient(270deg, rgba(60, 40, 20, 0.32), rgba(60, 40, 20, 0.08) 40%, transparent);
+  right: -10px;
+  background:
+    linear-gradient(270deg,
+      rgba(80, 55, 30, 0.55) 0, rgba(250, 242, 225, 0.85) 6px, rgba(120, 90, 55, 0.5) 11px,
+      rgba(250, 242, 225, 0.8) 17px, rgba(120, 90, 55, 0.42) 23px, rgba(250, 242, 225, 0.7) 30px,
+      rgba(120, 90, 55, 0.3) 38px, rgba(250, 242, 225, 0.35) 46px, transparent 58px);
+  box-shadow: -8px 0 14px -4px rgba(40, 25, 10, 0.35);
+  border-radius: 40% 0 0 40% / 8% 0 0 8%;
 }
 .rules {
   position: absolute;
@@ -352,10 +418,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   opacity: 0;
 }
 .sheet-leave-active .silk {
-  animation: unroll 0.4s ease-in reverse both;
+  animation: unroll 0.7s ease-in reverse both;
 }
 .sheet-leave-active .rod {
-  animation: rodIn 0.4s ease-in reverse both;
+  animation: rodIn 0.7s ease-in reverse both;
+}
+.sheet-enter-active,
+.sheet-leave-active {
+  transition: opacity 0.7s ease;
 }
 @media (max-width: 640px) {
   .scroll { --h: min(600px, 80vh); }
