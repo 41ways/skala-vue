@@ -596,11 +596,15 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .scroll { --h: min(600px, 80vh); }
   .rod { flex-basis: 30px; }
   .silk { padding: 14px 24px; margin: 0 -12px; }
-  .paper { padding: 20px 18px 20px 16px; overflow-x: auto; }
-  .columns { gap: 12px; padding-left: 4px; padding-right: 64px; }
-  .col { font-size: 15px; letter-spacing: 0.14em; }
-  .col.title { font-size: 30px; letter-spacing: 0.2em; }
-  .col.sky { font-size: 18px; }
+  .paper { padding: 18px 14px 18px 12px; overflow: hidden; }
+  /* 좁은 화면: 세로글은 유지하고 기문만 옆으로 밀어 본다. 낙관/닫기는 제자리 */
+  .columns { width: 100%; box-sizing: border-box; gap: 10px; padding-left: 2px; padding-right: 56px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .columns::-webkit-scrollbar { display: none; }
+  .col { font-size: 14px; letter-spacing: 0.12em; }
+  .col.title { font-size: 24px; letter-spacing: 0.18em; }
+  .col.sky { font-size: 16px; }
+  /* 오른쪽 끝이 잘렸음을 알리는 옅은 그늘 */
+  .paper::before { background: linear-gradient(90deg, transparent 80%, rgba(120, 90, 50, 0.22)); }
   .head { display: none; }
   .seal { right: 18px; bottom: 18px; width: 52px; height: 62px; }
   .seal-face { font-size: 16px; }
