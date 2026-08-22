@@ -79,7 +79,7 @@ const fillStyle = computed(() => {
 const dropsDone = computed(() => fillR.value > 150)
 // 수면 도입: 선염 없이 — 물이 걷히면 화폭이 온전한 색으로 떠오른다
 const plainFillStyle = computed(() => ({
-  opacity: clamp01((props.p - 0.34) / 0.2).toFixed(3),
+  opacity: clamp01((props.p - 0.46) / 0.18).toFixed(3),
 }))
 
 // 수면 도입 — 해·달이 물에서 떠오르고, 물은 서서히 걷힌다
@@ -114,14 +114,14 @@ const dawnStyle = computed(() => ({
   opacity: (riseT.value * 0.75 * (1 - clamp01((props.p - 0.36) / 0.24))).toFixed(3),
 }))
 function celestialStyle(c) {
-  const land = clamp01((props.p - 0.58) / 0.18) // 화폭이 다 차면 원화의 해·달 위에서 스러진다
+  const land = clamp01((props.p - 0.62) / 0.16) // 화폭이 다 차면 원화의 해·달 위에서 스러진다
   // 2단 모션: 보기 좋은 자리(riseX)에서 수직으로 떠오른 뒤,
   // 옆으로 미끄러져 원화 속 해·달의 실제 좌표(cover 크롭 보정)에 정렬한다
   const imgAR = c.imgAR ?? 2.315
   const vis = Math.min(1, window.innerWidth / window.innerHeight / imgAR)
   const x0 = 0.5 - vis / 2
   const targetX = Math.min(95, Math.max(5, ((c.ix - x0) / vis) * 100))
-  const slideT = easeOut(clamp01((props.p - 0.42) / 0.16))
+  const slideT = easeOut(clamp01((props.p - 0.38) / 0.14))
   const leftPct = (c.riseX ?? targetX) + (targetX - (c.riseX ?? targetX)) * slideT
   return {
     left: leftPct.toFixed(2) + '%',
@@ -136,6 +136,11 @@ function celestialStyle(c) {
 // 물 위에 떠 있는 그림을 내려다본다 — 항상 잔물결, 말미엔 배경만 남기고 일렁이며 사라진다
 const melt = computed(() => clamp01((props.p - 0.62) / 0.28))
 const mainWobble = computed(() => (7 + melt.value * 85).toFixed(1))
+// 시선 이동 — 호수를 내려다보다가, 스크롤하면 수면을 수평선 보듯 기울어진다
+const tiltStyle = computed(() => ({
+  transform: `perspective(90vh) rotateX(${(melt.value * 56).toFixed(1)}deg) translateY(${(melt.value * -4).toFixed(1)}%)`,
+  transformOrigin: '50% 96%',
+}))
 // 빗방울 파문 고리 위치 (마운트 시 고정)
 const rainRings = Array.from({ length: 7 }, (_, i) => ({
   left: 8 + ((i * 137) % 84) + '%',
@@ -198,7 +203,8 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
             <feGaussianBlur :stdDeviation="(melt * 2).toFixed(2)" />
           </filter>
         </svg>
-        <!-- 물 위에 떠 있는 그림 (부감) — 밑선은 보이고, 먹얼룩이 색을 채운다 -->
+        <!-- 물 위에 떠 있는 그림 (부감) — 스크롤하면 시선이 수평선으로 기울어진다 -->
+        <div class="w-tilt" :style="tiltStyle">
         <div class="w-main" :style="mainRise">
           <!-- 밑선: 색이 채워지기 전의 옅은 골격 -->
           <img :src="img" alt="" class="art-img lines" draggable="false" />
@@ -248,6 +254,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
             :style="{ left: rg.left, top: rg.top, animationDuration: rg.dur, animationDelay: rg.delay }"
           ></span>
         </template>
+        </div>
         <!-- 먹물 방울 — 비에 섞여 떨어지며 화폭을 적신다 -->
         <div v-if="!inkDropsDone" class="ink-drops">
           <span class="wd wd1"></span>
@@ -314,7 +321,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
           <img :src="bg || img" alt="" draggable="false" />
         </div>
         <span v-for="(c, i) in cuts" :key="'k' + i" class="cut-wrap" :style="cutStyle(c)">
-          <MinhwaCut :src="c.src" :parts="c.parts ?? []" :idle="c.idle" silhouette />
+          <MinhwaCut :src="c.src" :parts="c.parts ?? []" :idle="c.idle" />
         </span>
       </template>
     </div>
@@ -436,6 +443,11 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   position: absolute;
   inset: 0;
   will-change: transform, opacity, filter;
+}
+.w-tilt {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
 }
 /* 밑선 — 색이 채워지기 전의 옅은 골격 (짙은 획만 흐릿하게 남긴다) */
 .art-img.lines {

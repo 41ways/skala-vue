@@ -136,6 +136,20 @@ defineProps({
   from { transform: translateY(0) rotate(-0.4deg); }
   to { transform: translateY(-9px) rotate(0.6deg); }
 }
+/* 까치 — 이따금 훌쩍 날아올랐다 되돌아온다 */
+.mcut.fly {
+  animation: mcFly 15s ease-in-out infinite;
+  transform-origin: 45% 60%;
+}
+@keyframes mcFly {
+  0%, 54% { transform: translate(0, 0) rotate(0deg); }
+  57% { transform: translate(-2vw, -3vh) rotate(-7deg); }
+  63% { transform: translate(-11vw, -10vh) rotate(-11deg); }
+  70% { transform: translate(-17vw, -4vh) rotate(-3deg); }
+  78% { transform: translate(-9vw, -11vh) rotate(6deg); }
+  86% { transform: translate(-2vw, -3vh) rotate(3deg); }
+  91%, 100% { transform: translate(0, 0) rotate(0deg); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .mcut,

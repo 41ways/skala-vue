@@ -164,7 +164,7 @@ const chapters = [
         ox: 14,
         oy: -14,
         ds: 0.03,
-        idle: 'bob',
+        idle: 'fly',
         z: 1,
         parts: [
           { src: cut('magpie_head'), left: '0%', top: '6.9%', w: '40%', anim: 'p-head', origin: '85% 80%' },
