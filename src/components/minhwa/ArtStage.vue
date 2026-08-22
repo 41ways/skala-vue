@@ -50,7 +50,7 @@ const washStyle = computed(() => ({
 // 원화 배경 — 너무 날아가지 않게 또렷함을 유지한 채 뒤로 물러난다
 const backdropStyle = computed(() => ({
   transform: `scale(${(1.32 + dive.value * 0.18).toFixed(3)}) translate3d(${(-props.mx * 8).toFixed(1)}px, ${(-props.my * 6).toFixed(1)}px, 0)`,
-  opacity: (0.78 - dive.value * 0.1).toFixed(3),
+  opacity: (0.92 - dive.value * 0.08).toFixed(3),
 }))
 
 // 누끼 인물 — 깊이별 시차 + 빠져들 때 분리
@@ -383,7 +383,8 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(12px) saturate(0.95);
+  /* 누끼 자리는 이미 종이로 메워져 있으니 흐림 없이 또렷하게 */
+  filter: saturate(0.97);
 }
 .cut-wrap {
   position: absolute;
