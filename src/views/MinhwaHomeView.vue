@@ -160,6 +160,7 @@ const chapters = [
     id: 'tiger',
     img: tigerImg,
     bg: bgOf('tiger'),
+    zoom: 0.22,
     title: '작호도',
     hanja: '鵲虎圖',
     era: '조선 민화 · 세화(歲畫)',
@@ -424,6 +425,7 @@ function jumpTo(r) {
           :snow="!!ch.snow"
           :water-intro="!!ch.waterIntro"
           :intro-water-img="ch.waterImg ?? ''"
+          :zoom="ch.zoom ?? 0"
         />
 
         <!-- 초대형 화제(畫題) — 그림과 겹친다 -->

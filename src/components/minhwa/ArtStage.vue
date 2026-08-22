@@ -22,6 +22,7 @@ const props = defineProps({
   snow: { type: Boolean, default: false },
   waterIntro: { type: Boolean, default: false }, // inkfill: 수면에서 해·달이 떠오르는 도입부
   introWaterImg: { type: String, default: '' }, // 앞 폭(인왕제색도)이 풀어진 물 — 그 반영이 남아 일렁인다
+  zoom: { type: Number, default: 0 }, // 챕터별 다이브 확대 폭 재정의 (0=기본)
 })
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v))
@@ -36,7 +37,7 @@ const oprog = computed(() => (isCombo.value ? clamp01((props.p - 0.7) / 0.3) : p
 const dive = computed(() => easeOut(clamp01((props.p - 0.22) / 0.5)))
 
 // 효과별 줌 깊이 — 파노라마(inkfill)는 살짝만, 콜라주는 깊게 빠져든다
-const diveAmp = computed(() => ({ inkfill: 0.12, water: 0.24, sunrise: 0.08 })[props.effect] ?? 0.66)
+const diveAmp = computed(() => props.zoom || (({ inkfill: 0.12, water: 0.24, sunrise: 0.08 })[props.effect] ?? 0.66))
 const camStyle = computed(() => ({
   transform: `scale(${(0.97 + dive.value * diveAmp.value).toFixed(4)})`,
   transformOrigin: props.focal,
@@ -476,7 +477,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent 30%, rgba(224, 138, 78, 0.34) 62%, rgba(224, 120, 60, 0.5));
+  background: linear-gradient(180deg, rgba(224, 120, 60, 0.52), rgba(224, 138, 78, 0.3) 34%, transparent 68%);
   mix-blend-mode: multiply;
 }
 /* 밑선 — 색이 채워지기 전의 옅은 골격 (짙은 획만 흐릿하게 남긴다) */
