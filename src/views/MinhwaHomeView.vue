@@ -1,10 +1,6 @@
 <script setup>
-// 국내 화폭 — 팔도청우록(八道晴雨錄)
-// 레퍼런스: Shopify Editions Winter '26 의 구조를 그대로 가져오되,
-// 르네상스 회화 자리에 실제 조선 민화·풍속화 스캔이 들어간다.
-//  · 표제 획 드로잉(만국청우록 스타일) · sticky 챕터 스크롤텔링
-//  · 그림 속으로 빠져드는 카메라 · 선염 번짐 전환 · 레이어 패럴랙스 + 마우스 시차
-//  · 비 그림 챕터에는 비 오는 도시, 맑은 그림 챕터에는 맑은 도시
+// 국내 화폭 (팔도청우록)
+// 스크롤 진행도에 따라 민화 6폭이 바뀌고, 날씨가 맞는 도시가 그 폭에 들어간다
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import ArtStage from '@/components/minhwa/ArtStage.vue'
 import ScrollSheet from '@/components/minhwa/ScrollSheet.vue'
@@ -18,12 +14,12 @@ import ssireumImg from '@/assets/minhwa-art/ssireum.jpg'
 import seodangImg from '@/assets/minhwa-art/seodang.jpg'
 import inwangImg from '@/assets/minhwa-art/inwang.jpg'
 import tigerImg from '@/assets/minhwa-art/tiger.jpg'
-// 대청 분합문 — 오리 이원익 종택 (문화재청, 공공누리 1유형) 사진을 문틀/문짝으로 가공
+// 대청 분합문 - 오리 이원익 종택 (문화재청, 공공누리 1유형) 사진을 문틀/문짝으로 가공
 import dcBase from '@/assets/minhwa-art/daecheong/base.webp'
 import dcDoorL from '@/assets/minhwa-art/daecheong/door_l.webp'
 import dcDoorR from '@/assets/minhwa-art/daecheong/door_r.webp'
 
-// 누끼 PNG 일괄 로드 — cut('tiger_body') 식으로 꺼내 쓴다
+// 누끼 PNG 일괄 로드 - cut('tiger_body') 식으로 꺼내 쓴다
 const cutFiles = import.meta.glob('@/assets/minhwa-art/cut/*.png', {
   eager: true,
   import: 'default',
@@ -39,7 +35,7 @@ const bgOf = (name) => bgFiles[Object.keys(bgFiles).find((k) => k.includes(name)
 
 const { cities, loading, error, fetchLive } = useWeather()
 
-// 화폭 차례 — 그림과 날씨의 궁합
+// 화폭 차례 - 그림과 날씨의 궁합
 const chapters = [
   {
     id: 'cheongwoo',
@@ -85,7 +81,7 @@ const chapters = [
     effect: 'collage',
     focal: '38% 62%',
     cuts: [
-      // 무동이 먼저 — 그 뒤 악단이 시계방향으로 한 명씩
+      // 무동이 먼저 - 그 뒤 악단이 시계방향으로 한 명씩
       {
         src: cut('mudong_dancer'),
         t: 0.04,
@@ -126,12 +122,12 @@ const chapters = [
     effect: 'collage',
     focal: '50% 48%',
     cuts: [
-      // 구경꾼 네 무리 — 판 가장자리에서 들썩인다
+      // 구경꾼 네 무리 - 판 가장자리에서 들썩인다
       { src: cut('ssireum_crowd_tl'), left: '2%', top: '1%', w: '36%', depth: 7, ox: -12, oy: -10, ds: 0.015, idle: 'bob', z: 1 },
       { src: cut('ssireum_crowd_tr'), left: '62%', top: '2%', w: '34%', depth: 8, ox: 12, oy: -10, ds: 0.015, idle: 'bob', z: 1 },
       { src: cut('ssireum_crowd_bl'), left: '2%', top: '62%', w: '33%', depth: 10, ox: -12, oy: 10, ds: 0.02, idle: 'bob', z: 2 },
       { src: cut('ssireum_crowd_br'), left: '66%', top: '60%', w: '30%', depth: 10, ox: 12, oy: 10, ds: 0.02, idle: 'bob', z: 2 },
-      // 씨름꾼 — 판 한가운데서 힘겨루기
+      // 씨름꾼 - 판 한가운데서 힘겨루기
       { src: cut('ssireum_wrestlers'), left: '35.4%', top: '21.6%', w: '29.4%', depth: 24, oy: 12, ds: 0.11, idle: 'tussle', z: 3 },
     ],
     line: '구름처럼 모여든 판 — 구름 낀 고을들입니다.',
@@ -149,13 +145,13 @@ const chapters = [
     effect: 'collage',
     focal: '44% 50%',
     cuts: [
-      // 훈장님 — 서안 뒤에서 지긋이
+      // 훈장님 - 서안 뒤에서 지긋이
       { src: cut('seodang_hunjang'), left: '29%', top: '4%', w: '44%', depth: 8, oy: -12, ds: 0.02, idle: 'bob', z: 2 },
-      // 학동들 — 양쪽 줄
+      // 학동들 - 양쪽 줄
       { src: cut('seodang_students_l'), left: '4%', top: '16%', w: '25%', depth: 12, ox: -12, ds: 0.03, idle: 'bob', z: 1 },
       { src: cut('seodang_students_r'), left: '66%', top: '32%', w: '25%', depth: 12, ox: 12, ds: 0.03, idle: 'bob', z: 1 },
       { src: cut('seodang_back'), left: '40%', top: '66%', w: '21%', depth: 16, oy: 12, ds: 0.05, idle: 'bob', z: 2 },
-      // 우는 아이 — 한가운데 앞으로
+      // 우는 아이 - 한가운데 앞으로
       { src: cut('seodang_crier'), left: '33%', top: '40%', w: '18%', depth: 26, oy: 16, ds: 0.12, idle: 'sway', z: 3 },
     ],
     line: '하늘이 낮은 날은 글 읽기 좋은 날 — 흐린 고을들입니다.',
@@ -175,7 +171,7 @@ const chapters = [
     focal: '40% 48%',
     snow: true,
     cuts: [
-      // 까치 — 솔가지에 앉아 까딱인다
+      // 까치 - 솔가지에 앉아 까딱인다
       {
         src: cut('tiger_magpie'),
         left: '64%',
@@ -195,15 +191,15 @@ const chapters = [
             w: '40%',
             anim: 'p-head',
             origin: '85% 80%',
-            // 머리는 가만히 두고 — 날개를 한 번 크게 쳐서 눈을 턴다
+            // 머리는 가만히 두고 - 날개를 한 번 크게 쳐서 눈을 턴다
             snow: { vb: '0 0 110 90', d: 'M28 28 C34 16 44 6 60 2 C76 0 90 10 100 26 C92 22 84 16 72 12 C60 8 48 10 38 18 C34 22 30 26 28 28 Z', hi: 'M48 8 C56 4 66 4 74 7 C66 9 56 10 48 8 Z', still: true },
           },
           { src: cut('magpie_wing'), left: '18.2%', top: '27.6%', w: '47.3%', anim: 'p-flap', origin: '18% 28%', shed: true },
           { src: cut('magpie_tail'), left: '47.3%', top: '46.6%', w: '52.7%', anim: 'p-tail', origin: '10% 15%' },
         ],
       },
-      // 호랑이 — 개별로 숨쉬며 앞으로 나온다
-      // 호랑이 — 몸은 숨쉬고, 머리·꼬리·앞발은 저마다 따로 움직인다
+      // 호랑이 - 개별로 숨쉬며 앞으로 나온다
+      // 호랑이 - 몸은 숨쉬고, 머리/꼬리/앞발은 저마다 따로 움직인다
       {
         src: cut('tiger_body'),
         left: '16%',
@@ -230,14 +226,14 @@ const chapters = [
 // 병합 챕터: 진행도 후반이면 2막(오봉도) 정보를 쓴다
 const fld = (ch, i, k) =>
   ch.phase2 && (progress.value[i] ?? 0) > 0.65 ? (ch.phase2[k] ?? ch[k]) : ch[k]
-// 눈이 늘 내리는 곳(세종기지)은 실황과 무관하게 눈 화폭(작호도)에 든다
+// 처음엔 status만 비교했는데 세종기지(남극)는 늘 눈이라 snowAlways 예외를 둠
 const citiesFor = (ch, i) =>
   cities.value.filter((c) => {
     const w = fld(ch, i, 'weather')
     return c.snowAlways ? w.includes('눈') : w.includes(c.status)
   })
 
-// ── 스크롤 진행도 + 마우스 시차 ──────────────────────────
+// 스크롤 진행도 + 마우스 시차 
 const heroEl = ref(null)
 const chapterEls = ref([])
 const progress = ref([])
@@ -274,7 +270,7 @@ function onMove(e) {
   ty = (e.clientY / window.innerHeight) * 2 - 1
 }
 
-// 자석 스냅 — 스크롤이 멈췄을 때 어중간한 지점이면 정착점으로 스르륵
+// 자석 스냅 - 스크롤이 멈췄을 때 어중간한 지점이면 정착점으로 스르륵
 function magnetSnap() {
   const i = activeIdx.value
   if (i < 0) return
@@ -284,7 +280,7 @@ function magnetSnap() {
   const p = progress.value[i] ?? 0
   const isTall = !!chapters[i]?.phase2
   let target = null
-  // 다음 폭 자동 이동은 하지 않는다 — 사용자가 넘길 때만 넘어간다
+  // 다음 폭 자동 이동은 하지 않는다 - 사용자가 넘길 때만 넘어간다
   if (p > 0.008 && p < 0.1) {
     target = el.getBoundingClientRect().top + window.scrollY + (el.offsetHeight - vh) * (isTall ? 0.16 : 0.42)
   }
@@ -327,10 +323,10 @@ onBeforeUnmount(() => {
 })
 
 // 정보 오버레이 : 그림이 자리잡은 뒤 순차 등장
-// 두루마리 날씨첩 — 화기의 고을을 누르면 펼쳐진다
+// 두루마리 날씨첩 - 화기의 고을을 누르면 펼쳐진다
 const sheetCity = ref(null)
-// 대청 — 스크롤하면 분합문이 양쪽으로 열리고, 문밖에 인왕제색도가 선다
-// 처음엔 흐린 대청 — 제목이 물러나는 동안 진해지고 → 문이 열리면 빈 마당에 비 → 틀이 걷히며 인왕제색도 화폭으로 넘어간다
+// 대청 - 스크롤하면 분합문이 양쪽으로 열리고, 문밖에 인왕제색도가 선다
+// 처음엔 흐린 대청 - 제목이 물러나는 동안 진해지고 → 문이 열리면 빈 마당에 비 → 틀이 걷히며 인왕제색도 화폭으로 넘어간다
 const dcFocus = computed(() => easeOut(clamp01((heroP.value - 0.04) / 0.3)))
 const dcOpen = computed(() => easeOut(clamp01((heroP.value - 0.28) / 0.4)))
 const dcWash = computed(() => easeOut(clamp01((heroP.value - 0.7) / 0.3)))
@@ -340,7 +336,7 @@ const dcPhotoStyle = computed(() => ({
   opacity: ((0.22 + dcFocus.value * 0.78) * (1 - dcWash.value)).toFixed(3),
   filter: `contrast(${(0.7 + dcFocus.value * 0.3).toFixed(3)}) brightness(${(1.4 - dcFocus.value * 0.4).toFixed(3)}) saturate(${(0.55 + dcFocus.value * 0.45).toFixed(2)})`,
 }))
-// 히어로 끝자락 — 마당이 한지 바탕으로 녹아들어 다음 화폭과 경계 없이 이어진다
+// 히어로 끝자락 - 마당이 한지 바탕으로 녹아들어 다음 화폭과 경계 없이 이어진다
 const dcOut = computed(() => easeOut(clamp01((heroP.value - 0.84) / 0.16)))
 const dcViewStyle = computed(() => ({
   transform: `scale(${(1.14 - dcOpen.value * 0.1).toFixed(3)})`,
@@ -360,13 +356,13 @@ const activeToneLight = computed(() => {
 })
 function sideStyle(i) {
   const o = infoStyle(i, 1).opacity
-  // 겹쳐 쌓인 고정 패널끼리 클릭이 새지 않게 — 안 보이면 숨긴다
+  // 겹쳐 쌓인 고정 패널끼리 클릭이 새지 않게 - 안 보이면 숨긴다
   return { opacity: o, visibility: o < 0.05 ? 'hidden' : 'visible' }
 }
 function infoStyle(i, order = 0) {
   const p = progress.value[i] ?? 0
   if (chapters[i]?.phase2) {
-    // 병합 챕터 — 1막 문구는 그림이 흐트러지기 전에 먼저 물러나고,
+    // 병합 챕터 - 1막 문구는 그림이 흐트러지기 전에 먼저 물러나고,
     // 2막(일월오봉도) 문구는 화폭이 다 차오른 뒤에야 든다
     const in1 = easeOut(clamp01((p - 0.08 - order * 0.04) / 0.12))
     const out1 = clamp01((p - 0.36 - order * 0.02) / 0.06)
@@ -426,10 +422,10 @@ function jumpTo(r) {
   <main class="gukfok">
     <InkRipple />
 
-    <!-- ══ 표제 — 만국청우록의 획 드로잉 스타일, 국내판 ══ -->
+    <!-- 표제 - 만국청우록의 획 드로잉 스타일, 국내판 -->
     <section ref="heroEl" class="hero-wrap">
       <div class="hero-stage">
-        <!-- 대청 — 문밖엔 오늘의 하늘(인왕제색도), 앞엔 분합문. 스크롤하면 문이 열린다 -->
+        <!-- 대청 - 문밖엔 오늘의 하늘(인왕제색도), 앞엔 분합문. 스크롤하면 문이 열린다 -->
         <div class="dc-view" :style="dcViewStyle">
           <span class="dc-blank"></span>
           <span class="dc-rain" :style="{ opacity: dcRain.toFixed(3) }">
@@ -460,7 +456,7 @@ function jumpTo(r) {
       </div>
     </section>
 
-    <!-- ══ 화폭 챕터 ══ -->
+    <!-- 화폭 챕터 -->
     <section
       v-for="(ch, i) in chapters"
       :key="ch.id"
@@ -487,7 +483,7 @@ function jumpTo(r) {
           :zoom="ch.zoom ?? 0"
         />
 
-        <!-- 초대형 화제(畫題) — 그림과 겹친다 -->
+        <!-- 초대형 화제(畫題) - 그림과 겹친다 -->
         <h2 class="mega" :class="{ light: fld(ch, i, 'tone') === 'light' }" :style="infoStyle(i, 0)">
           {{ fld(ch, i, 'title') }}
           <small>{{ fld(ch, i, 'hanja') }} · 제{{ i + 1 }}폭 · {{ fld(ch, i, 'era') }}</small>
@@ -500,7 +496,7 @@ function jumpTo(r) {
           </p>
         </div>
 
-        <!-- 우측 — 그림 곁에 띄운 도시 정보 -->
+        <!-- 우측 - 그림 곁에 띄운 도시 정보 -->
         <aside class="side-cities" :class="{ light: fld(ch, i, 'tone') === 'light' }" :style="sideStyle(i)">
           <p class="side-cap"><i class="cap-seal">{{ fld(ch, i, 'wHanja') }}</i>이 화폭의 고을</p>
           <template v-if="citiesFor(ch, i).length">
@@ -511,7 +507,7 @@ function jumpTo(r) {
           <p v-else class="vc vc-empty">{{ fld(ch, i, 'empty') }}</p>
         </aside>
 
-        <!-- 다음 폭으로 — 하단의 작은 손짓 -->
+        <!-- 다음 폭으로 - 하단의 작은 손짓 -->
         <button
           v-if="i < chapters.length - 1"
           class="next-fab util"
@@ -527,7 +523,7 @@ function jumpTo(r) {
 
     <ScrollSheet :city="sheetCity" @close="sheetCity = null" />
 
-    <!-- ══ 발문 ══ -->
+    <!-- 발문 -->
     <section class="outro">
       <div class="saekdong"></div>
       <p class="outro-copy">여섯 폭을 모두 거두었습니다.</p>
@@ -543,12 +539,12 @@ function jumpTo(r) {
       <p v-if="error" class="err util">실시간 조회 실패 — 표본 자료로 표시 중입니다.</p>
     </section>
 
-    <!-- ══ 좌측 여백 — 세로 표제 ══ -->
+    <!-- 좌측 여백 - 세로 표제 -->
     <p v-show="activeIdx >= 0" class="side-title" :class="{ light: activeToneLight }">
       팔도청우록<span class="st-hanja">八道晴雨錄</span><i class="st-seal">晴雨</i>
     </p>
 
-    <!-- ══ 좌측 차례 레일 (챕터 진입 후) ══ -->
+    <!-- 좌측 차례 레일 (챕터 진입 후) -->
     <nav v-show="activeIdx >= 0" class="rail util" :class="{ light: activeToneLight }" aria-label="화폭 차례">
       <button
         v-for="(r, k) in railItems"
@@ -574,7 +570,7 @@ function jumpTo(r) {
   font-family: var(--font-util);
 }
 
-/* ── 표제 (만국청우록 스타일 이식) ── */
+/* 표제 (만국청우록 스타일 이식) */
 .hero-wrap {
   height: 270vh; /* 제목 → 문 열림 → 빈 마당의 비 → 틀이 걷힘 */
 }
@@ -586,7 +582,7 @@ function jumpTo(r) {
   display: grid;
   place-items: center;
 }
-/* 한지에 배접된 오봉도 — 표제 뒤 은은하게 */
+/* 한지에 배접된 오봉도 - 표제 뒤 은은하게 */
 .hero-bg {
   position: absolute;
   inset: 0;
@@ -665,7 +661,7 @@ function jumpTo(r) {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── 챕터 ── */
+/* 챕터 */
 .chapter {
   height: 300vh;
   position: relative;
@@ -677,7 +673,7 @@ function jumpTo(r) {
   overflow: hidden;
   background: var(--paper);
 }
-/* 화폭 위 은은한 비네트 — 그림이 무대 중앙으로 모인다 */
+/* 화폭 위 은은한 비네트 - 그림이 무대 중앙으로 모인다 */
 .stage::after {
   content: '';
   position: absolute;
@@ -686,7 +682,7 @@ function jumpTo(r) {
   background: radial-gradient(ellipse 120% 100% at 50% 45%, transparent 62%, rgba(34, 28, 22, 0.12));
 }
 
-/* ── 초대형 화제 — 그림과 겹치는 헤드라인 (세계화폭과 같은 문법) ── */
+/* 초대형 화제 - 그림과 겹치는 헤드라인 (세계화폭과 같은 문법) */
 .mega {
   position: absolute;
   left: max(5%, 104px);
@@ -749,14 +745,14 @@ function jumpTo(r) {
   font-size: clamp(16px, 2.2vw, 24px);
   line-height: 1.7;
   color: var(--ink);
-  /* 한지 바탕은 글자 주변만 옅게 — 그림을 가리지 않게 */
+  /* 한지 바탕은 글자 주변만 옅게 - 그림을 가리지 않게 */
   background: rgba(241, 231, 208, 0.42);
   border-radius: 5px;
   box-shadow: 0 0 14px 8px rgba(241, 231, 208, 0.42);
   text-shadow: 0 0 10px rgba(241, 231, 208, 0.9), 0 0 3px rgba(241, 231, 208, 0.9);
 }
 .foot.light .narrative {
-  /* 어두운 화폭(일월오봉도)은 먹빛 바탕을 더 진하게 — 흰 글자가 또렷해야 한다 */
+  /* 어두운 화폭(일월오봉도)은 먹빛 바탕을 더 진하게 - 흰 글자가 또렷해야 한다 */
   color: #fff;
   padding: 8px 14px;
   background: rgba(12, 10, 18, 0.58);
@@ -825,7 +821,7 @@ function jumpTo(r) {
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
 }
 
-/* ── 발문 ── */
+/* 발문 */
 .outro {
   text-align: center;
   padding: 0 24px 90px;
@@ -859,7 +855,7 @@ function jumpTo(r) {
   margin-top: 22px;
 }
 
-/* ── 좌측 차례 레일 (세계화폭과 동일 문법, 한지 팔레트) ── */
+/* 좌측 차례 레일 (세계화폭과 동일 문법, 한지 팔레트) */
 .rail {
   position: fixed;
   left: 18px;
@@ -888,7 +884,7 @@ function jumpTo(r) {
   transition: color 0.9s ease, text-shadow 0.9s ease, transform 0.25s;
   animation: marginIn 0.55s ease-out backwards;
 }
-/* 여백 요소 등장 — 위에서 아래로 스며들 듯 */
+/* 여백 요소 등장 - 위에서 아래로 스며들 듯 */
 @keyframes marginIn {
   from {
     opacity: 0;
@@ -927,7 +923,7 @@ function jumpTo(r) {
   color: rgba(34, 28, 22, 0.4);
 }
 
-/* ── 대청(히어로 배경) ── */
+/* 대청(히어로 배경) */
 .dc-view {
   position: absolute;
   inset: -4%;
@@ -943,7 +939,7 @@ function jumpTo(r) {
   user-select: none;
   will-change: opacity, filter;
 }
-/* 문이 열리면 보이는 빈 마당 — 비 오는 날의 한지 빛 */
+/* 문이 열리면 보이는 빈 마당 - 비 오는 날의 한지 빛 */
 .dc-blank {
   position: absolute;
   inset: 0;
@@ -974,7 +970,7 @@ function jumpTo(r) {
   inset: 0;
   background: radial-gradient(ellipse at 50% 55%, transparent 45%, rgba(42, 33, 26, 0.55));
 }
-/* 사진(3:2)을 화면에 cover — 문짝 좌표는 사진 기준 % */
+/* 사진(3:2)을 화면에 cover - 문짝 좌표는 사진 기준 % */
 .dc-photo {
   position: absolute;
   left: 50%;
@@ -1024,10 +1020,10 @@ function jumpTo(r) {
   color: rgba(251, 246, 234, 0.6);
 }
 
-/* 화기 부기 서체 — 표제와 동일 (뒤따르는 규칙에 덮이지 않게 마지막에 선언) */
+/* 화기 부기 서체 - 표제와 동일 (뒤따르는 규칙에 덮이지 않게 마지막에 선언) */
 .vc span { font-family: var(--font-display); }
 
-/* ── 다음 폭 버튼 ── */
+/* 다음 폭 버튼 */
 .next-fab {
   position: absolute;
   left: 50%;
@@ -1065,7 +1061,7 @@ function jumpTo(r) {
   color: #e8a5b0;
 }
 
-/* ── 좌측 여백 세로 표제 — 두루마리 제첨(題簽)과 낙관 ── */
+/* 좌측 여백 세로 표제 - 두루마리 제첨(題簽)과 낙관 */
 .side-title {
   position: fixed;
   left: 18px;
@@ -1079,7 +1075,7 @@ function jumpTo(r) {
   font-weight: 700;
   letter-spacing: 0.3em;
   color: var(--ink);
-  /* 판 없이 글자만 — 글자 가장자리에서 바깥으로 옅어지는 은은한 흰 테(겹 그림자 그라데이션) */
+  /* 판 없이 글자만 - 글자 가장자리에서 바깥으로 옅어지는 은은한 흰 테(겹 그림자 그라데이션) */
   text-shadow:
     0 0 1px rgba(247, 241, 226, 0.9),
     0 0 2px rgba(247, 241, 226, 0.75),
@@ -1096,7 +1092,7 @@ function jumpTo(r) {
   letter-spacing: 0.52em;
   color: var(--ink-soft);
 }
-/* 낙관 — 붉은 도장 */
+/* 낙관 - 붉은 도장 */
 .st-seal {
   display: inline-block;
   margin-top: 20px;
@@ -1125,7 +1121,7 @@ function jumpTo(r) {
   color: rgba(251, 246, 234, 0.6);
 }
 
-/* ── 우측 여백 — 화기(畫記): 그림에 적어 넣은 세로 기문처럼 ── */
+/* 우측 여백 - 화기(畫記): 그림에 적어 넣은 세로 기문처럼 */
 .side-cities {
   position: fixed;
   right: 26px;
@@ -1142,7 +1138,7 @@ function jumpTo(r) {
   padding: 18px 14px;
   border-radius: 8px;
   color: var(--ink);
-  /* 테두리 없는 종이 물결 — 부드럽게 번지는 한지 바탕이 글자를 받친다 */
+  /* 테두리 없는 종이 물결 - 부드럽게 번지는 한지 바탕이 글자를 받친다 */
   background: rgba(241, 231, 208, 0.72);
   box-shadow: 0 0 26px 18px rgba(241, 231, 208, 0.72);
   will-change: opacity;
@@ -1252,7 +1248,7 @@ function jumpTo(r) {
 }
 
 @media (max-width: 1100px) {
-  /* 여백이 좁아지면 — 처음처럼 내러티브 아래 하단 나열로 */
+  /* 여백이 좁아지면 - 처음처럼 내러티브 아래 하단 나열로 */
   .side-cities {
     position: absolute;
     right: 5%;

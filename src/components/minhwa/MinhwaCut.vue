@@ -1,9 +1,5 @@
 <script setup>
-// MinhwaCut — 누끼 인물 한 점.
-// 몸통(base) 위에 머리·꼬리·앞발 같은 부위 누끼(parts)가 정위치에 겹쳐져
-// 각자 다른 리듬으로 움직인다 → 관절 인형(紙人形)의 입체감.
-// silhouette: 어두운 화폭용 한지 실루엣 받침.
-// 기본 눈 더미 — 호랑이 머리(315×350) 윤곽
+// MinhwaCut: 누끼 인물 하나. 몸통 위에 부위(parts)를 겹쳐서 따로 움직인다
 const TIGER_SNOW = {
   vb: '0 0 315 350',
   d: 'M44 62 C52 40 70 26 96 24 C126 22 150 30 176 38 C198 44 214 40 230 22 C244 10 254 20 258 36 C266 46 272 54 276 70 C268 66 258 60 246 56 C232 52 220 56 204 60 C184 64 164 58 144 50 C120 42 96 40 76 44 C62 48 52 54 44 62 Z',
@@ -62,9 +58,9 @@ defineProps({
   position: absolute;
   inset: 0;
   filter: brightness(0) invert(0.93) sepia(0.55) saturate(0.9) brightness(1.04);
-  /* 확대 없음 — 몸통의 관절 구멍과 정확히 겹쳐야 한다 */
+  /* 확대 없음 - 몸통의 관절 구멍과 정확히 겹쳐야 한다 */
 }
-/* 스티커 테두리 — 모든 조각(부위 포함)의 윤곽을 따라 흰 선이 돈다 (꼭두각시 관절) */
+/* 스티커 테두리 - 모든 조각(부위 포함)의 윤곽을 따라 흰 선이 돈다 (꼭두각시 관절) */
 .mcut.with-sil {
   filter: drop-shadow(0 0 1.5px rgba(251, 246, 234, 0.95)) drop-shadow(0 0 1px rgba(251, 246, 234, 0.8));
 }
@@ -86,7 +82,7 @@ defineProps({
   width: 100%;
 }
 
-/* ── 눈 쌓임 — 12초 주기: 천천히 쌓이다(0~80%) 머리를 털면(84%) 눈이 떨어진다 ── */
+/* 눈 쌓임 - 12초 주기: 천천히 쌓이다(0~80%) 머리를 털면(84%) 눈이 떨어진다 */
 .part.snowy .part-in {
   animation: scShake 12s ease-in-out infinite;
   transform-origin: 55% 92%;
@@ -119,7 +115,7 @@ defineProps({
   88% { opacity: 0; transform: scaleY(0.5) translateY(26px); }
   100% { opacity: 0; transform: scaleY(0.1) translateY(4px); }
 }
-/* 털어 낸 눈덩이 — 네 조각이 흩어져 떨어진다 */
+/* 털어 낸 눈덩이 - 네 조각이 흩어져 떨어진다 */
 .sc-fall {
   position: absolute;
   top: 12%;
@@ -146,8 +142,8 @@ defineProps({
 .sc-fall.f3 { --sx: 8px; }
 .sc-fall.f4 { --sx: 16px; }
 
-/* ── 부위 모션 ─────────────────────────────────────── */
-/* 머리 — 갸웃갸웃 (목 기준) */
+/* 부위 모션 */
+/* 머리 - 갸웃갸웃 (목 기준) */
 .part.p-head {
   animation: pHead 7s ease-in-out infinite;
 }
@@ -158,7 +154,7 @@ defineProps({
   68%, 80% { transform: rotate(4.2deg) translateY(-2px); }
   88% { transform: rotate(-1.5deg); }
 }
-/* 꼬리 — 말렸다 풀렸다 */
+/* 꼬리 - 말렸다 풀렸다 */
 .part.p-tail {
   animation: pTail 4.4s ease-in-out infinite alternate;
 }
@@ -166,7 +162,7 @@ defineProps({
   from { transform: rotate(-9deg); }
   to { transform: rotate(13deg) translateY(-5px); }
 }
-/* 앞발 — 지그시 눌렀다 든다 */
+/* 앞발 - 지그시 눌렀다 든다 */
 .part.p-paw {
   animation: pPaw 4.4s ease-in-out infinite;
 }
@@ -177,7 +173,7 @@ defineProps({
   78% { transform: translateY(-7px) rotate(-3deg); }
   86% { transform: translateY(0) rotate(0deg); }
 }
-/* 털어 내는 날갯짓 — 눈이 떨어지는 순간(84%) 한 번 크게 친다 */
+/* 털어 내는 날갯짓 - 눈이 떨어지는 순간(84%) 한 번 크게 친다 */
 .part.shed .part-in {
   animation: scFlapShed 12s ease-in-out infinite;
   transform-origin: inherit;
@@ -188,7 +184,7 @@ defineProps({
   86% { transform: rotate(7deg); }
   88% { transform: rotate(-6deg) translateY(-2px); }
 }
-/* 소매·팔 — 나부낌 */
+/* 소매/팔 - 나부낌 */
 .part.p-flutter {
   animation: pFlutter 2.6s ease-in-out infinite alternate;
 }
@@ -199,7 +195,7 @@ defineProps({
 .part.p-flutter-b {
   animation: pFlutter 2.6s ease-in-out infinite alternate-reverse;
 }
-/* 작은 나부낌 — 왼팔처럼 살짝만 */
+/* 작은 나부낌 - 왼팔처럼 살짝만 */
 .part.p-flutter-s {
   animation: pFlutterS 3s ease-in-out infinite alternate-reverse;
 }
@@ -207,7 +203,7 @@ defineProps({
   from { transform: rotate(-1.5deg); }
   to { transform: rotate(2.5deg) translateY(-1px); }
 }
-/* 날개 — 제자리 날갯짓 */
+/* 날개 - 제자리 날갯짓 */
 .part.p-flap {
   animation: pFlap 0.9s ease-in-out infinite alternate;
 }
@@ -216,7 +212,7 @@ defineProps({
   55% { transform: rotate(2deg); }
   to { transform: rotate(13deg) translateY(-2px); }
 }
-/* 다리 — 차올림 */
+/* 다리 - 차올림 */
 .part.p-kick {
   animation: pKick 1.6s ease-in-out infinite;
 }
@@ -226,7 +222,7 @@ defineProps({
   70% { transform: rotate(-3deg); }
 }
 
-/* ── 몸 전체 잔모션 ─────────────────────────────────── */
+/* 몸 전체 잔모션 */
 .mcut.sway {
   animation: mcSway 4.8s ease-in-out infinite alternate;
   transform-origin: 45% 88%;
@@ -250,7 +246,7 @@ defineProps({
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.018); }
 }
-/* 호랑이 — 숨쉬며 무게중심을 옮기고 이따금 으르렁 들썩 */
+/* 호랑이 - 숨쉬며 무게중심을 옮기고 이따금 으르렁 들썩 */
 .mcut.prowl {
   animation: mcProwl 7s ease-in-out infinite;
   transform-origin: 45% 70%;
@@ -280,7 +276,7 @@ defineProps({
   from { transform: translateY(0) rotate(-0.4deg); }
   to { transform: translateY(-9px) rotate(0.6deg); }
 }
-/* 까치 — 이따금 훌쩍 날아올랐다 되돌아온다 */
+/* 까치 - 이따금 훌쩍 날아올랐다 되돌아온다 */
 .mcut.fly {
   animation: mcFly 15s ease-in-out infinite;
   transform-origin: 45% 60%;

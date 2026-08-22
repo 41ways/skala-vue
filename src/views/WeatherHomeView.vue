@@ -58,6 +58,9 @@ watch(selectedCityInfo, (newCity, oldCity) => {
   console.log(`[watch] 선택 도시 변경: ${before} → ${newCity.name}`)
 })
 
+// env 확인용 (build:staging 이면 stage 주소가 찍힌다)
+console.log('[env] VITE_API_URL =', import.meta.env.VITE_API_URL)
+
 watchEffect(() => {
   console.log(`[watchEffect] 검색어 추적: "${searchQuery.value}"`)
 })

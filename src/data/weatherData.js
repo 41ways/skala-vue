@@ -9,15 +9,15 @@ export const weatherList = [
   { id: 'city_08', name: '대전', temp: 29, status: '맑음', humidity: 58, wind: 1.9, x: 40, y: 46 },
   { id: 'city_09', name: '대구', temp: 31, status: '맑음', humidity: 50, wind: 2.2, x: 66, y: 54 },
   { id: 'city_10', name: '춘천', temp: 26, status: '흐림', humidity: 72, wind: 1.4, x: 44, y: 14 },
-  // 남극 세종과학기지 — 작호도(눈) 화폭에 늘 든다
+  // 남극 세종과학기지 - 작호도(눈) 화폭에 늘 든다
   { id: 'city_11', name: '세종기지', temp: -8, status: '눈', humidity: 85, wind: 9.5, x: 50, y: 99, snowAlways: true },
 ]
 
-// 해외 도시 — 세계화폭(스크롤텔링) 챕터. genre = 배정된 풍속화 장면
+// 해외 도시 - 세계화폭(스크롤텔링) 챕터. genre = 배정된 풍속화 장면
 export const worldList = [
   // prettier-ignore
   { id: 'w_tokyo', name: '도쿄', hanja: '東京', country: '일본', lat: 35.68, lon: 139.69, temp: 27, status: '맑음', humidity: 66, wind: 3.2, genre: 'mudong', line: '동경 앞바다의 큰 파도가 오늘의 하늘을 떠받칩니다' },
-  // 시연용 — 실황 대신 고정값: 뇌우·비바람 (demo: true 이면 API를 건너뛴다)
+  // 시연용 - 실황 대신 고정값: 뇌우/비바람 (demo: true 이면 API를 건너뛴다)
   { id: 'w_skala', name: '스칼라', hanja: 'SKALA', country: '시연', lat: 37.5, lon: 127.04, temp: 21, status: '뇌우', humidity: 93, wind: 11.4, genre: 'inwang', demo: true, line: '하늘을 배우는 이들의 캠퍼스 — 오늘은 시연을 위해 비바람을 불러왔습니다' },
   // prettier-ignore
   { id: 'w_beijing', name: '베이징', hanja: '北京', country: '중국', lat: 39.9, lon: 116.4, temp: 29, status: '구름', humidity: 48, wind: 2.1, genre: 'tiger', line: '천 리의 강산이 연경의 하늘 아래 펼쳐집니다' },

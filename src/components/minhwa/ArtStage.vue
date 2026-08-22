@@ -1,10 +1,6 @@
 <script setup>
-// ArtStage — 실제 민화 스캔을 움직이는 화폭으로 올리는 무대
-//  · 누끼: 알파 키잉으로 잘라낸 개별 인물 PNG가 저마다 따로 움직인다 (레퍼런스: Editions의 치타 콜라주)
-//  · 배경: 원화를 크게 흐려 화폭의 색면(色面)으로 깐다
-//  · 카메라: 스크롤 진행도(p)에 따라 그림 속으로 빠져드는 줌인
-//  · 선염(渲染): 가장자리가 물기로 풀린 라디얼 마스크가 번지며 나타나고, 먹이 적시며 사라진다
-//  · effect: 'collage'(누끼 콜라주) | 'inkfill'(물감 낙하 수묵 채색) | 'water'(수면 반영)
+// ArtStage: 민화 한 폭을 무대에 올리는 컴포넌트
+// effect = collage(누끼 콜라주) | inkfill(물감 번짐) | water(수면) | sunrise(인왕 -> 오봉도 병합)
 import { computed } from 'vue'
 import MinhwaCut from '@/components/minhwa/MinhwaCut.vue'
 
@@ -20,15 +16,15 @@ const props = defineProps({
   my: { type: Number, default: 0 },
   rain: { type: Boolean, default: false },
   snow: { type: Boolean, default: false },
-  waterIntro: { type: Boolean, default: false }, // inkfill: 수면에서 해·달이 떠오르는 도입부
-  introWaterImg: { type: String, default: '' }, // 앞 폭(인왕제색도)이 풀어진 물 — 그 반영이 남아 일렁인다
+  waterIntro: { type: Boolean, default: false }, // inkfill: 수면에서 해/달이 떠오르는 도입부
+  introWaterImg: { type: String, default: '' }, // 앞 폭(인왕제색도)이 풀어진 물 - 그 반영이 남아 일렁인다
   zoom: { type: Number, default: 0 }, // 챕터별 다이브 확대 폭 재정의 (0=기본)
 })
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v))
 const easeOut = (t) => 1 - Math.pow(1 - t, 3)
 
-// 병합 챕터(sunrise): 전반(wprog)=인왕 물, 후반(oprog)=해달·오봉도 — 같은 무대에서 이어진다
+// 병합 챕터(sunrise): 전반(wprog)=인왕 물, 후반(oprog)=해달/오봉도 - 같은 무대에서 이어진다
 const isCombo = computed(() => props.effect === 'sunrise')
 const wprog = computed(() => (isCombo.value ? clamp01(props.p / 0.72) : props.p))
 const oprog = computed(() => (isCombo.value ? clamp01((props.p - 0.7) / 0.3) : props.p))
@@ -36,14 +32,14 @@ const oprog = computed(() => (isCombo.value ? clamp01((props.p - 0.7) / 0.3) : p
 // 빠져드는 정도
 const dive = computed(() => easeOut(clamp01((props.p - 0.22) / 0.5)))
 
-// 효과별 줌 깊이 — 파노라마(inkfill)는 살짝만, 콜라주는 깊게 빠져든다
+// 효과별 줌 깊이 - 파노라마(inkfill)는 살짝만, 콜라주는 깊게 빠져든다
 const diveAmp = computed(() => props.zoom || (({ inkfill: 0.1, water: 0.24, sunrise: 0.08 })[props.effect] ?? 0.18))
 const camStyle = computed(() => ({
   transform: `scale(${(0.97 + dive.value * diveAmp.value).toFixed(4)})`,
   transformOrigin: props.focal,
 }))
 
-// 선염 등장 마스크 (수면 도입 챕터는 물·하늘이 이미 무대라 생략)
+// 선염 등장 마스크 (수면 도입 챕터는 물/하늘이 이미 무대라 생략)
 const veilStyle = computed(() => {
   if (props.waterIntro || isCombo.value) return {}
   const r = 24 + easeOut(clamp01(props.p / 0.24)) * 150
@@ -54,13 +50,13 @@ const washStyle = computed(() => ({
   opacity: clamp01((props.p - 0.87) / 0.12).toFixed(3),
 }))
 
-// 원화 배경 — 너무 날아가지 않게 또렷함을 유지한 채 뒤로 물러난다
+// 원화 배경 - 너무 날아가지 않게 또렷함을 유지한 채 뒤로 물러난다
 const backdropStyle = computed(() => ({
   transform: `scale(${(1.32 + dive.value * 0.18).toFixed(3)}) translate3d(${(-props.mx * 8).toFixed(1)}px, ${(-props.my * 6).toFixed(1)}px, 0)`,
   opacity: (0.92 - dive.value * 0.08).toFixed(3),
 }))
 
-// 누끼 인물 — 깊이별 시차 + 빠져들 때 분리
+// 누끼 인물 - 깊이별 시차 + 빠져들 때 분리
 function cutStyle(c) {
   const d = c.depth ?? 14
   const x = props.mx * d * 0.6 + dive.value * (c.ox ?? 0)
@@ -78,8 +74,8 @@ function cutStyle(c) {
   }
 }
 
-// ── inkfill ──
-// waterIntro면 해·달이 물에서 떠오른 뒤(p~0.24)에야 물감이 번지기 시작한다
+// inkfill 
+// waterIntro면 해/달이 물에서 떠오른 뒤(p~0.24)에야 물감이 번지기 시작한다
 const fillStart = computed(() => (props.waterIntro ? 0.42 : 0.05))
 const fillR = computed(() => easeOut(clamp01((oprog.value - fillStart.value) / 0.36)) * 165)
 const fillStyle = computed(() => {
@@ -87,19 +83,19 @@ const fillStyle = computed(() => {
   return { maskImage: g, WebkitMaskImage: g }
 })
 const dropsDone = computed(() => fillR.value > 150)
-// 수면 도입: 선염 없이 — 물이 걷히면 화폭이 온전한 색으로 떠오른다
+// 수면 도입: 선염 없이 - 물이 걷히면 화폭이 온전한 색으로 떠오른다
 const plainFillStyle = computed(() => ({
   opacity: clamp01((oprog.value - 0.52) / 0.18).toFixed(3),
 }))
 
-// 수면 도입 — 해·달이 물에서 떠오르고, 물은 서서히 걷힌다
-// 일출의 완급 — 수면에서 천천히 몸을 빼고, 중천으로 갈수록 미끄러진다
+// 수면 도입 - 해/달이 물에서 떠오르고, 물은 서서히 걷힌다
+// 일출의 완급 - 수면에서 천천히 몸을 빼고, 중천으로 갈수록 미끄러진다
 const riseT = computed(() => {
   const t = clamp01((oprog.value - 0.05) / 0.4)
   return t * t * (3 - 2 * t) // smoothstep
 })
 const introWaterStyle = computed(() => {
-  // 병합 무대에선 같은 물이 그대로 띠가 된다 — 별도 이어받기 불필요
+  // 병합 무대에선 같은 물이 그대로 띠가 된다 - 별도 이어받기 불필요
   const settle = isCombo.value ? 1 : clamp01(props.p / 0.14)
   const h = Math.max(44 - riseT.value * 20, 100 - settle * 56)
   return {
@@ -107,15 +103,15 @@ const introWaterStyle = computed(() => {
     opacity: (0.96 * (1 - clamp01((oprog.value - 0.36) / 0.24)) * (isCombo.value ? clamp01((props.p - 0.64) / 0.08) : 1)).toFixed(3),
   }
 })
-// 물에 남은 앞 폭의 잔영 — 해가 떠오를수록 스러진다
+// 물에 남은 앞 폭의 잔영 - 해가 떠오를수록 스러진다
 const introReflStyle = computed(() => ({
   opacity: ((1 - riseT.value) * 0.75).toFixed(3),
 }))
 // 상승 중 물방울이 듣는 구간
 const dripping = computed(() => riseT.value > 0.1 && riseT.value < 0.82)
-// 윤슬 기둥 — 디스크 아래에서 수면까지 잇는 빛 반사
+// 윤슬 기둥 - 디스크 아래에서 수면까지 잇는 빛 반사
 function glintStyle(c) {
-  // 기둥이 아니라 수면 위 잔광 — 디스크 아래 물결에만 짧게 얹힌다
+  // 기둥이 아니라 수면 위 잔광 - 디스크 아래 물결에만 짧게 얹힌다
   const waterTopVh = 56 + riseT.value * 20
   const discCenterVh = c.iy * 100 + (1 - riseT.value) * 72
   const gap = waterTopVh - discCenterVh
@@ -131,9 +127,9 @@ const dawnStyle = computed(() => ({
   opacity: (riseT.value * 0.8 * (1 - clamp01((oprog.value - 0.45) / 0.2))).toFixed(3),
 }))
 function celestialStyle(c) {
-  const land = clamp01((oprog.value - 0.62) / 0.16) // 화폭이 다 차면 원화의 해·달 위에서 스러진다
+  const land = clamp01((oprog.value - 0.62) / 0.16) // 화폭이 다 차면 원화의 해/달 위에서 스러진다
   // 2단 모션: 보기 좋은 자리(riseX)에서 수직으로 떠오른 뒤,
-  // 옆으로 미끄러져 원화 속 해·달의 실제 좌표(cover 크롭 보정)에 정렬한다
+  // 옆으로 미끄러져 원화 속 해/달의 실제 좌표(cover 크롭 보정)에 정렬한다
   const imgAR = c.imgAR ?? 2.315
   const vis = Math.min(1, window.innerWidth / window.innerHeight / imgAR)
   const x0 = 0.5 - vis / 2
@@ -149,16 +145,16 @@ function celestialStyle(c) {
   }
 }
 
-// ── water ──
-// 물 위에 떠 있는 그림을 내려다본다 — 항상 잔물결, 말미엔 배경만 남기고 일렁이며 사라진다
+// water 
+// 물 위에 떠 있는 그림을 내려다본다 - 항상 잔물결, 말미엔 배경만 남기고 일렁이며 사라진다
 const melt = computed(() => clamp01((wprog.value - 0.6) / 0.32))
 // 물 파동만 남은 뒤에야 시점이 눕는다
 const tiltT = computed(() => {
   const t = clamp01((wprog.value - 0.84) / 0.16)
-  return t * t * (3 - 2 * t) // smoothstep — 서서히 눕기 시작해 서서히 멎는다
+  return t * t * (3 - 2 * t) // smoothstep - 서서히 눕기 시작해 서서히 멎는다
 })
 const mainWobble = computed(() => (7 + melt.value * 85).toFixed(1))
-// 시선 이동 — 호수를 내려다보다가, 스크롤하면 수면을 수평선 보듯 기울어진다
+// 시선 이동 - 호수를 내려다보다가, 스크롤하면 수면을 수평선 보듯 기울어진다
 const tiltStyle = computed(() => ({
   transform: `perspective(90vh) rotateX(${(tiltT.value * 62).toFixed(1)}deg) translateY(${(tiltT.value * -5).toFixed(1)}%) scale(${(1 + tiltT.value * 0.65).toFixed(3)})`,
   transformOrigin: '50% 96%',
@@ -170,7 +166,7 @@ const rainRings = Array.from({ length: 7 }, (_, i) => ({
   dur: (2.2 + ((i * 7) % 10) / 6).toFixed(2) + 's',
   delay: -(((i * 13) % 22) / 10).toFixed(1) + 's',
 }))
-// 먹물 한두 방울 — 닿은 자리에서 튄 자국(위성 방울)과 함께 색이 스며든다
+// 먹물 한두 방울 - 닿은 자리에서 튄 자국(위성 방울)과 함께 색이 스며든다
 // 밑선은 처음부터 보이고, 얼룩 마스크는 '색'만 채운다. 좌표계 0~1000
 const mkSat = (seed, n) =>
   Array.from({ length: n }, (_, k) => {
@@ -203,7 +199,7 @@ const rainDrops = Array.from({ length: 44 }, (_, i) => ({
   delay: -((i * 7) % 20) / 10 + 's',
   opacity: 0.45 + ((i * 11) % 10) / 20,
 }))
-// 눈 — 세 겹: 가까운 송이(크고 흐리고 빠름) · 중간 · 먼 송이(작고 느림). 모양은 고르지 않고 빙글 돌며 내려앉는다
+// 눈 - 세 겹: 가까운 송이(크고 흐리고 빠름), 중간, 먼 송이(작고 느림). 모양은 고르지 않고 빙글 돌며 내려앉는다
 const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   const tier = i % 9 === 0 ? 'near' : i % 3 === 0 ? 'mid' : 'far'
   const r = (k) => ((i * k) % 37) / 37 // 0~1 의사난수
@@ -225,12 +221,12 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
 <template>
   <div class="art-stage" :style="veilStyle">
     <div class="cam" :style="camStyle">
-      <!-- ══ 수면 반영 ══ -->
+      <!-- 수면 반영 -->
       <template v-if="effect === 'water' || effect === 'sunrise'">
-        <!-- 본화용 물결 필터 — 말미에 그림이 수면처럼 일렁이며 풀어진다 -->
+        <!-- 본화용 물결 필터 - 말미에 그림이 수면처럼 일렁이며 풀어진다 -->
         <svg width="0" height="0" style="position: absolute" aria-hidden="true">
           <filter id="wobmain" x="-15%" y="-15%" width="130%" height="130%">
-            <!-- 등방에 가까운 잔물결 — 가로줄 무늬가 생기지 않게 -->
+            <!-- 등방에 가까운 잔물결 - 가로줄 무늬가 생기지 않게 -->
             <feTurbulence type="fractalNoise" baseFrequency="0.011 0.017" numOctaves="2" seed="9" result="n2">
               <animate attributeName="baseFrequency" values="0.011 0.017;0.013 0.02;0.011 0.017" dur="7s" repeatCount="indefinite" />
             </feTurbulence>
@@ -238,10 +234,10 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
             <feGaussianBlur :stdDeviation="(melt * 2).toFixed(2)" />
           </filter>
         </svg>
-        <!-- 물 위에 떠 있는 그림 (부감) — 스크롤하면 시선이 수평선으로 기울어진다 -->
+        <!-- 물 위에 떠 있는 그림 (부감) - 스크롤하면 시선이 수평선으로 기울어진다 -->
         <div class="w-tilt" :style="tiltStyle">
         <div class="w-main" :style="mainRise">
-          <!-- 해가 뜨며 인왕의 물결에 노을이 진다 — 물과 같은 필터로 함께 일렁인다 -->
+          <!-- 해가 뜨며 인왕의 물결에 노을이 진다 - 물과 같은 필터로 함께 일렁인다 -->
           <div class="w-dawn" :style="dawnStyle"></div>
           <!-- 밑선: 색이 채워지기 전의 옅은 골격 -->
           <img :src="img" alt="" class="art-img lines" draggable="false" />
@@ -258,7 +254,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
                 <g filter="url(#bleed)">
                   <g v-for="(b, i) in inkBlots" :key="'ib' + i">
                     <circle :cx="b.x" :cy="b.y" :r="blotR(b)" fill="#fff" />
-                    <!-- 튄 자국 — 본얼룩 둘레의 위성 방울들 -->
+                    <!-- 튄 자국 - 본얼룩 둘레의 위성 방울들 -->
                     <circle
                       v-for="(s, k) in b.sat"
                       :key="'sb' + k"
@@ -282,7 +278,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
             />
           </svg>
         </div>
-        <!-- 빗방울 파문 — 표면에 고리가 퍼진다 -->
+        <!-- 빗방울 파문 - 표면에 고리가 퍼진다 -->
         <template v-if="rain && melt < 0.7">
           <span
             v-for="(rg, i) in rainRings"
@@ -292,14 +288,14 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
           ></span>
         </template>
         </div>
-        <!-- 먹물 방울 — 비에 섞여 떨어지며 화폭을 적신다 -->
+        <!-- 먹물 방울 - 비에 섞여 떨어지며 화폭을 적신다 -->
         <div v-if="!inkDropsDone" class="ink-drops">
           <span class="wd wd1"></span>
           <span class="wd wd2"></span>
         </div>
       </template>
 
-      <!-- ══ 물감 낙하 수묵 채색 (+ 해·달 누끼 부유) ══ -->
+      <!-- 물감 낙하 수묵 채색 (+ 해/달 누끼 부유) -->
       <template v-if="effect === 'inkfill' || effect === 'sunrise'">
         <img v-if="!waterIntro" :src="img" alt="" class="art-img gray" draggable="false" />
         <img
@@ -309,10 +305,10 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
           draggable="false"
           :style="waterIntro ? plainFillStyle : fillStyle"
         />
-        <!-- 수면 도입: 해·달이 물에서 떠오르고, 화폭이 차면 제 자리에 스며든다 -->
+        <!-- 수면 도입: 해/달이 물에서 떠오르고, 화폭이 차면 제 자리에 스며든다 -->
         <template v-if="waterIntro">
           <span v-for="(c, i) in cuts" :key="'cel' + i" class="celestial" :style="celestialStyle(c)">
-            <!-- 윤슬 기둥 — 수면까지 빛이 잇닿는다 -->
+            <!-- 윤슬 기둥 - 수면까지 빛이 잇닿는다 -->
             <span class="cel-glint" :class="c.warm ? 'warm' : 'cool'" :style="glintStyle(c)"></span>
             <img :src="c.src" alt="" draggable="false" />
             <span class="cel-glow"></span>
@@ -329,7 +325,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
           <div v-if="effect !== 'sunrise'" class="intro-water" :style="introWaterStyle">
             <!-- 해가 뜨며 수면에 물드는 노을 -->
             <div class="iw-dawn" :style="dawnStyle"></div>
-            <!-- 앞 폭이 풀어진 물의 잔영 — 같은 물결로 일렁인다 -->
+            <!-- 앞 폭이 풀어진 물의 잔영 - 같은 물결로 일렁인다 -->
             <svg v-if="introWaterImg" class="iw-svg" preserveAspectRatio="xMidYMin slice" :style="introReflStyle">
               <defs>
                 <filter id="wobintro" x="-15%" y="-15%" width="130%" height="130%">
@@ -355,12 +351,12 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
         </div>
       </template>
 
-      <!-- ══ 누끼 콜라주 (기본) ══ -->
+      <!-- 누끼 콜라주 (기본) -->
       <template v-if="effect === 'collage'">
         <div class="backdrop" :style="backdropStyle">
           <img :src="bg || img" alt="" draggable="false" />
         </div>
-        <!-- 누끼 배치판 — 세로 화면에선 원화 비율 상자로 모아 한 폭처럼 보이게 -->
+        <!-- 누끼 배치판 - 세로 화면에선 원화 비율 상자로 모아 한 폭처럼 보이게 -->
         <div class="cut-field">
           <span v-for="(c, i) in cuts" :key="'k' + i" class="cut-wrap" :style="cutStyle(c)">
             <MinhwaCut :src="c.src" :parts="c.parts ?? []" :idle="c.idle" />
@@ -413,7 +409,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
 }
 .cam {
   position: absolute;
-  inset: 0; /* 풀블리드 — 그림이 화면을 가득 채운다 */
+  inset: 0; /* 풀블리드 - 그림이 화면을 가득 채운다 */
   will-change: transform;
 }
 .art-img {
@@ -427,7 +423,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   user-select: none;
 }
 
-/* ── 콜라주 ── */
+/* 콜라주 */
 .backdrop {
   position: absolute;
   inset: -6%;
@@ -444,8 +440,8 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   position: absolute;
   inset: 0;
 }
-/* 세로(모바일) 화면 — 가로 화면 기준 %좌표가 세로로 흩어지지 않게,
-   원화 비율(약 1:1.1)의 상자를 가운데 띄우고 그 안에 배치한다 */
+/* 세로(모바일) 화면 - 가로 화면 기준 %좌표가 세로로 흩어지지 않게,
+ 원화 비율(약 1:1.1)의 상자를 가운데 띄우고 그 안에 배치한다 */
 @media (max-width: 760px) and (orientation: portrait) {
   .cut-field {
     inset: auto 0;
@@ -466,7 +462,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   user-select: none;
 }
 
-/* 누끼 인물 고유의 잔모션 — 그림 자체가 살아 있다 */
+/* 누끼 인물 고유의 잔모션 - 그림 자체가 살아 있다 */
 .cut-img.sway {
   animation: idleSway 4.6s ease-in-out infinite alternate;
   transform-origin: 45% 88%;
@@ -507,7 +503,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   to { transform: translateY(-8px) rotate(0.6deg); }
 }
 
-/* ── 물 위의 그림 (부감) ── */
+/* 물 위의 그림 (부감) */
 .w-main {
   position: absolute;
   inset: 0;
@@ -516,7 +512,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
 .w-tilt {
   position: absolute;
   inset: 0;
-  z-index: 3; /* 해·달(z2)이 물결 뒤에서 떠오른다 */
+  z-index: 3; /* 해/달(z2)이 물결 뒤에서 떠오른다 */
   will-change: transform;
 }
 .w-dawn {
@@ -533,7 +529,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   );
   mix-blend-mode: multiply;
 }
-/* 밑선 — 색이 채워지기 전의 옅은 골격 (짙은 획만 흐릿하게 남긴다) */
+/* 밑선 - 색이 채워지기 전의 옅은 골격 (짙은 획만 흐릿하게 남긴다) */
 .art-img.lines {
   filter: grayscale(1) brightness(1.45) contrast(1.5);
   opacity: 0.34;
@@ -563,7 +559,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   100% { opacity: 0; transform: scale(1.6); }
 }
 
-/* ── 먹물 낙하 (인왕 도입) ── */
+/* 먹물 낙하 (인왕 도입) */
 .ink-drops {
   position: absolute;
   inset: 0;
@@ -590,7 +586,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   100% { opacity: 0; }
 }
 
-/* ── 물감 낙하 채색 ── */
+/* 물감 낙하 채색 */
 .art-img.gray {
   filter: grayscale(1) sepia(0.22) contrast(0.94) brightness(1.04);
 }
@@ -632,7 +628,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   pointer-events: none;
 }
 
-/* 윤슬 기둥 — 디스크에서 수면까지 */
+/* 윤슬 기둥 - 디스크에서 수면까지 */
 .cel-glint {
   position: absolute;
   left: 50%;
@@ -667,7 +663,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   animation: dripFall 1.5s cubic-bezier(0.4, 0, 0.9, 0.5) infinite;
   pointer-events: none;
 }
-/* 수면 돌파 파문 — 디스크 발치에서 퍼지는 동심 타원 */
+/* 수면 돌파 파문 - 디스크 발치에서 퍼지는 동심 타원 */
 .cel-ring {
   position: absolute;
   left: 50%;
@@ -698,10 +694,10 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   100% { opacity: 0; transform: translateY(16vh) scaleY(1.25); }
 }
 
-/* ── 수면 도입 : 해·달의 상승 ── */
+/* 수면 도입 : 해/달의 상승 */
 .celestial {
   position: absolute;
-  z-index: 2; /* 물띠(z3) 뒤 — 수면을 뚫고 떠오르는 일출 */
+  z-index: 2; /* 물띠(z3) 뒤 - 수면을 뚫고 떠오르는 일출 */
   will-change: transform, opacity;
 }
 .celestial img {
@@ -730,8 +726,8 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   z-index: 3;
   pointer-events: none;
   overflow: hidden;
-  /* 앞 폭이 풀어진 먹빛 물 — 파랗지 않게, 수묵의 잿빛으로 */
-  /* 인왕이 풀어진 수면과 같은 밝기 — 한지 위 옅은 잿물 */
+  /* 앞 폭이 풀어진 먹빛 물 - 파랗지 않게, 수묵의 잿빛으로 */
+  /* 인왕이 풀어진 수면과 같은 밝기 - 한지 위 옅은 잿물 */
   background: linear-gradient(
     180deg,
     rgba(120, 124, 126, 0.22),
@@ -746,12 +742,12 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   width: 100%;
   height: 160%;
   mix-blend-mode: multiply;
-  /* 방금 누운 인왕 수면의 연속 — 같은 각도로 멀어지는 물결 평면 */
+  /* 방금 누운 인왕 수면의 연속 - 같은 각도로 멀어지는 물결 평면 */
   transform: perspective(90vh) rotateX(62deg);
   transform-origin: 50% 100%;
 }
 
-/* ── 날씨 기운 ── */
+/* 날씨 기운 */
 .stage-drop {
   position: absolute;
   top: -6%;
@@ -783,7 +779,7 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   100% { transform: translate3d(calc(var(--sway, 20px) * 0.3), 110vh, 0) rotate(var(--rot, 360deg)); }
 }
 
-/* ── 퇴장 먹 번짐 ── */
+/* 퇴장 먹 번짐 */
 .ink-wash {
   position: absolute;
   inset: -10%;

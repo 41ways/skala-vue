@@ -1,6 +1,5 @@
 <script setup>
-// 먹 파문 — 손끝이 화폭에 닿으면 먹물이 번지듯 파문이 퍼진다
-// 부모 요소(position 지정)에 오버레이로 얹어 쓴다
+// 클릭한 자리에 먹 파문. 부모에 position 필요
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const host = ref(null)

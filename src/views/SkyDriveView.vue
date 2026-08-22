@@ -28,7 +28,7 @@ const openNav = () => {
 
 <template>
   <div class="sky-drive">
-    <button class="exit" @click="router.push('/')">← 대시보드</button>
+    <button class="exit" @click="router.push('/classic')">← 대시보드</button>
 
     <div class="stageview">
       <CityMap v-if="stage === 'map'" @pick-city="pickCity" />

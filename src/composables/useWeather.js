@@ -1,4 +1,5 @@
-// 날씨 컴포저블 — Open-Meteo(무료·키 불필요) 실시간 조회 + 실습 목데이터 폴백
+// 날씨 컴포저블. Open-Meteo 조회, 실패하면 weatherData.js 표본으로 폴백
+// TODO: 예보(daily)도 여기서 같이 받으면 두루마리에서 따로 안 불러도 됨
 import { ref } from 'vue'
 import axios from 'axios'
 import { weatherList, worldList } from '@/data/weatherData.js'
@@ -42,7 +43,7 @@ export function useWeather() {
     loading.value = true
     error.value = null
     try {
-      // 도시 전부를 한 번의 요청으로 — latitude/longitude에 쉼표로 여러 좌표를 넘기면 배열로 온다
+      // 도시 전부를 한 번의 요청으로 - latitude/longitude에 쉼표로 여러 좌표를 넘기면 배열로 온다
       const list = cities.value
       const { data } = await axios.get('https://api.open-meteo.com/v1/forecast', {
         params: {
@@ -67,7 +68,7 @@ export function useWeather() {
         }
       })
     } catch (e) {
-      // 폴백: 목데이터 유지 — 오프라인/차단 환경에서도 데모 가능
+      // 폴백: 목데이터 유지 - 오프라인/차단 환경에서도 데모 가능
       error.value = e
     } finally {
       loading.value = false
@@ -77,7 +78,7 @@ export function useWeather() {
   return { cities, loading, error, fetchLive }
 }
 
-// 세계화폭 — 해외 도시. timezone=auto로 현지 밤낮(is_day)을 그대로 받는다
+// 세계화폭 - 해외 도시. timezone=auto로 현지 밤낮(is_day)을 그대로 받는다
 export function useWorldWeather() {
   const cities = ref(worldList.map((c) => ({ ...c, isDay: true, live: false })))
   const loading = ref(false)

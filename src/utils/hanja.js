@@ -1,4 +1,4 @@
-// 한자 숫자 — 二十五 식. 0은 空으로 적는다 (두루마리·도시소개 공용)
+// 한자 숫자 변환. 0은 零 말고 空으로 (두루마리에서 이게 더 어울림)
 const DIG = ['空', '一', '二', '三', '四', '五', '六', '七', '八', '九']
 
 export function toHanja(n) {
@@ -15,7 +15,7 @@ export function toHanja(n) {
 // 날씨 상태 → 한 글자 한자
 export const STATUS_HANJA = { 맑음: '晴', 구름: '雲', 흐림: '陰', 비: '雨', 눈: '雪', 바람: '風', 뇌우: '雷', 안개: '霧' }
 
-// 온도 — 영하는 零下
+// 온도 - 영하는 零下
 export function tempHanja(t) {
   return (t < 0 ? '零下' : '') + toHanja(t) + '度'
 }

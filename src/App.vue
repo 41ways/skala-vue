@@ -2,13 +2,14 @@
 import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import Lenis from 'lenis'
+import UnitToggler from '@/components/exercise/UnitToggler.vue'
 
-// 레퍼런스와 동일한 관성 스무스 스크롤 — 화폭이 물 흐르듯 넘어간다
+// 관성 스무스 스크롤 - 화폭이 물 흐르듯 넘어간다
 const route = useRoute()
 let lenis = null
 let rafId = 0
 
-// 맨 위로 — 한 화면 넘게 내려가면 우하단에 뜬다
+// 맨 위로 - 한 화면 넘게 내려가면 우하단에 뜬다
 const showTop = ref(false)
 function onScrollTop() {
   showTop.value = window.scrollY > window.innerHeight * 1.2
@@ -17,7 +18,7 @@ function toTop() {
   if (lenis) lenis.scrollTo(0, { duration: 1.8 })
   else window.scrollTo({ top: 0, behavior: 'smooth' })
 }
-// 화폭 전환 — Lenis가 이전 스크롤 위치를 물고 있지 않게 즉시 맨 위로
+// 화폭 전환 - Lenis가 이전 스크롤 위치를 물고 있지 않게 즉시 맨 위로
 watch(
   () => route.path,
   () => {
@@ -56,8 +57,11 @@ onBeforeUnmount(() => {
       <RouterLink to="/edition">에디션</RouterLink>
       <RouterLink to="/guide">빨래 지침</RouterLink>
       <RouterLink to="/classic">실습 대시보드</RouterLink>
+      <RouterLink to="/sky">하늘 드라이브</RouterLink>
       <RouterLink to="/about">소개</RouterLink>
     </nav>
+    <!-- 단위 토글은 실습 화면(대시보드/상세)에서만 -->
+    <UnitToggler v-if="route.path === '/classic' || route.path.startsWith('/weather/')" class="unit" />
   </header>
   <div class="saekdong"></div>
   <RouterView />
@@ -67,6 +71,9 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.unit {
+  margin-left: 12px;
+}
 .top {
   display: flex;
   align-items: center;
@@ -75,7 +82,7 @@ onBeforeUnmount(() => {
   padding: 16px 24px;
   flex-wrap: wrap;
 }
-/* 세계화폭 — 먹빛 내비 (레퍼런스의 nav theme 전환) */
+/* 세계화폭 - 먹빛 내비 */
 .top.dark {
   background: #0b0f18;
   transition: background 0.4s;
@@ -136,7 +143,7 @@ nav a:hover {
   .totop { right: 14px; bottom: 16px; width: 40px; height: 40px; }
 }
 
-/* ── 맨 위로 ── */
+/* 맨 위로 */
 .totop {
   position: fixed;
   right: 22px;

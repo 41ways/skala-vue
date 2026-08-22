@@ -1,6 +1,5 @@
 <script setup>
-// ScrollSheet — 두루마리(卷軸) 날씨첩.
-// 고을을 누르면 옻칠 축 사이로 시전지(詩箋紙)가 펼쳐지고, 그 고을의 하늘을 세로 기문으로 적는다.
+// ScrollSheet: 두루마리 날씨첩. 도시를 누르면 열리고 세로글로 날씨를 적는다
 import { computed, watch, onBeforeUnmount, nextTick, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import axios from 'axios'
@@ -19,7 +18,7 @@ const statusHanja = computed(() => HANJA[props.city?.status] ?? '天')
 const CITY_HANJA = { 서울: '漢城', 수원: '水原', 부산: '釜山', 광주: '光州', 강릉: '江陵', 제주: '濟州', 인천: '仁川', 대전: '大田', 대구: '大邱', 춘천: '春川', 세종기지: '世宗基地' }
 const cityHanja = computed(() => props.city?.hanja ?? CITY_HANJA[props.city?.name] ?? '')
 
-// 숫자 표기 — 한자 ⇄ 아라비아 (낙관 버튼으로 전환)
+// 숫자 표기 - 한자 ⇄ 아라비아 (낙관 버튼으로 전환)
 const hanjaMode = ref(true)
 const num = (n) => (hanjaMode.value ? toHanja(n) : String(Math.round(n)))
 const tempTxt = computed(() => {
@@ -42,7 +41,7 @@ const windWord = computed(() => {
   return '바람 고요'
 })
 
-// 앞날 — Open-Meteo 일별 예보 (내일·모레·글피)
+// 앞날 - Open-Meteo 일별 예보 (내일/모레/글피)
 const forecast = ref([])
 const DAY = ['내일', '모레', '글피']
 watch(
@@ -105,7 +104,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   <Transition name="sheet">
     <div v-if="city" class="sheet-veil" @click.self="emit('close')">
       <div class="scroll" role="dialog" aria-modal="true" :aria-label="city.name + ' 날씨첩'">
-        <!-- 옻칠 축 — 옥 축두 -->
+        <!-- 옻칠 축 - 옥 축두 -->
         <span class="rod rod-l"><img :src="rodImg" alt="" draggable="false" /></span>
         <span class="rod rod-r"><img :src="rodImg" alt="" draggable="false" /></span>
 
@@ -193,7 +192,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   filter: blur(6px);
   z-index: -1;
 }
-/* 축 — 로즈우드 사진 텍스처 + 옥 축두 (rod.png) */
+/* 축 - 로즈우드 사진 텍스처 + 옥 축두 (rod.png) */
 .rod {
   position: relative;
   z-index: 3;
@@ -222,7 +221,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   100% { transform: translateX(0) translateY(0); }
 }
 
-/* 비단 표장 — 쪽빛 명주 만자(卍)문 */
+/* 비단 표장 - 쪽빛 명주 만자(卍)문 */
 .silk {
   flex: 1;
   min-width: 0; /* 세로글 내용이 축 밖으로 밀어내지 않게 */
@@ -242,7 +241,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   transform-origin: 50% 50%;
   animation: unroll 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
-/* 금선 이중 테 — 표구의 회장(回裝) 선, 세월에 닳아 군데군데 옅다 */
+/* 금선 이중 테 - 표구의 회장(回裝) 선, 세월에 닳아 군데군데 옅다 */
 .silk::after {
   content: '';
   position: absolute;
@@ -267,7 +266,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   45% { transform: translateY(0) scaleX(0.03); }
   100% { transform: translateY(0) scaleX(1); }
 }
-/* 시전지 — 진짜 한지 결 위에 주홍 괘선 */
+/* 시전지 - 진짜 한지 결 위에 주홍 괘선 */
 .paper {
   position: relative;
   height: 100%;
@@ -285,7 +284,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   from { opacity: 0; }
   to { opacity: 1; }
 }
-/* 종이 면의 미세한 굴곡 — 빛이 스치는 결 */
+/* 종이 면의 미세한 굴곡 - 빛이 스치는 결 */
 .paper::before {
   content: '';
   position: absolute;
@@ -332,7 +331,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   flex-direction: column;
   gap: 24px;
   padding-left: 8px;
-  padding-right: 84px; /* 오른쪽 낙관·거두기 자리 확보 */
+  padding-right: 84px; /* 오른쪽 낙관/거두기 자리 확보 */
   color: var(--ink);
   font-family: var(--font-display);
 }
@@ -348,7 +347,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   font-size: 1.25em;
   letter-spacing: 0.08em;
 }
-/* 아라비아 숫자 모드 — 기온·습도·바람 값은 세로글 속에서 가로로 한 덩어리(縦中横) */
+/* 아라비아 숫자 모드 - 기온/습도/바람 값은 세로글 속에서 가로로 한 덩어리(縦中横) */
 .columns.arabic .col b {
   text-combine-upright: all;
   -webkit-text-combine: horizontal;
@@ -429,7 +428,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .seal {
   position: absolute;
-  z-index: 4; /* 세로글 영역 위 — 실제 클릭이 닿아야 한다 */
+  z-index: 4; /* 세로글 영역 위 - 실제 클릭이 닿아야 한다 */
   right: 36px;
   bottom: 30px;
   width: 68px;
@@ -445,17 +444,17 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   transform: rotate(-4deg);
   /* 인주가 종이에 배어 번진 가장자리 */
   filter: drop-shadow(0 0 0.8px rgba(170, 45, 30, 0.7)) drop-shadow(0 1px 1px rgba(120, 30, 20, 0.35));
-  /* 인주가 고르지 않게 닿은 가장자리 — 거친 윤곽 마스크 */
+  /* 인주가 고르지 않게 닿은 가장자리 - 거친 윤곽 마스크 */
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='72' viewBox='0 0 64 72'%3E%3Cfilter id='r' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.16' numOctaves='3' seed='7'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='5'/%3E%3C/filter%3E%3Crect x='3' y='3' width='58' height='66' rx='2' fill='%23fff' filter='url(%23r)'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='72' viewBox='0 0 64 72'%3E%3Cfilter id='r' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.16' numOctaves='3' seed='7'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='5'/%3E%3C/filter%3E%3Crect x='3' y='3' width='58' height='66' rx='2' fill='%23fff' filter='url(%23r)'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
-  /* 인주(印朱) — 고르지 않게 찍힌 붉은 면 + 안쪽 이중 테 */
+  /* 인주(印朱) - 고르지 않게 찍힌 붉은 면 + 안쪽 이중 테 */
   background:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.96 0 0 0 0 0.9 0 0 0 7 -4.4'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23s)'/%3E%3C/svg%3E") 0 0 / 90px 90px repeat, /* 인주가 덜 묻어 종이가 비치는 점들 */
     radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.12), transparent 40%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.08 0 0 0 0 0.05 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='80' height='80' filter='url(%23n)'/%3E%3C/svg%3E"),
     radial-gradient(circle at 70% 80%, rgba(60, 10, 6, 0.35), transparent 55%),
     linear-gradient(160deg, #c8452f, #a0301f 60%, #8d2719);
-  /* 양각 테두리 — 바깥 굵은 테 + 안쪽 가는 테(음각 홈) */
+  /* 양각 테두리 - 바깥 굵은 테 + 안쪽 가는 테(음각 홈) */
   box-shadow:
     inset 0 0 0 3px rgba(251, 246, 234, 0.7),
     inset 0 0 0 5px rgba(150, 42, 30, 1),
@@ -464,7 +463,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   transition: transform 0.2s, box-shadow 0.2s;
   animation: stampIn 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) 1.35s both;
 }
-/* 낙관 — 두루마리가 다 펼쳐진 뒤 쿵, 찍힌다 */
+/* 낙관 - 두루마리가 다 펼쳐진 뒤 쿵, 찍힌다 */
 @keyframes stampIn {
   0% { transform: rotate(-12deg) scale(1.9); opacity: 0; filter: blur(2px); }
   60% { transform: rotate(-2deg) scale(0.94); opacity: 1; filter: blur(0); }
@@ -532,7 +531,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   color: var(--jeok);
   outline: none;
 }
-/* 빨래 지침 — 닫기 아래, 세로쓰기로 종이 오른쪽 여백에 */
+/* 빨래 지침 - 닫기 아래, 세로쓰기로 종이 오른쪽 여백에 */
 .guide-link {
   position: absolute;
   right: 34px;

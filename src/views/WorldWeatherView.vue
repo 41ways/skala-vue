@@ -1,10 +1,6 @@
 <script setup>
-// 세계화폭 — 만국청우록(萬國晴雨錄)
-// 레퍼런스: Shopify Editions Winter '26 를 그대로 —
-//  · 히어로: 미켈란젤로 「아담의 창조」 — 손끝이 닿는 그 장면 위에 1px 표제함 + 차례
-//  · 챕터: 도시마다 "그 나라의 명화"가 한 폭씩 (도쿄=호쿠사이, 베이징=왕희맹,
-//    파리=모네, 런던=터너, 뉴욕=비어슈타트, 시드니=폰 게라르)
-//  · 설명 블록 없음 — 그림 전환 연출 중심. 민화는 국내 화폭 전용.
+// 세계화폭 (만국청우록)
+// 해외 도시마다 그 나라 명화 한 폭, 실황에 따라 비/안개/바람 효과
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import InkRipple from '@/components/minhwa/InkRipple.vue'
 import ScrollHint from '@/components/minhwa/ScrollHint.vue'
@@ -22,14 +18,14 @@ import sydneyImg from '@/assets/world-art/sydney.jpg'
 import romeImg from '@/assets/world-art/rome.jpg'
 import istanbulImg from '@/assets/world-art/istanbul.jpg'
 import cairoImg from '@/assets/world-art/cairo.jpg'
-// 스칼라 시연 사진 — src/assets/world-art/skala.jpg 를 넣으면 자동 연결, 없으면 먹빛 폭풍 배경
+// 스칼라 시연 사진 - src/assets/world-art/skala.jpg 를 넣으면 자동 연결, 없으면 먹빛 폭풍 배경
 const skalaFiles = import.meta.glob('@/assets/world-art/skala.{jpg,jpeg,png,webp}', { eager: true, import: 'default' })
 const skalaImg = Object.values(skalaFiles)[0] ?? ''
 
 const { cities, loading, error, fetchLive } = useWorldWeather()
 
 const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
-// 두루마리 날씨첩 — 도시 이름을 누르면 펼쳐진다
+// 두루마리 날씨첩 - 도시 이름을 누르면 펼쳐진다
 const sheetCity = ref(null)
 
 // 도시 = 그 나라의 그림
@@ -47,7 +43,7 @@ const artMap = {
 }
 
 
-// ── 스크롤 진행도 + 마우스 시차 ──
+// 스크롤 진행도 + 마우스 시차 
 const chapterEls = ref([])
 const heroEl = ref(null)
 const progress = ref([])
@@ -81,7 +77,7 @@ function onMove(e) {
   ty = (e.clientY / window.innerHeight) * 2 - 1
 }
 
-// 자석 스냅 — 스크롤이 멈췄을 때 어중간한 지점이면 정착점으로 스르륵
+// 자석 스냅 - 스크롤이 멈췄을 때 어중간한 지점이면 정착점으로 스르륵
 function magnetSnap() {
   const i = activeIdx.value
   if (i < 0) return
@@ -133,7 +129,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('pointermove', onMove)
 })
 
-// 선묘 에칭 — 챕터 초입에 백색 선으로 떠올랐다가 원색이 번지면 물러난다
+// 선묘 에칭 - 챕터 초입에 백색 선으로 떠올랐다가 원색이 번지면 물러난다
 function etchStyle(i) {
   const p = progress.value[i] ?? 0
   return {
@@ -141,7 +137,7 @@ function etchStyle(i) {
     transform: `scale(${(1.2 - easeOut(clamp01(p / 0.6)) * 0.14).toFixed(4)})`,
   }
 }
-// 그림 — 선묘 위로 원색이 중심에서 번져 나오고, 초점으로 빠져들다 다음 폭에 어둠으로 내준다
+// 그림 - 선묘 위로 원색이 중심에서 번져 나오고, 초점으로 빠져들다 다음 폭에 어둠으로 내준다
 function paintStyle(i, art) {
   const p = progress.value[i] ?? 0
   const enter = easeOut(clamp01(p / 0.14))
@@ -168,7 +164,7 @@ function headStyle(i) {
     transform: `translateY(${((1 - t) * 60 - leave * 40).toFixed(1)}px) translateX(${(mx.value * 7).toFixed(1)}px) scale(${(0.94 + t * 0.06).toFixed(3)})`,
   }
 }
-// 유령 숫자 — 화폭보다 느리게 흐른다
+// 유령 숫자 - 화폭보다 느리게 흐른다
 function ghostStyle(i) {
   const p = progress.value[i] ?? 0
   return {
@@ -176,7 +172,7 @@ function ghostStyle(i) {
     transform: `translateY(${((0.5 - p) * 12).toFixed(1)}vh) translateX(${(mx.value * -12).toFixed(1)}px)`,
   }
 }
-// 빛 입자 — 어두운 화폭 위 느린 티끌
+// 빛 입자 - 어두운 화폭 위 느린 티끌
 const motes = Array.from({ length: 9 }, (_, i) => ({
   left: 6 + ((i * 131) % 88) + '%',
   top: 10 + ((i * 67) % 70) + '%',
@@ -204,8 +200,8 @@ const rainDrops = Array.from({ length: 26 }, (_, i) => ({
   delay: -((i * 7) % 20) / 10 + 's',
   opacity: 0.2 + ((i * 11) % 10) / 26,
 }))
-// 도시별 효과 — 어느 부위를 오려 어떻게 흔들지
-// 효과 영역은 칼로 자르지 않고 — 가장자리를 흐려 그림에 스미게 한다 (mask)
+// 도시별 효과 - 어느 부위를 오려 어떻게 흔들지
+// 효과 영역은 칼로 자르지 않고 - 가장자리를 흐려 그림에 스미게 한다 (mask)
 const SKY = (to) => `linear-gradient(180deg, #000 0%, #000 ${to - 18}%, transparent ${to}%)`
 const WATER = (from) => `linear-gradient(0deg, #000 0%, #000 ${100 - from - 18}%, transparent ${100 - from}%)`
 const fxMap = {
@@ -215,13 +211,13 @@ const fxMap = {
   w_newyork: { kind: 'sky', mask: SKY(60), lightning: true },
   w_skala: { kind: null, lightning: true, storm: true }, // 그림은 통째로 국기처럼 펄럭인다
 }
-// 효과는 그림과 함께 떠오르고 함께 물러난다 — 미리 보이지 않게
+// 효과는 그림과 함께 떠오르고 함께 물러난다 - 미리 보이지 않게
 function fxVis(i) {
   const p = progress.value[i] ?? 0
   // 원색 리빌(0.06~0.32)이 거의 끝난 뒤에야 효과가 스며든다
   return { opacity: (easeOut(clamp01((p - 0.24) / 0.14)) * (1 - clamp01((p - 0.84) / 0.12))).toFixed(3) }
 }
-// 효과 레이어용 그림 스타일 — 리빌 마스크는 빼고(자체 부드러운 마스크 사용) 움직임만 따라간다
+// 효과 레이어용 그림 스타일 - 리빌 마스크는 빼고(자체 부드러운 마스크 사용) 움직임만 따라간다
 function fxPaintStyle(i, art) {
   const st = paintStyle(i, art)
   delete st.maskImage
@@ -232,7 +228,7 @@ function fxPaintStyle(i, art) {
 function readingAria(c) {
   return `${c.status}, 기온 ${c.temp}도, 습도 ${c.humidity}퍼센트, 바람 초속 ${c.wind}미터, ${c.isDay ? '낮' : '밤'}`
 }
-// 고풍 독법 — 氣溫 二十二度 · 濕度 四十一分 · 風 四米
+// 고풍 독법 - 氣溫 二十二度, 濕度 四十一分, 風 四米
 function readingOf(c) {
   const parts = [`氣溫 ${tempHanja(c.temp)}`, `濕度 ${toHanja(c.humidity)}分`, `風 ${toHanja(Math.round(c.wind))}米`]
   if (c.demo) parts.push('示演 固定')
@@ -241,7 +237,7 @@ function readingOf(c) {
   parts.push(c.isDay ? '晝' : '夜')
   return parts.join(' · ')
 }
-// 안개 띠 — 산허리·강물 위로 천천히 흐른다
+// 안개 띠 - 산허리/강물 위로 천천히 흐른다
 const mists = Array.from({ length: 4 }, (_, i) => ({
   height: 7 + (i % 2) * 4 + '%',
   animationDuration: (22 + i * 6) + 's',
@@ -265,7 +261,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
     <!-- 상주 브랜드 마크 (챕터 진입 후) -->
     <p v-show="activeIdx >= 0" class="brand">만국청우록<span>萬國晴雨錄</span></p>
 
-    <!-- ══ 좌측 상주 차례 레일 ══ -->
+    <!-- 좌측 상주 차례 레일 -->
     <nav v-show="activeIdx >= 0" class="rail util" aria-label="도시 차례">
       <button
         v-for="(c, i) in cities"
@@ -280,7 +276,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
     </nav>
 
     <svg width="0" height="0" style="position: absolute" aria-hidden="true">
-      <!-- 강풍 — 천이 펄럭이듯 그림 전체가 물결친다 (국기) -->
+      <!-- 강풍 - 천이 펄럭이듯 그림 전체가 물결친다 (국기) -->
       <filter id="flagWave" x="-6%" y="-6%" width="112%" height="112%">
         <feTurbulence type="fractalNoise" baseFrequency="0.012 0.028" numOctaves="2" seed="6" result="w">
           <animate attributeName="baseFrequency" values="0.012 0.028;0.017 0.022;0.012 0.028" dur="3.2s" repeatCount="indefinite" />
@@ -290,7 +286,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
           <animate attributeName="scale" values="7;12;7" dur="3.2s" repeatCount="indefinite" />
         </feDisplacementMap>
       </filter>
-      <!-- 물결 — 가로로 긴 잔물결이 흐른다 -->
+      <!-- 물결 - 가로로 긴 잔물결이 흐른다 -->
       <filter id="fxWater" x="-10%" y="-10%" width="120%" height="120%">
         <feTurbulence type="fractalNoise" baseFrequency="0.008 0.04" numOctaves="2" seed="8" result="n">
           <animate attributeName="baseFrequency" values="0.008 0.04;0.011 0.05;0.008 0.04" dur="7s" repeatCount="indefinite" />
@@ -299,7 +295,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
           <animate attributeName="scale" values="6;12;6" dur="4.6s" repeatCount="indefinite" />
         </feDisplacementMap>
       </filter>
-      <!-- 구름 — 아주 느린 저주파 일렁임 -->
+      <!-- 구름 - 아주 느린 저주파 일렁임 -->
       <filter id="fxSky" x="-10%" y="-10%" width="120%" height="120%">
         <feTurbulence type="fractalNoise" baseFrequency="0.003 0.006" numOctaves="2" seed="2" result="n">
           <animate attributeName="baseFrequency" values="0.003 0.006;0.004 0.008;0.003 0.006" dur="14s" repeatCount="indefinite" />
@@ -315,7 +311,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
       </filter>
     </svg>
 
-    <!-- ══ 히어로 : 손끝이 닿는 순간 ══ -->
+    <!-- 히어로 : 손끝이 닿는 순간 -->
     <section ref="heroEl" class="hero-wrap">
       <div class="hero-stage">
         <div class="hero-art" :style="heroArtStyle">
@@ -349,7 +345,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
       </div>
     </section>
 
-    <!-- ══ 도시 챕터 — 그 나라의 그림으로 ══ -->
+    <!-- 도시 챕터 - 그 나라의 그림으로 -->
     <section
       v-for="(c, i) in cities"
       :key="c.id"
@@ -364,7 +360,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
         <div class="paint" :class="{ windy: c.wind >= 6, gale: c.wind >= 10, blank: !artMap[c.id].img }" :style="paintStyle(i, artMap[c.id])">
           <img v-if="artMap[c.id].img" :src="artMap[c.id].img" :alt="artMap[c.id].caption" loading="lazy" decoding="async" draggable="false" />
         </div>
-        <!-- 날씨 기운 + 도시별 효과 — 그림과 함께 나타난다 -->
+        <!-- 날씨 기운 + 도시별 효과 - 그림과 함께 나타난다 -->
         <div class="fx-group" :style="fxVis(i)">
           <template v-if="c.status === '비' || c.status === '뇌우'">
             <span
@@ -399,7 +395,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
         </div>
         <div class="paint-shade"></div>
 
-        <!-- 유령 숫자 — 화폭 뒤 거대한 차례 -->
+        <!-- 유령 숫자 - 화폭 뒤 거대한 차례 -->
         <span class="ghost-num" aria-hidden="true" :style="ghostStyle(i)">{{ numerals[i] }}</span>
         <!-- 빛 입자 -->
         <span v-for="(m, k) in motes" :key="'mo' + k" class="mote" :style="m"></span>
@@ -425,7 +421,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 
     <ScrollSheet :city="sheetCity" @close="sheetCity = null" />
 
-    <!-- ══ 발문 ══ -->
+    <!-- 발문 -->
     <section class="outro">
       <p class="outro-copy">열 곳의 하늘을 모두 거두었습니다.</p>
       <router-link to="/" class="outro-link util">국내 화폭 — 팔도청우록으로 →</router-link>
@@ -444,7 +440,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   font-family: var(--font-util);
 }
 
-/* ── 좌측 차례 레일 ── */
+/* 좌측 차례 레일 */
 .rail {
   position: fixed;
   left: 18px;
@@ -485,7 +481,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   color: rgba(251, 246, 234, 0.5);
 }
 
-/* ── 히어로 ── */
+/* 히어로 */
 .hero-wrap {
   height: 178vh;
 }
@@ -520,7 +516,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
     radial-gradient(ellipse 70% 60% at 50% 42%, transparent 40%, rgba(11, 15, 24, 0.68) 92%),
     linear-gradient(180deg, rgba(11, 15, 24, 0.55), transparent 26%, transparent 68%, rgba(11, 15, 24, 0.8));
 }
-/* 손끝이 닿는 지점 — 프레스코 중앙의 그 틈 */
+/* 손끝이 닿는 지점 - 프레스코 중앙의 그 틈 */
 .spark {
   position: absolute;
   z-index: 4;
@@ -655,7 +651,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   color: rgba(251, 246, 234, 0.85);
 }
 
-/* ── 챕터 ── */
+/* 챕터 */
 .chapter {
   position: relative;
   height: 230vh;
@@ -678,13 +674,13 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   object-fit: cover;
   user-select: none;
 }
-/* 사진 미첨부 시 — 먹구름 폭풍 하늘 */
+/* 사진 미첨부 시 - 먹구름 폭풍 하늘 */
 .paint.blank {
   background:
     radial-gradient(ellipse at 60% 20%, rgba(120, 130, 150, 0.5), transparent 55%),
     linear-gradient(180deg, #20242c, #0b0d12 70%);
 }
-/* 폭풍 어둠 — 빗줄기 뒤로 하늘이 무겁게 가라앉는다 */
+/* 폭풍 어둠 - 빗줄기 뒤로 하늘이 무겁게 가라앉는다 */
 .storm {
   position: absolute;
   inset: 0;
@@ -698,7 +694,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   0%, 100% { opacity: 0.85; }
   50% { opacity: 1; }
 }
-/* 바람 ≥ 6m/s — 걸어 둔 화폭이 바람에 살짝 휘날린다 (translate/rotate 대신 별도 속성으로 흔들어 인라인 transform과 충돌 없음) */
+/* 바람 ≥ 6m/s - 걸어 둔 화폭이 바람에 살짝 휘날린다 (translate/rotate 대신 별도 속성으로 흔들어 인라인 transform과 충돌 없음) */
 .paint.windy {
   animation: windFlutter 4.4s ease-in-out infinite;
   transform-origin: 50% 0%;
@@ -723,7 +719,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   75% { rotate: 0.12deg; translate: 1px 1px; }
 }
 
-/* ── 도시별 효과 레이어 ── */
+/* 도시별 효과 레이어 */
 .fx {
   position: absolute;
   inset: -3%;
@@ -796,7 +792,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   75.5% { opacity: 0; }
 }
 
-/* 선묘 에칭 — 엣지 추출 백선 */
+/* 선묘 에칭 - 엣지 추출 백선 */
 .etch {
   position: absolute;
   inset: -3%;
@@ -922,7 +918,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   margin: 0.04em 0.14em 0 0;
   color: #ffffff;
 }
-/* 독법 — 낙관 한 방 + 한자 기문, 위아래 괘선 */
+/* 독법 - 낙관 한 방 + 한자 기문, 위아래 괘선 */
 .reading {
   display: inline-flex;
   align-items: center;
@@ -1048,7 +1044,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   50% { opacity: 0.9; transform: translateY(-14px); }
 }
 
-/* ── 발문 ── */
+/* 발문 */
 .outro {
   position: relative;
   z-index: 5;

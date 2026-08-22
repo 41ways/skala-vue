@@ -1,5 +1,5 @@
 <script setup>
-// 스크롤 힌트 — 손가락이 화면을 아래로 쓸어내리는 모션 (레퍼런스: 에디션 스크롤 유도)
+// 스크롤 유도 손 모션
 defineProps({
   label: { type: String, default: '아래로 쓸어내리세요' },
 })
