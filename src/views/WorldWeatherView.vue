@@ -161,7 +161,7 @@ function headStyle(i) {
 function ghostStyle(i) {
   const p = progress.value[i] ?? 0
   return {
-    opacity: (clamp01(p / 0.2) * (1 - clamp01((p - 0.8) / 0.16)) * 0.09).toFixed(3),
+    opacity: (clamp01(p / 0.2) * (1 - clamp01((p - 0.8) / 0.16)) * 0.24).toFixed(3),
     transform: `translateY(${((0.5 - p) * 12).toFixed(1)}vh) translateX(${(mx.value * -12).toFixed(1)}px)`,
   }
 }
