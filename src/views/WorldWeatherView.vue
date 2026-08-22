@@ -203,7 +203,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
     >
       <div class="scene-sticky">
         <div class="paint" :style="paintStyle(i, artMap[c.id])">
-          <img :src="artMap[c.id].img" :alt="artMap[c.id].caption" draggable="false" />
+          <img :src="artMap[c.id].img" :alt="artMap[c.id].caption" loading="lazy" decoding="async" draggable="false" />
         </div>
         <div class="paint-shade"></div>
 
