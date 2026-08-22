@@ -94,7 +94,7 @@ const introWaterStyle = computed(() => ({
 }))
 // 물에 남은 앞 폭의 잔영 — 해가 떠오를수록 스러진다
 const introReflStyle = computed(() => ({
-  opacity: ((1 - riseT.value) * 0.55).toFixed(3),
+  opacity: ((1 - riseT.value) * 0.75).toFixed(3),
 }))
 // 상승 중 물방울이 듣는 구간
 const dripping = computed(() => riseT.value > 0.1 && riseT.value < 0.82)
@@ -644,6 +644,9 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
   width: 100%;
   height: 160%;
   mix-blend-mode: multiply;
+  /* 방금 누운 인왕 수면의 연속 — 같은 각도로 멀어지는 물결 평면 */
+  transform: perspective(90vh) rotateX(62deg);
+  transform-origin: 50% 100%;
 }
 
 /* ── 날씨 기운 ── */
