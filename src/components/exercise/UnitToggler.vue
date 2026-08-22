@@ -8,7 +8,7 @@ const { toggleUnit } = configStore
 </script>
 
 <template>
-  <button class="toggler" @click="toggleUnit">
+  <button class="toggler" aria-label="온도 단위 전환 (섭씨/화씨)" @click="toggleUnit">
     <span :class="{ on: unit === 'celsius' }">℃</span>
     <span :class="{ on: unit === 'fahrenheit' }">℉</span>
     <span class="now">{{ unitSymbol }}</span>
