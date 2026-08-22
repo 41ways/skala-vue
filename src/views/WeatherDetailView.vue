@@ -43,6 +43,7 @@ const goBack = () => {
       <p class="city">{{ city.name }}</p>
       <p class="big">{{ score }}<span>점</span></p>
       <p class="label">{{ grade.label }}</p>
+      <i class="seal">{{ { best: '上上', good: '上', fair: '中', none: '下' }[grade.key] }}</i>
     </header>
 
     <dl class="obs">
@@ -89,10 +90,31 @@ const goBack = () => {
 }
 
 header {
-  padding: 20px;
+  position: relative;
+  padding: 20px 22px;
   border-radius: 4px;
   border-left: 5px solid;
   margin-bottom: 16px;
+}
+/* 등급 낙관 */
+.seal {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  display: grid;
+  place-items: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 6px;
+  background: var(--jeok);
+  color: var(--baek);
+  font-family: var(--font-display);
+  font-style: normal;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1.5px rgba(251, 246, 234, 0.4);
+  transform: rotate(-4deg);
 }
 
 header.best {
@@ -121,12 +143,15 @@ header p {
 }
 
 .city {
-  font-size: 15px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 0.12em;
 }
 
 .big {
-  font-size: 44px;
-  font-weight: 300;
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 400;
   line-height: 1.1;
 }
 

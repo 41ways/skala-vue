@@ -157,33 +157,41 @@ const goDetail = (city) => {
   width: 100%;
   margin-bottom: 14px;
   padding: 14px 18px;
-  border: none;
-  border-radius: 6px;
-  background: linear-gradient(100deg, #0d1730, #21325c 60%, #33406b);
-  color: #dbe4ef;
+  border: 1px solid rgba(251, 246, 234, 0.18);
+  border-radius: 4px;
+  /* 밤하늘: 먹빛에서 쪽빛으로 */
+  background:
+    radial-gradient(circle at 12% 30%, rgba(251, 246, 234, 0.9) 0 1px, transparent 2px),
+    radial-gradient(circle at 38% 70%, rgba(251, 246, 234, 0.7) 0 1px, transparent 2px),
+    radial-gradient(circle at 71% 25%, rgba(251, 246, 234, 0.8) 0 1.2px, transparent 2.4px),
+    radial-gradient(circle at 88% 62%, rgba(251, 246, 234, 0.6) 0 1px, transparent 2px),
+    linear-gradient(100deg, var(--ink), #1c2a3e 60%, var(--cheong));
+  color: var(--baek);
   cursor: pointer;
   text-align: left;
+  transition: filter 0.2s;
 }
 
 .banner:hover {
-  background: linear-gradient(100deg, #121e3d, #2a3d6d 60%, #3d4c7d);
+  filter: brightness(1.15);
 }
 
 .btitle {
-  font-size: 15px;
-  font-weight: 600;
-  color: #f2f6ff;
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 0.14em;
+  color: var(--baek);
 }
 
 .bsub {
   font-size: 12px;
-  color: #94a3bd;
+  color: rgba(251, 246, 234, 0.7);
 }
 
 .barrow {
   margin-left: auto;
   font-size: 16px;
-  color: #94a3bd;
+  color: rgba(251, 246, 234, 0.7);
 }
 
 .list {
