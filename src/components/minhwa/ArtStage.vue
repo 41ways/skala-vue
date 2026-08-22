@@ -429,7 +429,7 @@ const snowFlakes = Array.from({ length: 24 }, (_, i) => ({
     inset: auto 0;
     top: 50%;
     height: min(118vw, 82vh);
-    transform: translateY(-54%);
+    transform: translateY(-44%);
   }
 }
 .cut-wrap {
