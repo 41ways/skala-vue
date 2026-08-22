@@ -1,7 +1,7 @@
 <script setup>
 // ScrollSheet — 두루마리(卷軸) 날씨첩.
 // 도시를 누르면 좌우 나무 축 사이로 한지가 펼쳐지며 그 고을의 하늘을 세로글로 적는다.
-import { computed, watch, onBeforeUnmount } from 'vue'
+import { computed, watch, onBeforeUnmount, nextTick, ref } from 'vue'
 
 const props = defineProps({
   city: { type: Object, default: null },
@@ -34,14 +34,24 @@ const windWord = computed(() => {
   return '바람 없음'
 })
 
+const closeBtn = ref(null)
+let lastFocus = null
 function onKey(e) {
   if (e.key === 'Escape') emit('close')
 }
 watch(
   () => props.city,
-  (c) => {
-    if (c) window.addEventListener('keydown', onKey)
-    else window.removeEventListener('keydown', onKey)
+  async (c) => {
+    if (c) {
+      window.addEventListener('keydown', onKey)
+      lastFocus = document.activeElement
+      await nextTick()
+      closeBtn.value?.focus({ preventScroll: true })
+    } else {
+      window.removeEventListener('keydown', onKey)
+      lastFocus?.focus?.({ preventScroll: true })
+      lastFocus = null
+    }
   },
   { immediate: true },
 )
@@ -53,8 +63,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     <div v-if="city" class="sheet-veil" @click.self="emit('close')">
       <div class="scroll" role="dialog" aria-modal="true" :aria-label="city.name + ' 날씨첩'">
         <!-- 좌우 나무 축 — 옥 축두 -->
-        <span class="rod rod-l"><i></i></span>
-        <span class="rod rod-r"><i></i></span>
+        <span class="rod rod-l"></span>
+        <span class="rod rod-r"></span>
 
         <!-- 비단 표장 + 한지 -->
         <div class="silk">
@@ -74,7 +84,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               <p class="col date">{{ today }} · {{ city.live ? '실측' : '표본' }}</p>
             </div>
 
-            <button class="close util" @click="emit('close')">거두기 ✕</button>
+            <button ref="closeBtn" class="close util" @click="emit('close')">거두기 ✕</button>
           </div>
         </div>
       </div>
@@ -111,7 +121,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   background: linear-gradient(90deg, #3a1f16, #7a4a33 35%, #a86a48 50%, #6b3d2a 70%, #2d1710);
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(0, 0, 0, 0.4);
 }
-.rod i {
+.rod::before,
+.rod::after {
+  content: '';
   position: absolute;
   left: 50%;
   width: 30px;
@@ -120,19 +132,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #e9e4cf, #9aa285 55%, #5c6a4e);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45), inset 0 0 0 2px rgba(60, 40, 24, 0.5);
-  top: -14px;
 }
-.rod i::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  width: 30px;
-  height: 30px;
-  top: calc(min(420px, 70vh) + 52px - 16px);
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #e9e4cf, #9aa285 55%, #5c6a4e);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45), inset 0 0 0 2px rgba(60, 40, 24, 0.5);
-}
+.rod::before { top: -14px; }
+.rod::after { bottom: -14px; }
 /* 비단 표장 — 쪽빛 명주에 잔무늬 */
 .silk {
   flex: 1;
@@ -262,9 +264,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   font-size: 12.5px;
   letter-spacing: 0.12em;
 }
-.close:hover {
+.close:hover,
+.close:focus-visible {
   border-color: var(--jeok);
   color: var(--jeok);
+  outline: none;
 }
 .sheet-enter-active,
 .sheet-leave-active {
@@ -281,8 +285,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .scroll {
     height: min(560px, 78vh);
   }
-  .col.title { font-size: 30px; }
-  .col.big { font-size: 42px; }
+  .silk { padding: 12px 14px; }
+  .paper { padding: 16px 18px; }
+  .columns { gap: 14px; }
+  .col { font-size: 14px; letter-spacing: 0.12em; }
+  .col.title { font-size: 28px; }
+  .col.big { font-size: 40px; }
+  .seal { width: 44px; height: 44px; font-size: 24px; right: 16px; bottom: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .silk,

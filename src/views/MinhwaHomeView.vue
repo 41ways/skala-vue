@@ -1053,9 +1053,11 @@ function jumpTo(r) {
 .side-cities.light .vc {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.6);
 }
-.vc:hover {
+.vc:hover,
+.vc:focus-visible {
   color: var(--jeok);
   transition: color 0.2s ease;
+  outline: none;
 }
 .vc b {
   font-weight: 700;

@@ -14,7 +14,7 @@ defineProps({
 <template>
   <span class="mcut" :class="[idle, { 'with-sil': silhouette }]">
     <img v-if="silhouette" class="sil" :src="src" alt="" draggable="false" />
-    <img class="base" :src="src" alt="" draggable="false" />
+    <img class="base" :src="src" alt="" draggable="false" loading="lazy" decoding="async" />
     <img
       v-for="(pt, i) in parts"
       :key="i"
@@ -23,6 +23,8 @@ defineProps({
       :src="pt.src"
       alt=""
       draggable="false"
+      loading="lazy"
+      decoding="async"
       :style="{ left: pt.left, top: pt.top, width: pt.w, transformOrigin: pt.origin }"
     />
   </span>
