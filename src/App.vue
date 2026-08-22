@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onBeforeUnmount, ref } from 'vue'
+import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import Lenis from 'lenis'
 
@@ -17,6 +17,15 @@ function toTop() {
   if (lenis) lenis.scrollTo(0, { duration: 1.8 })
   else window.scrollTo({ top: 0, behavior: 'smooth' })
 }
+// 화폭 전환 — Lenis가 이전 스크롤 위치를 물고 있지 않게 즉시 맨 위로
+watch(
+  () => route.path,
+  () => {
+    if (lenis) lenis.scrollTo(0, { immediate: true })
+    window.scrollTo(0, 0)
+    showTop.value = false
+  },
+)
 onMounted(() => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   lenis = new Lenis({ lerp: 0.09, smoothWheel: true })

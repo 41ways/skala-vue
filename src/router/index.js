@@ -3,6 +3,10 @@ import MinhwaHomeView from '../views/MinhwaHomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  // 화폭을 옮기면 새 화폭의 맨 위에서 시작한다 (뒤로가기는 있던 자리로)
+  scrollBehavior(to, from, savedPosition) {
+    return savedPosition ?? { top: 0 }
+  },
   routes: [
     {
       path: '/',

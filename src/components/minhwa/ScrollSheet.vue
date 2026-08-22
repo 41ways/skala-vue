@@ -156,6 +156,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               @click="hanjaMode = !hanjaMode"
             >
               <span class="seal-face" :class="{ on: hanjaMode }">文</span>
+              <span class="seal-arrow" aria-hidden="true">⇅</span>
               <span class="seal-face num" :class="{ on: !hanjaMode }">123</span>
             </button>
             <button ref="closeBtn" class="close" @click="emit('close')">거두기</button>
@@ -403,10 +404,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .seal {
   position: absolute;
+  z-index: 4; /* 세로글 영역 위 — 실제 클릭이 닿아야 한다 */
   left: 36px;
   bottom: 30px;
   width: 64px;
-  height: 64px;
+  height: 72px;
   display: grid;
   place-items: center;
   gap: 0;
@@ -440,6 +442,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   line-height: 1;
   opacity: 0.45;
   transition: opacity 0.2s;
+}
+.seal-arrow {
+  font-family: var(--font-util);
+  font-size: 13px;
+  line-height: 1;
+  opacity: 0.85;
+  margin: -2px 0;
 }
 .seal-face.num {
   font-family: var(--font-util);
@@ -505,7 +514,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .col.title { font-size: 30px; letter-spacing: 0.2em; }
   .col.sky { font-size: 18px; }
   .head { display: none; }
-  .seal { left: 18px; bottom: 18px; width: 54px; height: 54px; }
+  .seal { left: 18px; bottom: 18px; width: 52px; height: 62px; }
   .seal-face { font-size: 16px; }
   .close { left: 18px; top: 18px; }
   .rules { inset: 12px 14px; }
