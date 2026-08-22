@@ -187,6 +187,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 /* 비단 표장 — 쪽빛 명주 만자(卍)문 */
 .silk {
   flex: 1;
+  min-width: 0; /* 세로글 내용이 축 밖으로 밀어내지 않게 */
   margin: 0 -16px; /* 축 몸통 밑으로 파고들어 붙는다 */
   padding: 18px 34px;
   z-index: 1;
@@ -438,8 +439,19 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 @media (max-width: 640px) {
   .scroll { --h: min(600px, 80vh); }
-  .col.title { font-size: 30px; }
-  .columns { padding-right: 34px; }
+  .rod { flex-basis: 30px; }
+  .silk { padding: 14px 24px; margin: 0 -12px; }
+  .paper { padding: 20px 18px 20px 16px; overflow-x: auto; }
+  .columns { gap: 12px; padding-right: 16px; }
+  .col { font-size: 15px; letter-spacing: 0.14em; }
+  .col.title { font-size: 30px; letter-spacing: 0.2em; }
+  .col.sky { font-size: 18px; }
+  .head { display: none; }
+  .seal { left: 18px; bottom: 18px; width: 54px; height: 54px; }
+  .seal-face { font-size: 16px; }
+  .seal::after { display: none; }
+  .close { left: 18px; top: 18px; }
+  .rules { inset: 12px 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .silk, .paper, .rod { animation: none !important; }
