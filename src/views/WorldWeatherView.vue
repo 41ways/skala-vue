@@ -819,6 +819,9 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 }
 .open-sheet {
   all: unset;
+  display: inline-block;
+  padding: 6px 2px; /* 손가락이 닿을 높이 */
+  margin: -6px -2px;
   text-decoration: underline;
   text-underline-offset: 4px;
   pointer-events: auto;
@@ -1070,6 +1073,18 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 }
 
 @media (max-width: 860px) {
+  /* 터치 화면: 날씨첩 버튼을 손가락 크기의 알약으로 */
+  .open-sheet {
+    display: inline-block;
+    margin: 8px 0 0;
+    padding: 9px 14px;
+    border: 1.5px solid rgba(251, 246, 234, 0.7);
+    border-radius: 999px;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    color: var(--baek);
+  }
   .rail, .brand { display: none; }
   .mega { top: 22%; font-size: clamp(52px, 17vw, 96px); }
   .ghost-num { font-size: clamp(180px, 58vw, 360px); top: 6%; }
