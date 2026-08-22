@@ -9,7 +9,7 @@ export const weatherList = [
   { id: 'city_08', name: '대전', temp: 29, status: '맑음', humidity: 58, wind: 1.9, x: 40, y: 46 },
   { id: 'city_09', name: '대구', temp: 31, status: '맑음', humidity: 50, wind: 2.2, x: 66, y: 54 },
   { id: 'city_10', name: '춘천', temp: 26, status: '흐림', humidity: 72, wind: 1.4, x: 44, y: 14 },
-  // 남극 세종과학기지 — 국내 화폭의 마지막 폭 (눈은 늘 내린다)
+  // 남극 세종과학기지 — 작호도(눈) 화폭에 늘 든다
   { id: 'city_11', name: '세종기지', temp: -8, status: '눈', humidity: 85, wind: 9.5, x: 50, y: 99, snowAlways: true },
 ]
 

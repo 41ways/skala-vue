@@ -125,7 +125,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               <p class="col sky"><i class="sky-hanja">{{ statusHanja }}</i>{{ city.status }} · {{ city.isDay ? '낮' : '밤' }}</p>
               <p class="col"><span class="k">기온</span><b>{{ tempTxt }}</b></p>
               <p class="col"><span class="k">습도</span><b>{{ humTxt }}</b></p>
-              <p class="col"><span class="k">바람</span><b>{{ windTxt }}<small v-if="!hanjaMode" class="unit">m/s</small></b><span class="sub">{{ windWord }}</span></p>
+              <p class="col"><span class="k">바람</span><b>{{ windTxt }}</b><small v-if="!hanjaMode" class="unit">m/s</small><span class="sub">{{ windWord }}</span></p>
               <p class="col date">{{ today }} · {{ city.demo ? '시연' : city.live ? '실측' : '표본' }}</p>
               <template v-if="forecast.length">
                 <span class="col divider" aria-hidden="true"></span>
@@ -332,20 +332,22 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   font-size: 1.25em;
   letter-spacing: 0.08em;
 }
-/* 아라비아 숫자 모드 — 기온·습도·바람 값은 작게, 글자를 눕히지 않고 똑바로 세운다 */
+/* 아라비아 숫자 모드 — 기온·습도·바람 값은 세로글 속에서 가로로 한 덩어리(縦中横) */
 .columns.arabic .col b {
-  text-orientation: upright;
-  font-size: 1em;
-  letter-spacing: 0.04em;
+  text-combine-upright: all;
+  -webkit-text-combine: horizontal;
+  font-size: 1.05em;
+  letter-spacing: 0;
 }
-.columns.arabic .col b .unit {
+.columns.arabic .col .unit {
   display: inline-block;
   margin-top: 4px;
   font-family: var(--font-util);
   font-size: 0.6em;
   letter-spacing: 0.02em;
-  color: var(--ink-soft);
-  text-orientation: sideways;
+  color: var(--jeok);
+  text-combine-upright: all;
+  -webkit-text-combine: horizontal;
 }
 .col .k {
   display: inline-block;
@@ -501,12 +503,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   z-index: 2;
   writing-mode: vertical-lr;
   font-family: var(--font-display);
-  font-size: 14px;
-  letter-spacing: 0.3em;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
   color: var(--jeok);
   text-decoration: none;
-  border-left: 1px solid rgba(178, 58, 44, 0.45);
-  padding-left: 6px;
+  border-left: 1.5px solid rgba(178, 58, 44, 0.5);
+  padding-left: 8px;
 }
 .guide-link:hover,
 .guide-link:focus-visible {
@@ -544,7 +547,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .seal { right: 18px; bottom: 18px; width: 52px; height: 62px; }
   .seal-face { font-size: 16px; }
   .close { right: 18px; top: 18px; }
-  .guide-link { right: 18px; top: 96px; font-size: 12px; }
+  .guide-link { right: 18px; top: 96px; font-size: 15px; }
   .rules { inset: 12px 14px; }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -18,9 +18,6 @@ import ssireumImg from '@/assets/minhwa-art/ssireum.jpg'
 import seodangImg from '@/assets/minhwa-art/seodang.jpg'
 import inwangImg from '@/assets/minhwa-art/inwang.jpg'
 import tigerImg from '@/assets/minhwa-art/tiger.jpg'
-// 세종기지 — 사진을 수묵으로 변환한 화폭 (scripts/ink_wash.py 산출물)
-const sejongInkFiles = import.meta.glob('@/assets/minhwa-art/sejong_ink.jpg', { eager: true, import: 'default' })
-const sejongInkImg = Object.values(sejongInkFiles)[0] ?? ''
 
 // 누끼 PNG 일괄 로드 — cut('tiger_body') 식으로 꺼내 쓴다
 const cutFiles = import.meta.glob('@/assets/minhwa-art/cut/*.png', {
@@ -215,30 +212,17 @@ const chapters = [
     line: '궂은 하늘을 막아서는 세화 — 눈 오는 고을을 지킵니다.',
     empty: '오늘 눈 내리는 고을은 없습니다. 호랑이가 잘 막고 있습니다.',
   },
-  {
-    id: 'sejong',
-    img: sejongInkImg,
-    title: '세종기지',
-    hanja: '世宗科學基地',
-    era: '남극 킹조지섬 · 사진을 수묵으로',
-    weather: ['눈'],
-    wHanja: '雪',
-    effect: 'collage',
-    focal: '50% 52%',
-    zoom: 0.1,
-    snow: true,
-    pin: 'city_11',
-    cuts: [],
-    line: '남극의 하늘 — 눈발 속에 기지 불빛만 깨어 있습니다.',
-    empty: '세종기지의 하늘을 살피는 중입니다.',
-  },
 ]
 
 // 병합 챕터: 진행도 후반이면 2막(오봉도) 정보를 쓴다
 const fld = (ch, i, k) =>
   ch.phase2 && (progress.value[i] ?? 0) > 0.65 ? (ch.phase2[k] ?? ch[k]) : ch[k]
+// 눈이 늘 내리는 곳(세종기지)은 실황과 무관하게 눈 화폭(작호도)에 든다
 const citiesFor = (ch, i) =>
-  cities.value.filter((c) => (ch.pin ? c.id === ch.pin : c.id !== 'city_11' && fld(ch, i, 'weather').includes(c.status)))
+  cities.value.filter((c) => {
+    const w = fld(ch, i, 'weather')
+    return w.includes(c.status) || (c.snowAlways && w.includes('눈'))
+  })
 
 // ── 스크롤 진행도 + 마우스 시차 ──────────────────────────
 const heroEl = ref(null)
@@ -479,7 +463,7 @@ function jumpTo(r) {
           <p class="side-cap"><i class="cap-seal">{{ fld(ch, i, 'wHanja') }}</i>이 화폭의 고을</p>
           <template v-if="citiesFor(ch, i).length">
             <button v-for="c in citiesFor(ch, i)" :key="c.id" class="vc" @click="sheetCity = c">
-              <b>{{ c.name }}</b><span>{{ c.temp }}° {{ c.status }}</span>
+              <b>{{ c.name }}</b><span><i class="n">{{ c.temp }}°</i> {{ c.status }}</span>
             </button>
           </template>
           <p v-else class="vc vc-empty">{{ fld(ch, i, 'empty') }}</p>
@@ -1099,6 +1083,13 @@ function jumpTo(r) {
 .side-cities.light .vc span {
   color: #f2b3bb;
 }
+/* 숫자는 세로글 속에서 가로로 한 덩어리(縦中横) */
+.vc span .n {
+  font-style: normal;
+  text-combine-upright: all;
+  -webkit-text-combine: horizontal;
+  font-weight: 700;
+}
 .vc-empty {
   margin: 0;
   font-size: 16px;
@@ -1165,7 +1156,14 @@ function jumpTo(r) {
   .side-cities { bottom: 2.5%; gap: 10px; }
   .vc { font-size: 18px; }
   .vc span { font-size: 0.7em; }
-  .vc-empty { font-size: 14px; font-weight: 400; }
+  /* 숫자는 세로글 속에서 가로로 한 덩어리(縦中横) */
+.vc span .n {
+  font-style: normal;
+  text-combine-upright: all;
+  -webkit-text-combine: horizontal;
+  font-weight: 700;
+}
+.vc-empty { font-size: 14px; font-weight: 400; }
   .mega {
     top: 22%;
     left: 5%;
