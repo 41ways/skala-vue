@@ -22,19 +22,24 @@ W, H = im.size
 
 # 1) 명도 — 먹 농담의 바탕. 하늘처럼 밝은 곳은 거의 비운다
 g = ImageOps.grayscale(im)
-g = ImageOps.autocontrast(g, cutoff=1)
-g = ImageEnhance.Contrast(g).enhance(1.25)
-tone = g.filter(ImageFilter.GaussianBlur(2.2))
-tone = ImageOps.posterize(tone, 3)              # 4단 농담
-tone = tone.filter(ImageFilter.GaussianBlur(3))  # 번짐
-tone = tone.point(lambda v: 255 if v > 200 else int(80 + v * 0.7))  # 밝은 곳은 여백으로
+g = ImageOps.autocontrast(g, cutoff=2)
+# 먹은 아껴 쓴다 — 중간 밝기는 옅은 담묵, 밝은 곳은 종이 여백. 감마로 그림자를 들어 올린 뒤 4단으로
+lift = g.point(lambda v: int(255 * (v / 255) ** 0.6))
+tone = lift.filter(ImageFilter.GaussianBlur(2.0))
+def level(v):
+    if v < 60: return 52      # 농묵
+    if v < 115: return 118    # 중묵
+    if v < 175: return 190    # 담묵
+    return 255                # 여백
+tone = tone.point(level)
+tone = tone.filter(ImageFilter.GaussianBlur(2.6))  # 번짐
 
 # 2) 붓선 — 윤곽을 굵고 거칠게
 edges = g.filter(ImageFilter.GaussianBlur(1)).filter(ImageFilter.FIND_EDGES)
 edges = ImageOps.autocontrast(edges, cutoff=2)
-edges = edges.point(lambda v: 255 if v > 38 else 0)
-edges = edges.filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.GaussianBlur(0.8))
-ink_lines = ImageOps.invert(edges)  # 선=검정
+edges = edges.point(lambda v: 255 if v > 46 else 0)
+edges = edges.filter(ImageFilter.GaussianBlur(0.7))
+ink_lines = ImageOps.invert(edges).point(lambda v: 90 + int(v * 0.65))  # 선=진먹(완전 검정은 피함)
 
 # 3) 합성 — 농담 × 선
 ink = ImageChops.multiply(tone, ink_lines)
