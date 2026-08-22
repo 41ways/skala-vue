@@ -326,8 +326,8 @@ const dcFocus = computed(() => easeOut(clamp01((heroP.value - 0.04) / 0.3)))
 const dcOpen = computed(() => easeOut(clamp01((heroP.value - 0.3) / 0.5)))
 const dcPhotoStyle = computed(() => ({
   '--o': dcOpen.value.toFixed(3),
-  opacity: (0.34 + dcFocus.value * 0.66).toFixed(3),
-  filter: `contrast(${(0.7 + dcFocus.value * 0.3).toFixed(3)}) brightness(${(1.3 - dcFocus.value * 0.3).toFixed(3)}) saturate(${(0.55 + dcFocus.value * 0.45).toFixed(2)})`,
+  opacity: (0.22 + dcFocus.value * 0.78).toFixed(3),
+  filter: `contrast(${(0.7 + dcFocus.value * 0.3).toFixed(3)}) brightness(${(1.4 - dcFocus.value * 0.4).toFixed(3)}) saturate(${(0.55 + dcFocus.value * 0.45).toFixed(2)})`,
 }))
 const dcViewStyle = computed(() => ({
   transform: `scale(${(1.14 - dcOpen.value * 0.1).toFixed(3)})`,
