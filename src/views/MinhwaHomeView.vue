@@ -491,7 +491,6 @@ function jumpTo(r) {
       <nav class="outro-links util">
         <router-link to="/world">세계화폭 →</router-link>
         <router-link to="/guide">빨래 지침</router-link>
-        <router-link to="/sky">별하늘</router-link>
       </nav>
       <p v-if="error" class="err util">실시간 조회 실패 — 표본 자료로 표시 중입니다.</p>
     </section>
