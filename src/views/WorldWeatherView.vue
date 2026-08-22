@@ -20,8 +20,7 @@ import sydneyImg from '@/assets/world-art/sydney.jpg'
 
 const { cities, loading, error, fetchLive } = useWorldWeather()
 
-const numerals = ['一', '二', '三', '四', '五', '六']
-const statusHanja = { 맑음: '晴', 구름: '雲', 흐림: '陰', 비: '雨', 뇌우: '雷', 눈: '雪', 바람: '風' }
+const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI']
 
 // 도시 = 그 나라의 그림
 const artMap = {
@@ -219,10 +218,8 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 
         <div class="hero-inner" :style="heroStyle">
           <div class="title-box">
-            <svg class="title-svg" viewBox="0 0 640 190">
-              <text x="320" y="86" class="stroke-title t-main">만국청우록</text>
-              <text x="320" y="150" class="stroke-title t-sub">萬 國 晴 雨 錄</text>
-            </svg>
+            <h1 class="ed-title">만국<em>청우</em>록</h1>
+            <p class="ed-sub util">The Cheongurok Edition</p>
             <p class="hero-sub util">
               새로운 하늘의 기록 — 바다 건너 여섯 도시의 지금.
               <span v-if="loading"> 살피는 중…</span>
@@ -292,7 +289,6 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
             <span class="dcap">{{ firstChar(c.line) }}</span>{{ restChars(c.line) }}
           </p>
           <p class="reading util">
-            <span class="r-hanja">{{ statusHanja[c.status] ?? '晴' }}</span>
             {{ c.temp }}° · {{ c.status }} · 습도 {{ c.humidity }}% ·
             {{ c.live && c.localTime ? `현지 ${c.localTime}` : '표본' }} · {{ c.isDay ? '낮' : '밤' }}
           </p>
@@ -313,7 +309,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 <style scoped>
 .mangug {
   position: relative;
-  background: #0b0f18;
+  background: #050505;
   color: var(--baek);
 }
 .util {
@@ -338,10 +334,11 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   border: 0;
   padding: 2px 0;
   cursor: pointer;
-  color: rgba(251, 246, 234, 0.55);
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Helvetica Neue', Helvetica, Arial, var(--font-util);
   font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   transition: color 0.25s, transform 0.25s;
 }
 .rail-item:hover,
@@ -350,11 +347,11 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   transform: translateX(3px);
 }
 .rail-item.on .rail-num {
-  color: #e8a5b0;
+  color: #ffffff;
 }
 .rail-num {
-  font-family: var(--font-display);
-  font-size: 11px;
+  font-family: var(--font-util);
+  font-size: 10px;
   color: rgba(251, 246, 234, 0.4);
 }
 
@@ -367,7 +364,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   top: 0;
   height: 100vh;
   overflow: hidden;
-  background: #0b0f18;
+  background: #050505;
 }
 .hero-art {
   position: absolute;
@@ -437,37 +434,30 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   width: 100%;
   display: block;
 }
-.stroke-title {
-  font-family: var(--font-display);
-  text-anchor: middle;
-  fill: var(--baek);
-  stroke: var(--baek);
-  fill-opacity: 0;
-  stroke-dasharray: 2600;
-  stroke-dashoffset: 2600;
-  animation:
-    draw 2.6s ease-out forwards,
-    fillIn 1.2s ease-out 1.9s forwards;
+.ed-title {
+  font-family: var(--font-body);
+  font-size: clamp(44px, 6.4vw, 64px);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+  text-align: center;
+  color: #fff;
+  margin: 0;
 }
-.t-main {
-  font-size: 76px;
-  letter-spacing: 0.12em;
-  stroke-width: 1.4;
+.ed-title em {
+  font-style: italic;
+  font-weight: 400;
+  color: #d9d3c6;
 }
-.t-sub {
-  font-size: 30px;
-  letter-spacing: 0.46em;
-  stroke-width: 0.8;
-  fill: #e8a5b0;
-  stroke: #e8a5b0;
-  animation-delay: 0.7s, 2.4s;
+.ed-sub {
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 8px 0 0;
 }
-@keyframes draw {
-  to { stroke-dashoffset: 0; }
-}
-@keyframes fillIn {
-  to { fill-opacity: 1; }
-}
+
 .hero-sub {
   text-align: center;
   font-size: 13.5px;
@@ -502,14 +492,15 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   border: 0;
   padding: 7px 2px;
   cursor: pointer;
-  color: var(--baek);
-  font-size: clamp(16px, 2.2vw, 21px);
-  font-weight: 700;
+  color: #fff;
+  font-family: 'Helvetica Neue', Helvetica, Arial, var(--font-util);
+  font-size: clamp(17px, 2.3vw, 22px);
+  font-weight: 800;
   letter-spacing: 0.04em;
   transition: color 0.2s, transform 0.2s;
 }
 .menu-item:hover {
-  color: #e8a5b0;
+  color: #ffffff;
   transform: translateX(4px);
 }
 .m-dots {
@@ -517,8 +508,9 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   border-bottom: 1px dotted rgba(251, 246, 234, 0.28);
 }
 .m-num {
-  font-family: var(--font-display);
-  font-size: 0.8em;
+  font-family: var(--font-util);
+  font-weight: 400;
+  font-size: 0.62em;
   color: rgba(251, 246, 234, 0.55);
 }
 .hero-credit {
@@ -548,7 +540,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   top: 0;
   height: 100vh;
   overflow: hidden;
-  background: #0b0f18;
+  background: #050505;
 }
 .paint {
   position: absolute;
@@ -600,11 +592,11 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   top: 32%;
   z-index: 2;
   margin: 0;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(72px, 15vw, 200px);
-  line-height: 0.95;
-  letter-spacing: 0.06em;
+  font-family: 'Helvetica Neue', Helvetica, Arial, var(--font-util);
+  font-weight: 800;
+  font-size: clamp(76px, 16vw, 220px);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
   color: var(--baek);
   text-shadow: 0 4px 44px rgba(0, 0, 0, 0.55);
   will-change: transform, opacity;
@@ -612,8 +604,11 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 }
 .mega small {
   display: block;
-  font-size: clamp(13px, 1.6vw, 19px);
-  letter-spacing: 0.5em;
+  font-family: var(--font-util);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: clamp(11px, 1.3vw, 15px);
+  letter-spacing: 0.4em;
   margin-top: 14px;
   color: rgba(251, 246, 234, 0.8);
 }
@@ -636,10 +631,11 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 .dcap {
   float: left;
   font-family: var(--font-display);
+  font-style: italic;
   font-size: 3.1em;
   line-height: 0.9;
   margin: 0.04em 0.14em 0 0;
-  color: #e8a5b0;
+  color: #ffffff;
 }
 .reading {
   display: flex;
@@ -656,7 +652,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   width: 26px;
   height: 26px;
   border: 1.2px solid rgba(232, 165, 176, 0.9);
-  color: #e8a5b0;
+  color: #ffffff;
   border-radius: 3px;
   font-family: var(--font-display);
   font-size: 15px;
@@ -710,7 +706,8 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   right: 4%;
   top: 8%;
   z-index: 1;
-  font-family: var(--font-display);
+  font-family: 'Helvetica Neue', Helvetica, Arial, var(--font-util);
+  font-weight: 800;
   font-size: clamp(280px, 55vh, 620px);
   line-height: 1;
   color: var(--baek);
@@ -749,12 +746,12 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   margin: 0 0 16px;
 }
 .outro-link {
-  color: #e8a5b0;
+  color: #ffffff;
   font-size: 14px;
   font-weight: 500;
 }
 .err {
-  color: #e8a5b0;
+  color: #ffffff;
   font-size: 13px;
   margin-top: 20px;
 }
