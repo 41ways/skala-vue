@@ -283,11 +283,11 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
       <!-- 강풍 — 천이 펄럭이듯 그림 전체가 물결친다 (국기) -->
       <filter id="flagWave" x="-6%" y="-6%" width="112%" height="112%">
         <feTurbulence type="fractalNoise" baseFrequency="0.012 0.028" numOctaves="2" seed="6" result="w">
-          <animate attributeName="baseFrequency" values="0.012 0.028;0.017 0.022;0.012 0.028" dur="2.6s" repeatCount="indefinite" />
+          <animate attributeName="baseFrequency" values="0.012 0.028;0.017 0.022;0.012 0.028" dur="3.2s" repeatCount="indefinite" />
           <animate attributeName="seed" values="6;7;8;9;6" dur="5.2s" repeatCount="indefinite" calcMode="discrete" />
         </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="w" scale="26" xChannelSelector="R" yChannelSelector="G">
-          <animate attributeName="scale" values="18;30;18" dur="2.6s" repeatCount="indefinite" />
+        <feDisplacementMap in="SourceGraphic" in2="w" scale="10" xChannelSelector="R" yChannelSelector="G">
+          <animate attributeName="scale" values="7;12;7" dur="3.2s" repeatCount="indefinite" />
         </feDisplacementMap>
       </filter>
       <!-- 물결 — 가로로 긴 잔물결이 흐른다 -->
@@ -700,27 +700,27 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 }
 /* 바람 ≥ 6m/s — 걸어 둔 화폭이 바람에 살짝 휘날린다 (translate/rotate 대신 별도 속성으로 흔들어 인라인 transform과 충돌 없음) */
 .paint.windy {
-  animation: windFlutter 3.6s ease-in-out infinite;
+  animation: windFlutter 4.4s ease-in-out infinite;
   transform-origin: 50% 0%;
 }
 .paint.gale {
-  animation: galeFlutter 2.3s ease-in-out infinite;
+  animation: galeFlutter 3.2s ease-in-out infinite;
 }
 .paint.gale img {
   filter: url(#flagWave); /* 천 결이 바람에 일렁인다 */
 }
 @keyframes galeFlutter {
   0%, 100% { rotate: 0deg; translate: 0 0; }
-  20% { rotate: 1.3deg; translate: 14px 6px; }
-  45% { rotate: -0.9deg; translate: -10px 2px; }
-  70% { rotate: 1deg; translate: 8px 5px; }
-  85% { rotate: -0.6deg; translate: -5px 1px; }
+  20% { rotate: 0.5deg; translate: 5px 2px; }
+  45% { rotate: -0.35deg; translate: -4px 1px; }
+  70% { rotate: 0.4deg; translate: 3px 2px; }
+  85% { rotate: -0.25deg; translate: -2px 0; }
 }
 @keyframes windFlutter {
   0%, 100% { rotate: 0deg; translate: 0 0; }
-  25% { rotate: 0.5deg; translate: 6px 2px; }
-  50% { rotate: -0.35deg; translate: -4px 0; }
-  75% { rotate: 0.3deg; translate: 3px 2px; }
+  25% { rotate: 0.2deg; translate: 2px 1px; }
+  50% { rotate: -0.15deg; translate: -2px 0; }
+  75% { rotate: 0.12deg; translate: 1px 1px; }
 }
 
 /* ── 도시별 효과 레이어 ── */

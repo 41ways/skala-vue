@@ -151,7 +151,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               <span class="seal-face num" :class="{ on: !hanjaMode }">123</span>
             </button>
             <button ref="closeBtn" class="close" @click="emit('close')">✕ 닫기</button>
-            <RouterLink to="/guide" class="guide-link" @click="emit('close')">빨래 지침 보기 →</RouterLink>
+            <RouterLink to="/guide" class="guide-link" @click="emit('close')">빨래 지침 보기 ↓</RouterLink>
           </div>
         </div>
       </div>
@@ -235,10 +235,24 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.12),
     inset 0 0 48px rgba(0, 0, 0, 0.45),
-    inset 0 2px 0 rgba(255, 255, 255, 0.1);
+    inset 0 2px 0 rgba(255, 255, 255, 0.1),
+    inset 46px 0 40px -30px rgba(0, 0, 0, 0.6), /* 축에 말려 들어가는 그늘 */
+    inset -46px 0 40px -30px rgba(0, 0, 0, 0.6);
   position: relative;
   transform-origin: 50% 50%;
   animation: unroll 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+/* 금선 이중 테 — 표구의 회장(回裝) 선, 세월에 닳아 군데군데 옅다 */
+.silk::after {
+  content: '';
+  position: absolute;
+  inset: 9px 24px;
+  pointer-events: none;
+  border: 1px solid rgba(214, 178, 98, 0.55);
+  outline: 1px solid rgba(214, 178, 98, 0.28);
+  outline-offset: 3px;
+  -webkit-mask: linear-gradient(90deg, #000 0, rgba(0, 0, 0, 0.5) 18%, #000 40%, rgba(0, 0, 0, 0.6) 70%, #000);
+  mask: linear-gradient(90deg, #000 0, rgba(0, 0, 0, 0.5) 18%, #000 40%, rgba(0, 0, 0, 0.6) 70%, #000);
 }
 .silk::before {
   /* 비단 광택 */
@@ -286,14 +300,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   position: absolute;
   inset: 18px 26px;
   pointer-events: none;
-  border-top: 1.5px solid rgba(178, 58, 44, 0.55);
-  border-bottom: 1.5px solid rgba(178, 58, 44, 0.55);
+  border-top: 1.5px solid rgba(170, 62, 44, 0.42);
+  border-bottom: 1.5px solid rgba(170, 62, 44, 0.42);
   background: repeating-linear-gradient(
     90deg,
-    rgba(178, 58, 44, 0.45) 0 1px,
+    rgba(170, 62, 44, 0.36) 0 1px,
     transparent 1px 58px
   );
   background-position: right top;
+  -webkit-mask: linear-gradient(180deg, rgba(0, 0, 0, 0.7), #000 30%, #000 70%, rgba(0, 0, 0, 0.65));
+  mask: linear-gradient(180deg, rgba(0, 0, 0, 0.7), #000 30%, #000 70%, rgba(0, 0, 0, 0.65));
 }
 .head {
   position: absolute;
@@ -416,27 +432,34 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   z-index: 4; /* 세로글 영역 위 — 실제 클릭이 닿아야 한다 */
   right: 36px;
   bottom: 30px;
-  width: 64px;
-  height: 72px;
+  width: 68px;
+  height: 78px;
   display: grid;
   place-items: center;
   gap: 0;
   padding: 0;
   color: var(--baek);
   border: 0;
-  border-radius: 3px;
+  border-radius: 2px;
   cursor: pointer;
-  transform: rotate(-3deg);
+  transform: rotate(-4deg);
+  /* 인주가 종이에 배어 번진 가장자리 */
+  filter: drop-shadow(0 0 0.8px rgba(170, 45, 30, 0.7)) drop-shadow(0 1px 1px rgba(120, 30, 20, 0.35));
+  /* 인주가 고르지 않게 닿은 가장자리 — 거친 윤곽 마스크 */
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='72' viewBox='0 0 64 72'%3E%3Cfilter id='r' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.16' numOctaves='3' seed='7'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='5'/%3E%3C/filter%3E%3Crect x='3' y='3' width='58' height='66' rx='2' fill='%23fff' filter='url(%23r)'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='72' viewBox='0 0 64 72'%3E%3Cfilter id='r' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.16' numOctaves='3' seed='7'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='5'/%3E%3C/filter%3E%3Crect x='3' y='3' width='58' height='66' rx='2' fill='%23fff' filter='url(%23r)'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
   /* 인주(印朱) — 고르지 않게 찍힌 붉은 면 + 안쪽 이중 테 */
   background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.96 0 0 0 0 0.9 0 0 0 7 -4.4'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23s)'/%3E%3C/svg%3E") 0 0 / 90px 90px repeat, /* 인주가 덜 묻어 종이가 비치는 점들 */
     radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.12), transparent 40%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.08 0 0 0 0 0.05 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='80' height='80' filter='url(%23n)'/%3E%3C/svg%3E"),
-    linear-gradient(160deg, #c4402f, #9f2f23);
+    radial-gradient(circle at 70% 80%, rgba(60, 10, 6, 0.35), transparent 55%),
+    linear-gradient(160deg, #c8452f, #a0301f 60%, #8d2719);
+  /* 양각 테두리 — 바깥 굵은 테 + 안쪽 가는 테(음각 홈) */
   box-shadow:
-    inset 0 0 0 2px rgba(251, 246, 234, 0.55),
-    inset 0 0 0 5px rgba(159, 47, 35, 1),
-    inset 0 0 0 6px rgba(251, 246, 234, 0.35),
-    0 4px 10px rgba(34, 28, 22, 0.35);
+    inset 0 0 0 3px rgba(251, 246, 234, 0.7),
+    inset 0 0 0 5px rgba(150, 42, 30, 1),
+    inset 0 0 0 6px rgba(251, 246, 234, 0.38);
   mix-blend-mode: multiply;
   transition: transform 0.2s, box-shadow 0.2s;
   animation: stampIn 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) 1.35s both;
@@ -455,24 +478,27 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .seal-face {
   font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 30px;
+  font-weight: 900;
   line-height: 1;
-  opacity: 0.45;
+  opacity: 0.32;
+  transform: scaleX(1.08); /* 전서처럼 넓적하게 */
   letter-spacing: 0.1em;
-  text-shadow: 0 0 1px rgba(251, 246, 234, 0.6);
+  color: rgba(251, 246, 234, 0.95);
+  -webkit-text-stroke: 0.6px rgba(251, 246, 234, 0.9);
+  filter: drop-shadow(0 0 0.6px rgba(90, 20, 12, 0.8));
   transition: opacity 0.2s;
 }
 .seal-arrow {
   font-family: var(--font-util);
-  font-size: 13px;
+  font-size: 11px;
   line-height: 1;
   opacity: 0.85;
   margin: -2px 0;
 }
 .seal-face.num {
   font-family: var(--font-util);
-  font-size: 15px;
+  font-size: 16px;
   letter-spacing: 0.04em;
 }
 .seal-face.on {
@@ -506,29 +532,25 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   color: var(--jeok);
   outline: none;
 }
-/* 빨래 지침 — 종이 아래 가운데, 낙관·닫기와 겹치지 않게 */
+/* 빨래 지침 — 닫기 아래, 세로쓰기로 종이 오른쪽 여백에 */
 .guide-link {
   position: absolute;
-  left: 50%;
-  bottom: 22px;
-  transform: translateX(-50%);
+  right: 34px;
+  top: 112px;
   z-index: 2;
-  padding: 7px 16px;
-  border: 1.5px solid rgba(178, 58, 44, 0.7);
-  border-radius: 3px;
-  background: rgba(251, 246, 234, 0.55);
+  writing-mode: vertical-lr;
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 700;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.28em;
   color: var(--jeok);
   text-decoration: none;
-  white-space: nowrap;
+  border-left: 1.5px solid rgba(178, 58, 44, 0.5);
+  padding-left: 8px;
 }
 .guide-link:hover,
 .guide-link:focus-visible {
-  background: var(--jeok);
-  color: var(--baek);
+  color: #8e2a22;
   outline: none;
 }
 .sheet-enter-active,
@@ -562,7 +584,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .seal { right: 18px; bottom: 18px; width: 52px; height: 62px; }
   .seal-face { font-size: 16px; }
   .close { right: 18px; top: 18px; }
-  .guide-link { left: 18px; transform: none; bottom: 14px; font-size: 13px; padding: 5px 12px; }
+  .guide-link { right: 18px; top: 96px; font-size: 15px; }
   .rules { inset: 12px 14px; }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -203,18 +203,21 @@ const rainDrops = Array.from({ length: 44 }, (_, i) => ({
   delay: -((i * 7) % 20) / 10 + 's',
   opacity: 0.45 + ((i * 11) % 10) / 20,
 }))
-// 눈 — 가까운 송이는 크고 빠르며 조금 흐리고, 먼 송이는 작고 느리다
-const snowFlakes = Array.from({ length: 70 }, (_, i) => {
-  const near = i % 5 === 0
-  const size = near ? 5 + ((i * 7) % 30) / 10 : 2 + ((i * 7) % 25) / 10
+// 눈 — 세 겹: 가까운 송이(크고 흐리고 빠름) · 중간 · 먼 송이(작고 느림). 모양은 고르지 않고 빙글 돌며 내려앉는다
+const snowFlakes = Array.from({ length: 90 }, (_, i) => {
+  const tier = i % 9 === 0 ? 'near' : i % 3 === 0 ? 'mid' : 'far'
+  const r = (k) => ((i * k) % 37) / 37 // 0~1 의사난수
+  const size = tier === 'near' ? 8 + r(7) * 6 : tier === 'mid' ? 4 + r(11) * 2.5 : 1.8 + r(13) * 1.6
   return {
     left: ((i * 41) % 100) + '%',
-    duration: (near ? 5.5 : 8) + ((i * 17) % 50) / 10 + 's',
-    delay: -((i * 29) % 110) / 10 + 's',
-    size: size + 'px',
-    blur: near ? '0.8px' : '0px',
-    opacity: near ? 0.95 : 0.6 + ((i * 13) % 10) / 30,
-    sway: (i % 2 ? 1 : -1) * (14 + ((i * 11) % 30)) + 'px',
+    duration: (tier === 'near' ? 5 : tier === 'mid' ? 8.5 : 12) + r(17) * 5 + 's',
+    delay: -r(29) * 14 + 's',
+    size: size.toFixed(1) + 'px',
+    blur: tier === 'near' ? '2.2px' : tier === 'mid' ? '0.7px' : '0px',
+    opacity: tier === 'near' ? 0.55 : tier === 'mid' ? 0.9 : 0.55 + r(19) * 0.35,
+    sway: (i % 2 ? 1 : -1) * (10 + r(23) * 34) + 'px',
+    rot: (i % 2 ? 1 : -1) * (180 + r(31) * 360) + 'deg',
+    shape: ['50% 50% 48% 52%', '55% 45% 50% 50%', '46% 54% 56% 44%', '50%'][i % 4],
   }
 })
 </script>
@@ -386,9 +389,11 @@ const snowFlakes = Array.from({ length: 70 }, (_, i) => {
           height: f.size,
           opacity: f.opacity,
           filter: `blur(${f.blur})`,
+          borderRadius: f.shape,
           animationDuration: f.duration,
           animationDelay: f.delay,
           '--sway': f.sway,
+          '--rot': f.rot,
         }"
       ></span>
     </template>
@@ -769,13 +774,13 @@ const snowFlakes = Array.from({ length: 70 }, (_, i) => {
   animation: stageSnow ease-in-out infinite;
   pointer-events: none;
 }
-/* 좌우로 흔들리며 내려앉는다 */
+/* 좌우로 흔들리고 빙글 돌며 내려앉는다 */
 @keyframes stageSnow {
-  0% { transform: translate3d(0, 0, 0); }
-  25% { transform: translate3d(var(--sway, 20px), 27vh, 0); }
-  50% { transform: translate3d(calc(var(--sway, 20px) * -0.4), 55vh, 0); }
-  75% { transform: translate3d(var(--sway, 20px), 82vh, 0); }
-  100% { transform: translate3d(calc(var(--sway, 20px) * 0.3), 110vh, 0); }
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  25% { transform: translate3d(var(--sway, 20px), 27vh, 0) rotate(calc(var(--rot, 360deg) * 0.25)); }
+  50% { transform: translate3d(calc(var(--sway, 20px) * -0.4), 55vh, 0) rotate(calc(var(--rot, 360deg) * 0.5)); }
+  75% { transform: translate3d(var(--sway, 20px), 82vh, 0) rotate(calc(var(--rot, 360deg) * 0.75)); }
+  100% { transform: translate3d(calc(var(--sway, 20px) * 0.3), 110vh, 0) rotate(var(--rot, 360deg)); }
 }
 
 /* ── 퇴장 먹 번짐 ── */

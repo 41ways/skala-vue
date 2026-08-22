@@ -1079,10 +1079,13 @@ function jumpTo(r) {
   font-weight: 700;
   letter-spacing: 0.3em;
   color: var(--ink);
-  /* 판 없이 글자만 — 얕은 종이 후광으로 최소한의 분리 */
+  /* 판 없이 글자만 — 글자 가장자리에서 바깥으로 옅어지는 은은한 흰 테(겹 그림자 그라데이션) */
   text-shadow:
-    0 0 3px rgba(241, 231, 208, 0.9),
-    0 0 12px rgba(241, 231, 208, 0.8);
+    0 0 1px rgba(247, 241, 226, 0.9),
+    0 0 2px rgba(247, 241, 226, 0.75),
+    0 0 5px rgba(247, 241, 226, 0.55),
+    0 0 10px rgba(247, 241, 226, 0.35),
+    0 0 18px rgba(247, 241, 226, 0.18);
   transition: color 0.9s ease, text-shadow 0.9s ease;
   animation: marginIn 0.8s ease-out backwards;
 }
@@ -1109,24 +1112,14 @@ function jumpTo(r) {
   text-shadow: none;
   box-shadow: 0 2px 8px rgba(34, 28, 22, 0.25), inset 0 0 0 1px rgba(251, 246, 234, 0.35);
 }
-.side-title::before {
-  content: '';
-  position: absolute;
-  inset: -28px -22px;
-  z-index: -1;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at 50% 50%, rgba(245, 238, 222, 0.92) 0%, rgba(245, 238, 222, 0.7) 45%, rgba(245, 238, 222, 0) 72%);
-  filter: blur(4px);
-  pointer-events: none;
-}
-.side-title.light::before {
-  background: radial-gradient(ellipse at 50% 50%, rgba(20, 16, 12, 0.6) 0%, rgba(20, 16, 12, 0.4) 45%, rgba(20, 16, 12, 0) 72%);
-}
 .side-title.light {
   color: var(--baek);
   text-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.8),
-    0 0 12px rgba(0, 0, 0, 0.6);
+    0 0 1px rgba(14, 12, 10, 0.9),
+    0 0 2px rgba(14, 12, 10, 0.75),
+    0 0 5px rgba(14, 12, 10, 0.55),
+    0 0 10px rgba(14, 12, 10, 0.35),
+    0 0 18px rgba(14, 12, 10, 0.18);
 }
 .side-title.light .st-hanja {
   color: rgba(251, 246, 234, 0.6);
@@ -1221,10 +1214,10 @@ function jumpTo(r) {
 .vc span {
   display: inline-block;
   margin-top: 10px;
-  font-family: var(--font-util);
-  font-size: 0.7em;
+  font-family: var(--font-display);
+  font-size: 0.66em;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.18em;
   opacity: 1;
   color: var(--jeok);
 }
