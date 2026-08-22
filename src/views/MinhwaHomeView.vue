@@ -509,7 +509,7 @@ function jumpTo(r) {
           <p class="hero-note util">
             {{ loading ? '팔도의 하늘을 살피는 중…' : skySummary }}
           </p>
-          <p class="hero-here util">
+          <p class="hero-here util" aria-live="polite">
             <button v-if="!hereSky" type="button" :disabled="hereBusy" @click="askHere">{{ hereBusy ? '하늘을 살피는 중…' : '지금 계신 곳의 하늘 보기' }}</button>
             <span v-else>{{ hereSky }}</span>
           </p>
