@@ -1,12 +1,13 @@
 <script setup>
 // 세계화폭 (만국청우록)
 // 해외 도시마다 그 나라 명화 한 폭, 실황에 따라 비/안개/바람 효과
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, defineAsyncComponent } from 'vue'
 import InkRipple from '@/components/minhwa/InkRipple.vue'
 import ScrollHint from '@/components/minhwa/ScrollHint.vue'
-import ScrollSheet from '@/components/minhwa/ScrollSheet.vue'
 import { useWorldWeather } from '@/composables/useWeather.js'
 import { toHanja, tempHanja, STATUS_HANJA } from '@/utils/hanja.js'
+// 두루마리는 누를 때 처음 불러온다 (초기 번들에서 제외)
+const ScrollSheet = defineAsyncComponent(() => import('@/components/minhwa/ScrollSheet.vue'))
 
 import heroImg from '@/assets/world-art/hero.jpg'
 import tokyoImg from '@/assets/world-art/tokyo.jpg'

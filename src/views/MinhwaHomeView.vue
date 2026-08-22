@@ -1,13 +1,14 @@
 <script setup>
 // 국내 화폭 (팔도청우록)
 // 스크롤 진행도에 따라 민화 6폭이 바뀌고, 날씨가 맞는 도시가 그 폭에 들어간다
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, defineAsyncComponent } from 'vue'
 import ArtStage from '@/components/minhwa/ArtStage.vue'
-import ScrollSheet from '@/components/minhwa/ScrollSheet.vue'
 import InkRipple from '@/components/minhwa/InkRipple.vue'
 import ScrollHint from '@/components/minhwa/ScrollHint.vue'
 import { useWeather, cachedGet, codeToStatus } from '@/composables/useWeather.js'
 import { laundryScore } from '@/data/weatherData.js'
+// 두루마리는 누를 때 처음 불러온다 (초기 번들에서 제외)
+const ScrollSheet = defineAsyncComponent(() => import('@/components/minhwa/ScrollSheet.vue'))
 
 import obongdoImg from '@/assets/minhwa-art/obongdo.jpg'
 import mudongImg from '@/assets/minhwa-art/mudong.jpg'
