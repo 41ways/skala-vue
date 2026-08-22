@@ -314,8 +314,10 @@ onMounted(() => {
   window.addEventListener('scroll', measure, { passive: true })
   window.addEventListener('resize', measure, { passive: true })
   window.addEventListener('pointermove', onMove, { passive: true })
+  window.addEventListener('keydown', onKeyNav)
 })
 onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onKeyNav)
   cancelAnimationFrame(rafId)
   window.removeEventListener('scroll', measure)
   window.removeEventListener('resize', measure)
@@ -408,6 +410,28 @@ const railActive = computed(() => {
   }
   return -1
 })
+// 히어로 한 줄 요약: 오늘 팔도 하늘 - 비 3 · 맑음 4 …
+const skySummary = computed(() => {
+  const count = {}
+  for (const c of cities.value) count[c.status] = (count[c.status] ?? 0) + 1
+  const parts = Object.entries(count)
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, n]) => `${k} ${n}`)
+  const live = cities.value.some((c) => c.live)
+  return `오늘 팔도 — ${parts.join(' · ')} · ${live ? '실측 Open-Meteo' : '표본'}`
+})
+// 키보드: ↓/→ 다음 폭, ↑/← 앞 폭 (두루마리가 열려 있으면 무시)
+function onKeyNav(e) {
+  if (sheetCity.value || e.altKey || e.metaKey || e.ctrlKey) return
+  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target?.tagName)) return
+  const next = ['ArrowDown', 'ArrowRight', 'PageDown'].includes(e.key)
+  const prev = ['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)
+  if (!next && !prev) return
+  const i = activeIdx.value + (next ? 1 : -1)
+  if (i < 0 || i >= chapters.length) return
+  e.preventDefault()
+  jumpTo({ i, f: 0.42 })
+}
 function jumpTo(r) {
   const el = chapterEls.value[r.i]
   if (!el) return
@@ -449,7 +473,7 @@ function jumpTo(r) {
             화폭을 내리면, 여섯 폭 민화가 지금 팔도의 날씨를 대신 전합니다.
           </p>
           <p class="hero-note util">
-            {{ loading ? '팔도의 하늘을 살피는 중…' : '실측 · Open-Meteo · 그림은 조선의 원본 스캔' }}
+            {{ loading ? '팔도의 하늘을 살피는 중…' : skySummary }}
           </p>
           <div class="hero-hint"><ScrollHint /></div>
         </div>

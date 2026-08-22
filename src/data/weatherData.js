@@ -34,23 +34,6 @@ export const worldList = [
   { id: 'w_cairo', name: '카이로', hanja: '開羅', country: '이집트', lat: 30.04, lon: 31.24, temp: 35, status: '맑음', humidity: 30, wind: 3.5, genre: 'tiger', line: '사막의 바람이 첨탑 사이로 마른 볕을 실어 옵니다' },
 ]
 
-export const starCount = (city) => {
-  if (city.status === '비' || city.status === '눈') return 8
-  let n = 220
-  n -= (city.humidity - 40) * 2.2
-  if (city.status === '흐림') n -= 70
-  if (city.status === '구름') n -= 40
-  if (city.status === '맑음') n += 30
-  return Math.max(10, Math.min(240, Math.round(n)))
-}
-
-export const skyGrade = (n) => {
-  if (n >= 180) return '은하수까지 보여요'
-  if (n >= 120) return '별자리가 또렷해요'
-  if (n >= 60) return '밝은 별만 겨우'
-  return '오늘은 하늘이 닫혔어요'
-}
-
 export const findCity = (id) => weatherList.find((c) => c.id === id)
 
 export const laundryScore = (city) => {

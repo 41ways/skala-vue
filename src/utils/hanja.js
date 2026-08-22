@@ -19,3 +19,8 @@ export const STATUS_HANJA = { 맑음: '晴', 구름: '雲', 흐림: '陰', 비: 
 export function tempHanja(t) {
   return (t < 0 ? '零下' : '') + toHanja(t) + '度'
 }
+
+// 간지(干支) 연도. 2026 -> 丙午
+const STEMS = '甲乙丙丁戊己庚辛壬癸'
+const BRANCHES = '子丑寅卯辰巳午未申酉戌亥'
+export const ganjiYear = (y) => STEMS[(y - 4) % 10] + BRANCHES[(y - 4) % 12]

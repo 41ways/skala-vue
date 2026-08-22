@@ -4,7 +4,8 @@ import { computed, watch, onBeforeUnmount, nextTick, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import axios from 'axios'
 import { cityCoords, codeToStatus } from '@/composables/useWeather.js'
-import { toHanja, STATUS_HANJA as HANJA } from '@/utils/hanja.js'
+import { toHanja, ganjiYear, STATUS_HANJA as HANJA } from '@/utils/hanja.js'
+import { laundryScore, laundryGrade } from '@/data/weatherData.js'
 import hanjiImg from '@/assets/minhwa-art/bg/mudong.jpg'
 import rodImg from '@/assets/minhwa-art/rod.png'
 import silkImg from '@/assets/minhwa-art/silk.jpg'
@@ -30,9 +31,15 @@ const windTxt = computed(() => (hanjaMode.value ? num(props.city?.wind ?? 0) + '
 const today = computed(() => {
   const d = new Date()
   return hanjaMode.value
-    ? `${toHanja(d.getMonth() + 1)}月 ${toHanja(d.getDate())}日`
+    ? `${ganjiYear(d.getFullYear())}年 ${toHanja(d.getMonth() + 1)}月 ${toHanja(d.getDate())}日`
     : `${d.getMonth() + 1}월 ${d.getDate()}일`
 })
+// 빨래 지수 (실습 대시보드와 같은 규칙)
+const laundry = computed(() => {
+  const sc = laundryScore(props.city ?? {})
+  return { score: sc, grade: laundryGrade(sc) }
+})
+const laundryTxt = computed(() => (hanjaMode.value ? toHanja(laundry.value.score) + '點' : `${laundry.value.score}점`))
 const windWord = computed(() => {
   const w = props.city?.wind ?? 0
   if (w >= 8) return '세찬 바람'
@@ -142,6 +149,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               <p class="col"><span class="k">기온</span><b>{{ tempTxt }}</b></p>
               <p class="col"><span class="k">습도</span><b>{{ humTxt }}</b></p>
               <p class="col"><span class="k">바람</span><b>{{ windTxt }}</b><small v-if="!hanjaMode" class="unit">m/s</small><span class="sub">{{ windWord }}</span></p>
+              <p class="col"><span class="k">빨래</span><b>{{ laundryTxt }}</b><span class="sub">{{ laundry.grade.label }}</span></p>
               <p class="col date">{{ today }} · {{ city.demo ? '시연' : city.live ? '실측' : '표본' }}</p>
               <template v-if="forecast.length">
                 <span class="col divider" aria-hidden="true"></span>
