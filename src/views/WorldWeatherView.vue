@@ -897,7 +897,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   z-index: 1;
   font-family: 'Cinzel', 'Times New Roman', serif;
   font-weight: 700;
-  font-size: clamp(320px, 72vh, 840px);
+  font-size: clamp(280px, min(72vh, 46vw), 840px); /* 좁은 화면에서 왼쪽으로 넘치지 않게 */
   line-height: 1;
   letter-spacing: 0.04em;
   /* 새김 윤곽 + 옅은 채움 */
@@ -951,6 +951,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 @media (max-width: 860px) {
   .rail, .brand { display: none; }
   .mega { top: 22%; font-size: clamp(52px, 17vw, 96px); }
+  .ghost-num { font-size: clamp(180px, 58vw, 360px); top: 6%; }
   .mega small { font-size: 11px; letter-spacing: 0.24em; }
   .foot { left: 5%; right: 5%; bottom: 5%; }
   .narrative { font-size: 16px; line-height: 1.55; }
