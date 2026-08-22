@@ -43,6 +43,7 @@ const emit = defineEmits(['change-sort', 'toggle-filter'])
       <button
         :class="{ on: sortOrder === 'desc' }"
         title="높은 점수부터"
+        aria-label="높은 점수부터 정렬"
         @click="emit('change-sort', 'desc')"
       >
         ↓
@@ -50,6 +51,7 @@ const emit = defineEmits(['change-sort', 'toggle-filter'])
       <button
         :class="{ on: sortOrder === 'asc' }"
         title="낮은 점수부터"
+        aria-label="낮은 점수부터 정렬"
         @click="emit('change-sort', 'asc')"
       >
         ↑
