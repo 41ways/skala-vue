@@ -37,7 +37,7 @@ const oprog = computed(() => (isCombo.value ? clamp01((props.p - 0.7) / 0.3) : p
 const dive = computed(() => easeOut(clamp01((props.p - 0.22) / 0.5)))
 
 // 효과별 줌 깊이 — 파노라마(inkfill)는 살짝만, 콜라주는 깊게 빠져든다
-const diveAmp = computed(() => props.zoom || (({ inkfill: 0.12, water: 0.24, sunrise: 0.08 })[props.effect] ?? 0.66))
+const diveAmp = computed(() => props.zoom || (({ inkfill: 0.12, water: 0.24, sunrise: 0.08 })[props.effect] ?? 0.36))
 const camStyle = computed(() => ({
   transform: `scale(${(0.97 + dive.value * diveAmp.value).toFixed(4)})`,
   transformOrigin: props.focal,

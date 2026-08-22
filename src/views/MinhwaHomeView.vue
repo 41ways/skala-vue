@@ -926,13 +926,10 @@ function jumpTo(r) {
   font-weight: 700;
   letter-spacing: 0.3em;
   color: var(--ink);
-  /* 제첨 띠 — 반투명 한지 판이 표제만의 자리를 만든다 */
-  padding: 18px 9px 14px;
-  background: linear-gradient(180deg, rgba(251, 246, 234, 0.95), rgba(241, 231, 208, 0.93));
-  border: 1px solid var(--line);
-  border-radius: 2px;
-  box-shadow: 0 10px 26px rgba(34, 28, 22, 0.2);
-  text-shadow: none;
+  /* 판 없이 글자만 — 얕은 종이 후광으로 최소한의 분리 */
+  text-shadow:
+    0 0 3px rgba(241, 231, 208, 0.9),
+    0 0 12px rgba(241, 231, 208, 0.8);
 }
 .st-hanja {
   margin-top: 16px;
@@ -959,9 +956,9 @@ function jumpTo(r) {
 }
 .side-title.light {
   color: var(--baek);
-  background: linear-gradient(180deg, rgba(24, 22, 30, 0.82), rgba(14, 13, 20, 0.82));
-  border-color: rgba(251, 246, 234, 0.3);
-  text-shadow: none;
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.8),
+    0 0 12px rgba(0, 0, 0, 0.6);
 }
 .side-title.light .st-hanja {
   color: rgba(251, 246, 234, 0.6);
