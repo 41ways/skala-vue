@@ -504,6 +504,7 @@ function jumpTo(r) {
         :key="k"
         class="rail-item"
         :class="{ on: railActive === k }"
+        :style="{ animationDelay: (0.5 + k * 0.09).toFixed(2) + 's' }"
         @click="jumpTo(r)"
       >
         <span class="rail-name">{{ r.label }}</span>
@@ -839,6 +840,18 @@ function jumpTo(r) {
     0 0 10px rgba(241, 231, 208, 1),
     0 0 20px rgba(241, 231, 208, 0.9);
   transition: color 0.9s ease, text-shadow 0.9s ease, transform 0.25s;
+  animation: marginIn 0.55s ease-out backwards;
+}
+/* 여백 요소 등장 — 위에서 아래로 스며들 듯 */
+@keyframes marginIn {
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .rail-item:hover,
 .rail-item.on {
@@ -925,6 +938,7 @@ function jumpTo(r) {
     0 0 3px rgba(241, 231, 208, 0.9),
     0 0 12px rgba(241, 231, 208, 0.8);
   transition: color 0.9s ease, text-shadow 0.9s ease;
+  animation: marginIn 0.8s ease-out backwards;
 }
 .st-hanja {
   margin-top: 16px;
@@ -1112,6 +1126,10 @@ function jumpTo(r) {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .side-title,
+  .rail-item {
+    animation: none !important;
+  }
   .stroke-title {
     animation: none;
     fill-opacity: 1;
