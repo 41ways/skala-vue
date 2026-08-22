@@ -986,13 +986,20 @@ function jumpTo(r) {
   align-items: flex-start;
   gap: 15px;
   max-height: 62vh;
+  padding: 16px 12px;
+  border-radius: 8px;
   color: var(--ink);
+  /* 테두리 없는 종이 물결 — 부드럽게 번지는 한지 바탕이 글자를 받친다 */
+  background: rgba(241, 231, 208, 0.72);
+  box-shadow: 0 0 26px 18px rgba(241, 231, 208, 0.72);
   will-change: opacity;
   pointer-events: none;
-  transition: color 0.9s ease;
+  transition: color 0.9s ease, background 0.9s ease, box-shadow 0.9s ease;
 }
 .side-cities.light {
   color: var(--baek);
+  background: rgba(18, 16, 24, 0.46);
+  box-shadow: 0 0 26px 18px rgba(18, 16, 24, 0.46);
 }
 .side-cap {
   margin: 0;
@@ -1026,7 +1033,8 @@ function jumpTo(r) {
 .vc {
   pointer-events: auto;
   font-family: var(--font-display);
-  font-size: 25px;
+  font-size: 27px;
+  font-weight: 700;
   letter-spacing: 0.2em;
   color: inherit;
   text-decoration: none;
@@ -1047,10 +1055,14 @@ function jumpTo(r) {
   display: inline-block;
   margin-top: 10px;
   font-family: var(--font-util);
-  font-size: 0.62em;
-  font-weight: 600;
+  font-size: 0.7em;
+  font-weight: 700;
   letter-spacing: 0.1em;
-  opacity: 0.95;
+  opacity: 1;
+  color: var(--jeok);
+}
+.side-cities.light .vc span {
+  color: #f2b3bb;
 }
 .vc-empty {
   margin: 0;
