@@ -576,21 +576,21 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .sheet-enter-active,
 .sheet-leave-active {
-  transition: opacity 0.4s ease;
+  transition: opacity 0.7s ease;
 }
 .sheet-enter-from,
 .sheet-leave-to {
   opacity: 0;
+}
+/* 걷히는 중에는 클릭을 가로채지 않는다 (연출이 늦게 끝나도 화면이 막히지 않게) */
+.sheet-leave-active {
+  pointer-events: none;
 }
 .sheet-leave-active .silk {
   animation: unroll 0.7s ease-in reverse both;
 }
 .sheet-leave-active .rod {
   animation: rodIn 0.7s ease-in reverse both;
-}
-.sheet-enter-active,
-.sheet-leave-active {
-  transition: opacity 0.7s ease;
 }
 @media (max-width: 640px) {
   .scroll { --h: min(600px, 80vh); }
