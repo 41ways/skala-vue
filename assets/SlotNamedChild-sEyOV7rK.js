@@ -1,0 +1,1 @@
+import{R as e,V as t,p as n,u as r}from"./runtime-core.esm-bundler-ClK__qKa.js";import{t as i}from"./_plugin-vue_export-helper-BDNMzG2s.js";var a={},o={class:`base-card`};function s(i,a){return e(),n(`div`,o,[r(`header`,null,[t(i.$slots,`header`)]),r(`main`,null,[t(i.$slots,`default`)])])}var c=i(a,[[`render`,s]]);export{c as default};

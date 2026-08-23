@@ -1,0 +1,1 @@
+import{R as e,Yt as t,p as n,pt as r,u as i}from"./runtime-core.esm-bundler-ClK__qKa.js";var a={class:`practice-section`},o={__name:`VPreBasic`,setup(o){let s=r(`안녕하세요!`);return(r,o)=>(e(),n(`div`,a,[o[0]||=i(`h2`,null,`v-pre 디렉티브 학습`,-1),i(`p`,null,`일반 출력: `+t(s.value),1),o[1]||=i(`p`,null,`v-pre 출력: {{ message }}`,-1)]))}};export{o as default};
