@@ -503,8 +503,8 @@ function jumpTo(r) {
             <text x="450" y="196" class="stroke-title t-sub">八 道 晴 雨 錄</text>
           </svg>
           <p class="hero-copy">
-            옛 그림은 늘 오늘의 하늘이었습니다.<br />
-            화폭을 내리면, 여섯 폭 민화가 지금 팔도의 날씨를 대신 전합니다.
+            그림으로 보는 오늘 날씨.<br />
+            화폭을 내리면 팔도의 날씨가 펼쳐집니다.
           </p>
           <p class="hero-note util">
             {{ loading ? '팔도의 하늘을 살피는 중…' : skySummary }}
