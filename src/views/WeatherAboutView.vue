@@ -1,5 +1,6 @@
 <script setup>
 // 소개: 어떤 서비스인지, 무엇으로 만들었는지
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink } from 'vue-router'
 import inwang from '@/assets/minhwa-art/inwang.jpg'
 import obongdo from '@/assets/minhwa-art/obongdo.jpg'
@@ -23,6 +24,14 @@ const credits = [
   ['두루마리 질감', 'Poly Haven (CC0)'],
   ['날씨', 'Open-Meteo'],
 ]
+// 그림 크게 보기. 누른 그림 하나를 body 위에 띄운다 (Teleport)
+const viewing = ref(null)
+const onKey = (e) => {
+  if (e.key === 'Escape') viewing.value = null
+}
+onMounted(() => window.addEventListener('keydown', onKey))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
+
 // 머리 숫자
 const stats = [
   { n: 6, k: '폭', d: '날씨마다 한 폭' },
@@ -88,7 +97,9 @@ const pairs = [
       <h2><i class="h2seal">對</i>하늘과 그림의 대응</h2>
       <ul class="pairs">
         <li v-for="p in pairs" :key="p.w">
-          <img :src="p.img" :alt="p.title" loading="lazy" decoding="async" />
+          <button type="button" class="thumb" :aria-label="p.title + ' 크게 보기'" @click="viewing = p">
+            <img :src="p.img" :alt="p.title" loading="lazy" decoding="async" />
+          </button>
           <i class="seal">{{ p.h }}</i>
           <b>{{ p.w }}</b>
           <span class="t">{{ p.title }}</span>
@@ -125,6 +136,22 @@ const pairs = [
       </dl>
     </section>
   </main>
+
+  <Teleport to="body">
+    <Transition name="view">
+      <div v-if="viewing" class="viewer" role="dialog" aria-modal="true" :aria-label="viewing.title" @click.self="viewing = null">
+        <figure>
+          <img :src="viewing.img" :alt="viewing.title" />
+          <figcaption>
+            <i class="seal">{{ viewing.h }}</i>
+            <b>{{ viewing.title }}</b>
+            <span>{{ viewing.by }} · {{ viewing.w }}</span>
+          </figcaption>
+        </figure>
+        <button type="button" class="close" @click="viewing = null">✕ 닫기</button>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -399,6 +426,15 @@ section p {
   gap: 3px;
   font-size: 14px;
 }
+.thumb {
+  all: unset;
+  display: block;
+  cursor: zoom-in;
+}
+.thumb:focus-visible {
+  outline: 2px solid var(--cheong);
+  outline-offset: 3px;
+}
 .pairs img {
   width: 100%;
   aspect-ratio: 4 / 3;
@@ -409,7 +445,8 @@ section p {
   box-shadow: 0 6px 16px -10px rgba(34, 28, 22, 0.5);
   transition: transform 0.4s ease;
 }
-.pairs li:hover img {
+.pairs li:hover img,
+.thumb:focus-visible img {
   transform: translateY(-3px) rotate(-0.6deg);
 }
 .pairs .seal {
@@ -446,6 +483,68 @@ code {
 }
 a {
   color: var(--jeok);
+}
+/* 그림 크게 보기 */
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(18, 16, 14, 0.86);
+  backdrop-filter: blur(3px);
+  cursor: zoom-out;
+}
+.viewer figure {
+  margin: 0;
+  max-width: min(1100px, 94vw);
+  cursor: default;
+}
+.viewer img {
+  display: block;
+  max-width: 100%;
+  max-height: 78vh;
+  margin: 0 auto;
+  padding: 8px;
+  background: var(--baek);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+.viewer figcaption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  color: var(--baek);
+  font-size: 14px;
+}
+.viewer figcaption b {
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 0.08em;
+}
+.viewer figcaption span {
+  color: rgba(251, 246, 234, 0.7);
+}
+.viewer .close {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  background: none;
+  border: 0;
+  color: var(--baek);
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+}
+.view-enter-active,
+.view-leave-active {
+  transition: opacity 0.3s ease;
+}
+.view-enter-from,
+.view-leave-to {
+  opacity: 0;
 }
 @media (max-width: 520px) {
   .head-art { height: 150px; }
