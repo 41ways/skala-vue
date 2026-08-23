@@ -65,7 +65,7 @@ const emit = defineEmits(['change-sort', 'toggle-filter'])
   display: flex;
   align-items: center;
   gap: 16px;
-  font-size: 12px;
+  font-size: 13.5px;
   color: var(--ink-soft);
 }
 

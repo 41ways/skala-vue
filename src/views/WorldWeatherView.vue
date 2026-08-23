@@ -52,7 +52,7 @@ const heroP = ref(0)
 const activeIdx = ref(-1)
 const mx = ref(0)
 const my = ref(0)
-let tx = 0, ty = 0, rafId = 0, lastY = -1
+let tx = 0, ty = 0, rafId = 0, lastY = -1, scrollDir = 1 // 1 내려감, -1 올라감
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v))
 const easeOut = (t) => 1 - Math.pow(1 - t, 3)
@@ -86,12 +86,17 @@ function magnetSnap() {
   if (!el) return
   const vh = window.innerHeight
   const p = progress.value[i] ?? 0
+  const settle = (node) => node.getBoundingClientRect().top + window.scrollY + (node.offsetHeight - vh) * 0.42
   let target = null
+  // 스크롤 방향을 따라간다 - 위로 올라가는데 아래로 되돌려 보내면 앞 폭으로 못 간다
   if (p > 0.9) {
     const next = chapterEls.value[i + 1]
-    if (next) target = next.getBoundingClientRect().top + window.scrollY + (next.offsetHeight - vh) * 0.42
+    if (scrollDir > 0 && next) target = settle(next)
+    else if (scrollDir < 0) target = settle(el)
   } else if (p > 0.008 && p < 0.1) {
-    target = el.getBoundingClientRect().top + window.scrollY + (el.offsetHeight - vh) * 0.42
+    const prev = chapterEls.value[i - 1]
+    if (scrollDir < 0 && prev) target = settle(prev)
+    else if (scrollDir > 0) target = settle(el)
   }
   if (target !== null) {
     if (window.__lenis) window.__lenis.scrollTo(target, { duration: 1.7 })
@@ -103,6 +108,7 @@ let magnetArmed = true
 function loop() {
   const y = window.scrollY
   if (y !== lastY) {
+    if (lastY >= 0) scrollDir = y > lastY ? 1 : -1
     lastY = y
     measure()
     still = 0

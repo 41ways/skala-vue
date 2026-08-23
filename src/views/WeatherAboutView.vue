@@ -106,25 +106,25 @@ h1 {
 }
 .lead {
   margin: 0;
-  font-size: 16px;
-  line-height: 1.85;
+  font-size: 17px;
+  line-height: 1.9;
   color: var(--ink-soft);
 }
 section {
-  margin-top: 40px;
-  padding-top: 18px;
+  margin-top: 44px;
+  padding-top: 20px;
   border-top: 1px solid var(--line);
 }
 h2 {
-  margin: 0 0 14px;
+  margin: 0 0 16px;
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 20px;
   letter-spacing: 0.16em;
 }
 section p {
   margin: 0;
-  font-size: 14.5px;
-  line-height: 1.8;
+  font-size: 15.5px;
+  line-height: 1.85;
   color: var(--ink-soft);
 }
 .menus {
@@ -140,7 +140,7 @@ section p {
   align-items: baseline;
   gap: 10px;
   font-family: var(--font-display);
-  font-size: 17px;
+  font-size: 18px;
   color: var(--ink);
   text-decoration: none;
 }
@@ -168,7 +168,7 @@ section p {
   position: relative;
   display: grid;
   gap: 3px;
-  font-size: 13px;
+  font-size: 14px;
 }
 .pairs img {
   width: 100%;
@@ -214,8 +214,8 @@ section p {
 .plain {
   margin: 0;
   padding-left: 18px;
-  font-size: 14.5px;
-  line-height: 1.8;
+  font-size: 15px;
+  line-height: 1.85;
   color: var(--ink-soft);
 }
 code {

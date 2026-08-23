@@ -18,15 +18,17 @@ defineProps({
 .panel {
   border: 1px solid var(--line);
   border-radius: 6px;
-  padding: 16px 18px;
+  padding: 18px 20px;
   margin-bottom: 14px;
   background-color: rgba(251, 246, 234, 0.7);
 }
 
 .panel h3 {
   margin: 0 0 12px;
-  font-size: 12px;
-  color: var(--ink-soft);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  color: var(--jeok);
+  font-weight: 400;
 }
 </style>

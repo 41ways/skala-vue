@@ -132,12 +132,14 @@ const TYPES = { best: 'primary', good: 'success', fair: 'warning', none: 'info' 
 }
 
 .name {
-  font-size: 17px;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .cond {
-  font-size: 12px;
+  font-size: 13.5px;
   color: var(--ink-soft);
   margin-top: 3px;
 }
@@ -159,8 +161,9 @@ const TYPES = { best: 'primary', good: 'success', fair: 'warning', none: 'info' 
 
 .score {
   margin: 0;
-  font-size: 30px;
-  font-weight: 300;
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 400;
   line-height: 1;
 }
 

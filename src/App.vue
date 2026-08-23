@@ -38,7 +38,6 @@ const TITLES = {
   '/guide': '빨래 지침',
   '/classic': '실습 대시보드',
   '/about': '소개',
-  '/edition': '에디션',
 }
 watch(
   () => route.path,
@@ -78,12 +77,11 @@ onBeforeUnmount(() => {
     <p class="pl-sub util">먹을 갈고 있습니다</p>
   </div>
   <a class="skip util" href="#main">본문으로 건너뛰기</a>
-  <header class="top" :class="{ dark: route.path.startsWith('/world') || route.path.startsWith('/edition') }">
+  <header class="top" :class="{ dark: route.path.startsWith('/world') }">
     <RouterLink to="/" class="logo">청우<em>록</em><small>晴雨錄</small></RouterLink>
     <nav class="util">
       <RouterLink to="/">국내 화폭</RouterLink>
       <RouterLink to="/world">세계화폭</RouterLink>
-      <RouterLink to="/edition">에디션</RouterLink>
       <RouterLink to="/guide">빨래 지침</RouterLink>
       <RouterLink to="/classic">실습 대시보드</RouterLink>
       <RouterLink to="/about">소개</RouterLink>

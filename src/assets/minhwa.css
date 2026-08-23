@@ -92,15 +92,14 @@ a:hover {
 
 /* ── 몰입 화폭 페이지 — 폭 제한 해제 (넓은 화면 풀블리드) ── */
 #app:has(main.gukfok),
-#app:has(main.mangug),
-#app:has(main.edition) {
+#app:has(main.mangug) {
   max-width: none;
   padding: 0;
 }
 
 /* 좁은 화면에서는 #app 여백을 줄여 본문 폭 확보 */
 @media (max-width: 640px) {
-  #app:not(:has(main.gukfok)):not(:has(main.mangug)):not(:has(main.edition)) {
+  #app:not(:has(main.gukfok)):not(:has(main.mangug)) {
     padding: 1rem 0.75rem;
   }
 }

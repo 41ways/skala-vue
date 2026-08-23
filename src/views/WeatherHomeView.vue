@@ -5,7 +5,7 @@ import BaseDashboardCard from '@/components/exercise/BaseDashboardCard.vue'
 import SearchBar from '@/components/exercise/SearchBar.vue'
 import WeatherCard from '@/components/exercise/WeatherCard.vue'
 import SummaryBar from '@/components/exercise/SummaryBar.vue'
-import DevLog from '@/components/exercise/DevLog.vue'
+import DevNotes from '@/components/exercise/DevNotes.vue'
 import { weatherList, laundryScore, laundryGrade } from '@/data/weatherData.js'
 
 const router = useRouter()
@@ -131,7 +131,7 @@ const goDetail = (city) => {
 
     <p class="bar">{{ statusBar }}</p>
 
-    <DevLog />
+    <DevNotes />
   </div>
 </template>
 
@@ -144,8 +144,8 @@ const goDetail = (city) => {
   margin-bottom: 16px;
 }
 .src {
-  margin: 6px 0 0;
-  font-size: 12.5px;
+  margin: 8px 0 0;
+  font-size: 13.5px;
   color: var(--ink-soft);
 }
 .src a {
@@ -153,13 +153,16 @@ const goDetail = (city) => {
 }
 
 .head h3 {
-  margin: 0 0 4px;
-  font-size: 18px;
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  letter-spacing: 0.08em;
 }
 
 .head p {
   margin: 0;
-  font-size: 12px;
+  font-size: 14px;
+  line-height: 1.7;
   color: var(--ink-soft);
 }
 
@@ -172,7 +175,7 @@ const goDetail = (city) => {
   padding: 28px 0;
   text-align: center;
   color: var(--ink-soft);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .bar {
@@ -181,6 +184,7 @@ const goDetail = (city) => {
   background-color: var(--ink);
   color: var(--line);
   border-radius: 4px;
-  font-size: 13px;
+  font-size: 14px;
+  letter-spacing: 0.02em;
 }
 </style>

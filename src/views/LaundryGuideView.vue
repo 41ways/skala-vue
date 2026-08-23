@@ -1,5 +1,26 @@
 <script setup>
 import { RouterLink } from 'vue-router'
+import { laundryScore, laundryGrade } from '@/data/weatherData.js'
+
+// 실제 계산 예시 - 규칙을 숫자로 따라가 볼 수 있게
+const samples = [
+  { name: '서울', temp: 28, status: '맑음', humidity: 62, wind: 2.4 },
+  { name: '부산', temp: 26, status: '구름', humidity: 74, wind: 4.7 },
+  { name: '수원', temp: 23, status: '비', humidity: 88, wind: 3.1 },
+].map((c) => {
+  const score = laundryScore(c)
+  const steps =
+    c.status === '비' || c.status === '눈'
+      ? ['비·눈 → 0점']
+      : [
+          '100',
+          `습도 ${c.humidity}% → −${((c.humidity - 40) * 1.8).toFixed(1)}`,
+          `바람 ${c.wind}m/s → +${(Math.min(c.wind, 6) * 6).toFixed(1)}`,
+          c.status === '맑음' ? '맑음 +8' : null,
+          c.temp >= 20 ? `${c.temp}° +4` : null,
+        ].filter(Boolean)
+  return { ...c, score, grade: laundryGrade(score), steps }
+})
 
 const rules = [
   { item: '기본', hanja: '基', detail: '100점에서 시작' },
@@ -48,6 +69,18 @@ const grades = [
       </ul>
     </section>
 
+    <section class="sheet">
+      <h2><i class="seal">例</i>계산 예시</h2>
+      <ul class="samples">
+        <li v-for="c in samples" :key="c.name">
+          <b class="city">{{ c.name }}</b>
+          <span class="cond">{{ c.status }} · {{ c.temp }}° · 습도 {{ c.humidity }}% · 바람 {{ c.wind }}m/s</span>
+          <span class="steps">{{ c.steps.join('  ·  ') }}</span>
+          <span class="result"><b>{{ c.score }}점</b> {{ c.grade.label }}</span>
+        </li>
+      </ul>
+    </section>
+
     <p class="note">
       바람은 다른 지표와 달리 강할수록 점수가 오릅니다. 빨래가 마르는 데는 습기를 걷어 가는 공기의 흐름이 필요하기 때문입니다.
     </p>
@@ -80,8 +113,8 @@ h1 {
 }
 .lead {
   margin: 0;
-  font-size: 15.5px;
-  line-height: 1.85;
+  font-size: 16.5px;
+  line-height: 1.9;
   color: var(--ink-soft);
 }
 .sheet {
@@ -99,7 +132,7 @@ h2 {
   gap: 10px;
   margin: 0 0 14px;
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 19px;
   letter-spacing: 0.18em;
 }
 .seal {
@@ -127,7 +160,7 @@ h2 {
   align-items: center;
   gap: 12px;
   height: 48px;
-  font-size: 15.5px;
+  font-size: 16px;
 }
 .h,
 .mark {
@@ -150,11 +183,59 @@ h2 {
 .d {
   color: var(--ink-soft);
 }
+.samples {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.samples li {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  grid-template-areas:
+    'city cond result'
+    'city steps result';
+  gap: 2px 14px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px dotted var(--line);
+}
+.samples li:last-child {
+  border-bottom: 0;
+}
+.samples .city {
+  grid-area: city;
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+.samples .cond {
+  grid-area: cond;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.samples .steps {
+  grid-area: steps;
+  font-family: var(--font-util);
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: var(--cheong);
+}
+.samples .result {
+  grid-area: result;
+  text-align: right;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.samples .result b {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--jeok);
+}
 .note {
   margin: 30px 0 0;
   padding-left: 14px;
   border-left: 2px solid var(--hwang);
-  font-size: 14.5px;
+  font-size: 15px;
   line-height: 1.8;
   color: var(--ink-soft);
 }
@@ -178,6 +259,17 @@ h2 {
   .sheet {
     padding: 18px 16px 14px;
     background-image: none;
+  }
+  .samples li {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'city'
+      'cond'
+      'steps'
+      'result';
+  }
+  .samples .result {
+    text-align: left;
   }
 }
 </style>
