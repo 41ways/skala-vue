@@ -119,4 +119,19 @@ const emit = defineEmits(['change-sort', 'toggle-filter'])
   border-color: var(--ink);
   color: white;
 }
+
+/* 터치 화면에서는 손가락이 닿을 크기로 */
+@media (max-width: 640px) {
+  .sort button {
+    width: 40px;
+    height: 40px;
+    font-size: 15px;
+  }
+  .filter {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
 </style>
