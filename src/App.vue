@@ -186,7 +186,7 @@ onBeforeUnmount(() => {
 }
 .logo {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 27px;
   letter-spacing: 0.06em;
   color: var(--ink);
   text-decoration: none;
@@ -196,7 +196,7 @@ onBeforeUnmount(() => {
   font-style: normal;
 }
 .logo small {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--ink-soft);
   margin-left: 8px;
   letter-spacing: 0.18em;
@@ -227,7 +227,7 @@ nav a:hover {
 
 @media (max-width: 600px) {
   .top { padding: 10px 14px; gap: 8px; }
-  .logo { font-size: 19px; }
+  .logo { font-size: 22px; }
   .logo small { display: none; }
   /* 좁은 화면에서는 차례가 옆으로 밀린다 - 오른쪽 끝을 흐려 더 있다는 걸 알린다 */
   nav {
