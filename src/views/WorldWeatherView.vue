@@ -296,10 +296,10 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
       <filter id="flagWave" x="-6%" y="-6%" width="112%" height="112%">
         <!-- 깃발처럼: 큰 파동 한두 줄만. 주파수를 낮춰 잔떨림을 없앰 -->
         <feTurbulence type="fractalNoise" baseFrequency="0.003 0.009" numOctaves="1" seed="3" result="w">
-          <animate attributeName="baseFrequency" values="0.003 0.009;0.004 0.007;0.003 0.009" dur="3.6s" repeatCount="indefinite" />
+          <animate attributeName="baseFrequency" values="0.003 0.009;0.004 0.007;0.003 0.009" dur="3.2s" repeatCount="indefinite" />
         </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="w" scale="32" xChannelSelector="R" yChannelSelector="G">
-          <animate attributeName="scale" values="22;40;22" dur="3.6s" repeatCount="indefinite" />
+        <feDisplacementMap in="SourceGraphic" in2="w" scale="44" xChannelSelector="R" yChannelSelector="G">
+          <animate attributeName="scale" values="30;56;30" dur="3.2s" repeatCount="indefinite" />
         </feDisplacementMap>
       </filter>
       <!-- 물결 - 가로로 긴 잔물결이 흐른다 -->
@@ -720,10 +720,10 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 }
 @keyframes galeFlutter {
   0%, 100% { rotate: 0deg; translate: 0 0; }
-  18% { rotate: 1.2deg; translate: 16px 7px; }
-  38% { rotate: -0.9deg; translate: -13px 3px; }
-  58% { rotate: 1deg; translate: 12px 6px; }
-  78% { rotate: -0.7deg; translate: -8px 2px; }
+  18% { rotate: 0.9deg; translate: 12px 5px; }
+  38% { rotate: -0.7deg; translate: -10px 2px; }
+  58% { rotate: 0.8deg; translate: 9px 5px; }
+  78% { rotate: -0.5deg; translate: -6px 2px; }
 }
 @keyframes windFlutter {
   0%, 100% { rotate: 0deg; translate: 0 0; }
