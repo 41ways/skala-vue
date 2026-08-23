@@ -1,77 +1,173 @@
-# skala-vue
+# 청우록 晴雨錄
 
-SKALA 프론트엔드 프레임워크(Vue.js) 과정 실습 저장소.
+민화로 보는 오늘 날씨. 비 오는 도시는 인왕제색도 쪽에, 맑은 도시는 일월오봉도 쪽에 들어감.
 
-## 개발 환경
+배포 https://41ways.github.io/skala-vue/
+저장소 https://github.com/41ways/skala-vue
 
-- Node.js v26.5.1 / npm 12.0.2
-- create-vue 3.22.3 으로 스캐폴딩
-- 스캐폴딩 옵션: TypeScript 미사용, JSX 미사용, Vue Router 사용, Pinia 사용, Vitest 미사용, E2E 미사용, ESLint 사용, Prettier 사용
+수업 과제인 날씨 대시보드는 /classic에 그대로 두고, 그 위에 "그림이 날씨를 대신 말해주는 사이트"를 얹음.
+원래 민화를 좋아하기도 했고, 날씨 카드를 만들다 보니 숫자보다 그림 한 장이 더 와닿겠다 싶어서 시작.
 
-강의 자료 기준 Node 버전은 v24.16.0 이지만 package.json 의 engines 가 >=22.12.0 이라 상위 버전으로 진행함.
+
+## 화면
+
+| 경로 | 화면 | 설명 |
+|---|---|---|
+| / | 국내 화폭 | 한옥 문이 열리면서 시작. 국내 10개 도시 + 세종기지 날씨에 따라 민화 6폭이 차례로 나오고, 도시 이름을 누르면 두루마리가 펼쳐짐 |
+| /world | 세계화폭 | 해외 10곳. 나라마다 그 나라 그림 한 폭, 현지 시각, 비·안개·바람 효과. 두 번째 '스칼라'는 시연용이라 날씨 고정 |
+| /guide | 빨래 지침 | 빨래 지수 계산 규칙과 예시 |
+| /classic | 실습 대시보드 | 과제 화면. 아래에 개발 일지 / 배운 점 / 회고 탭 |
+| /weather/:cityId | 상세 | 과제의 동적 라우트 |
+| /about | 소개 | 만든 재료와 그림 출처 |
+
+
+## 과제 단원별로 한 것
+
+교재 순서대로. 파일 단위로 더 자세한 건 /classic의 '배운 점' 탭에 있음.
+
+1. Vue 문법 (views/WeatherHomeView.vue)
+v-for + :key 도시 카드, v-if 더움/선선함 라벨, 검색 input, 카드 클릭하면 상태바, 상세보기는 @click.stop.
+도시를 10곳 + 세종기지로 늘리고 습도·바람을 넣어서 빨래 지수를 계산하게 함.
+
+2. Composition API (같은 파일)
+searchQuery, selectedCityInfo, weatherList는 ref, filteredWeatherList는 computed.
+watch(selectedCityInfo), watchEffect(searchQuery)는 콘솔에 찍힘.
+추가한 computed: scoredList, sortedList, averageScore, dryableCount.
+
+3. 컴포넌트 (components/exercise/)
+BaseDashboardCard(slot), SearchBar(props, update-query), WeatherCard(props, select-card / click-detail). SummaryBar는 하나 더 뗌.
+원본 WeatherParent 같은 건 archive/에 있음.
+
+4. Router (router/index.js, App.vue)
+지연 로딩, 404 catch-all, /weather/:cityId(onMounted에서 route.params로 도시 찾기), 상세보기는 alert 대신 router.push.
+더 한 것: 라우트 meta로 기온 나오는 화면에서만 단위 토글 표시, 검색어를 ?q=에 넣기(router.replace), 라우트마다 document.title.
+
+5. Pinia (stores/configStore.js, components/exercise/UnitToggler.vue)
+unit / unitSymbol / toggleUnit. 토글은 내비 옆에 있고 메인·상세 둘 다 바뀜.
+교재에 "메인/상세 중복은 Composable로 풀 수 있다"고 돼 있어서 composables/useDisplayTemp.js로 묶어 봄. 고른 단위는 localStorage에 남김.
+
+6. Axios (api/openMeteo.js, composables/useWeather.js)
+OpenWeatherMap은 키가 필요한데 GitHub Pages는 정적이라 키가 번들에 그대로 남음. 그래서 키 없는 Open-Meteo로 바꿈.
+axios.create로 baseURL과 timeout을 묶고, 인터셉터에서 429·타임아웃·네트워크 오류를 한글 문구로 변환.
+요청은 도시 21곳을 좌표 묶음으로 국내 1번 해외 1번, 예보는 두루마리 열 때 1번, 10분 안엔 sessionStorage 캐시. 실패하면 표본 데이터로 돌아가고 화면에 "표본"이라고 뜸.
+
+7. UI Library (Element Plus)
+el-input(검색), el-tag·el-progress·el-button(카드), el-tabs(아래 탭). 기본 색이 한지 톤이랑 안 맞아서 :deep()으로 색만 덮어씀.
+
+8. 빌드·배포
+ESLint eqeqeq / no-console off, lint 0 에러.
+.env.staging / .env.production에 VITE_API_URL, build:staging으로 확인(대시보드 콘솔에 찍힘).
+GitHub Actions가 main push마다 빌드해서 Pages로. 하위 경로(/skala-vue/)라 파비콘·매니페스트 링크는 %BASE_URL%, 딥링크는 404.html을 index로 복사해서 받음.
+
+
+## 실습에서 배운 것
+
+교재 단원 순서. 수업에서 한 것과 이 프로젝트에서 실제로 쓴 자리.
+
+Modern JavaScript
+- 구조분해·spread - API 응답 const { data } = …, 도시 객체 복사 { ...c, temp, live: true } (useWeather.js)
+- 옵셔널 체이닝 ?. / 널 병합 ?? - props.city?.temp ?? 0 (ScrollSheet.vue 등)
+- map / filter / find / toSorted - 도시 검색·정렬 (WeatherHomeView.vue)
+- 템플릿 리터럴 - 인라인 스타일 translateY(${…}px) (ArtStage.vue)
+
+Vue가 뭔지 (MVVM, SPA, 컴포넌트)
+- 데이터가 바뀌면 화면이 따라옴. DOM을 직접 만지는 코드 없음
+- index.html 하나 + Router로 화면 전환. 서버는 날씨 데이터만 줌
+- 그림 무대(ArtStage), 누끼 인물(MinhwaCut), 두루마리(ScrollSheet)를 부품으로 조립
+
+프로젝트 구조 · SFC
+- index.html - main.js - App.vue 흐름 그대로. main.js에서 Pinia·Router·Element Plus 등록
+- 모든 .vue가 <script setup> / <template> / <style scoped>. Options API는 안 씀
+- 파일명은 파스칼 케이스
+
+반응성
+- ref - 스크롤 진행도, 두루마리에 띄울 도시, 한자/숫자 모드
+- computed - 검색 결과, 평균 점수, 한자 숫자 텍스트
+- watch - 도시가 바뀌면 예보 다시 호출, 라우트 바뀌면 맨 위로 / watchEffect - 검색어 추적
+- onMounted에서 API 호출·리스너 등록, onBeforeUnmount에서 해제
+- 컴포저블: useWeather(조회), useDisplayTemp(단위 변환, toValue로 값·ref·getter 다 받음)
+
+디렉티브
+- v-bind 클래스 - 어두운 화폭이면 :class="{ light }"로 글자색 반전
+- v-bind 스타일 - 스크롤 진행도로 opacity·transform 실시간 계산 (교재의 "수치를 실시간으로 미세 조정할 때" 그 경우)
+- v-if / v-show - 드물게 바뀌는 빗방울은 v-if, 자주 토글되는 차례는 v-show
+- v-for + :key - 도시, 챕터, 누끼 부위, 빗방울까지 전부
+- v-on - @click으로 두루마리 열고 닫기, @click.stop으로 버블링 차단
+- v-pre / v-once / v-memo - 쓸 데가 없어서 안 씀
+
+컴포넌트 통신
+- props / emits - SearchBar(update-query), WeatherCard(select-card, click-detail), ScrollSheet(close)
+- slot - BaseDashboardCard
+- <Transition> - 두루마리, 맨 위로 버튼, 개발 일지 펼침
+- defineAsyncComponent - 두루마리는 처음 누를 때 불러옴
+
+Router
+- 지연 로딩, catch-all, 동적 경로, router.push / router.replace, scrollBehavior
+- route.meta - 기온 나오는 화면에서만 단위 토글
+
+Pinia
+- state / getter / action, storeToRefs, localStorage에 단위 저장
+
+Axios
+- axios.create + 인터셉터, 요청 묶기, 캐시, 실패 시 표본 폴백
+
+UI Library
+- Element Plus: el-input, el-tag, el-progress, el-button, el-tabs
+
+빌드·배포
+- ESLint 커스텀 규칙, Prettier, .env 모드 분리, build:staging, GitHub Actions - Pages
+
+
+## 날씨와 그림
+
+| 날씨 | 그림 |
+|---|---|
+| 비·뇌우 | 인왕제색도 (정선) |
+| 맑음 | 일월오봉도 |
+| 바람 | 무동 (김홍도) |
+| 구름 | 씨름 (김홍도) |
+| 흐림·안개 | 서당 (김홍도) |
+| 눈 | 작호도 |
+
+WMO 날씨코드를 이 여섯으로 묶어서(codeToStatus) 도시를 배정.
+연출은 CSS/SVG 필터로만 함. 먹 번짐, 물에서 해 떠오르기, 누끼 딴 인물 부위별로 움직이기, 호랑이 머리에 눈 쌓였다 털리기.
+
 
 ## 실행
 
-```sh
+```
 npm install
 npm run dev
+npm run lint
+npm run build
+npm run build:staging
 ```
 
-개발 서버는 http://localhost:5173 에서 뜬다.
 
-```sh
-npm run lint     # oxlint + eslint
-npm run format   # prettier
-npm run build    # dist 생성
-```
+## 막혔던 것
 
-## 폴더 구조
+전부는 /classic 개발 일지에 카드로 있고, 여기엔 크게 걸린 것만.
 
-```
-src/
-  App.vue                        루트 컴포넌트
-  main.js                        진입점, createApp 으로 앱 인스턴스 생성
-  components/
-    practices/basic/             단원별 실습 컴포넌트
-  router/                        라우팅 경로 정의
-  stores/                        Pinia 저장소
-  views/                         페이지 단위 화면
-```
+- 429 - 도시마다 따로 부르니까 새로고침 몇 번에 막힘. 좌표를 쉼표로 묶어 한 번에 받게 바꾸고 10분 캐시를 달음.
+- 풍속이 km/h - 화면엔 m/s라고 써놓고 값은 km/h였음. 해외 그림이 전부 바람에 흔들리길래 이상해서 봤더니 Open-Meteo 기본 단위가 km/h. wind_speed_unit=ms.
+- Element Plus 등록만 함 - app.use만 해두고 실제로는 한 군데도 안 쓰고 있었음. 제출 전에 과제 표랑 대조하다 발견.
+- 페이지 전환 애니메이션 - Transition mode="out-in"을 걸었더니 탭이 비활성일 때 다음 화면이 안 뜸. 뺌.
+- Pages 하위 경로 - /favicon.ico 같은 절대 경로가 404. %BASE_URL%로.
 
-실습 컴포넌트는 `components/practices/` 아래에 단원별로 나눠서 넣는다.
 
-## 실습 기록
+## 회고
 
-### 2. Getting Started with Vue.js
+- 일반 변수로는 화면이 안 바뀐다는 걸 스크롤 진행도 만들면서 제대로 겪음.
+- 표본 데이터 폴백을 먼저 만들어 두니 API가 죽어도 시연이 됨. 다음에도 이 순서로.
+- 단위는 꼭 적고, 경계값(습도 100%)은 꼭 넣어 볼 것. 둘 다 한 번씩 당함.
+- 설치만 하고 안 쓴 라이브러리는 안 한 거나 마찬가지.
+- 다른 교육생 저장소를 몇 개 봤는데 라우트 meta, 단위 저장, 검색어 URL 동기화는 거기서 배워 옴.
 
-프로젝트 스캐폴딩과 개발 서버 구동까지 진행.
 
-HMR 확인은 개발 서버를 띄운 상태에서 `views/AboutView.vue` 의 template 을 수정하는 방식으로 했다. 새로고침 없이 화면이 바뀌는 것을 확인한 뒤 원래 내용으로 되돌렸다.
+## 출처
 
-커스터마이징 내역:
-
-- (작성 예정)
-
-### 3. Vue Syntax
-
-`App.vue` 를 비우고 실습용 컴포넌트를 자식으로 갈아 끼우는 구조로 바꿨다.
-
-SampleOne.vue - 반응형 데이터
-
-- `let normalCount` 은 값이 바뀌어도 화면에 반영되지 않는다.
-- `ref()` 로 감싼 `vueCount` 는 값이 바뀌는 즉시 화면에 반영된다.
-- 일반 변수를 여러 번 누른 뒤 반응성 변수를 누르면, 리렌더가 일어나면서 그동안 누적된 일반 변수 값도 같이 화면에 나타난다.
-
-SampleTwo.vue - 텍스트 보간
-
-- `{{ }}` 안에서 변수뿐 아니라 `toUpperCase()`, `Math.ceil()` 같은 자바스크립트 표현식도 쓸 수 있다.
-
-강의 자료 71쪽 예제에는 `import { ref } from 'vue'` 가 들어 있는데 SampleTwo 에서는 ref 를 쓰지 않는다. 그대로 두면 ESLint 에서 미사용 변수로 잡히기 때문에 import 를 뺐다.
-
-커스터마이징 내역:
-
-- (작성 예정)
-
-## 배포
-
-- (작성 예정)
+- 민화·풍속화: 위키미디어 공용 (퍼블릭 도메인)
+- 세계 명화: 퍼블릭 도메인 (호쿠사이, 모네, 터너 등)
+- 첫 화면 문 사진: 오리 이원익 종택, 문화재청 공공누리 제1유형
+- 두루마리 질감: Poly Haven (CC0)
+- 날씨: Open-Meteo
