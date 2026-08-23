@@ -23,7 +23,7 @@
 
 ## 과제 단원별로 한 것
 
-교재 순서대로. 괄호 안은 교재 쪽수. 더 자세한 건 /classic 아래 '배운 점' 탭.
+교재 순서대로. 괄호 안은 교재 쪽수. 화살표 뒤는 사이트 어디서 보이는지 — 표시 없는 건 실습 대시보드(/classic) 안에 있음.
 
 1. Vue 문법 (views/WeatherHomeView.vue)
 - v-for + :key로 도시 카드 출력 (p.87, p.116)
@@ -31,7 +31,7 @@
 - 검색 input 한글 입력 출력 (p.116)
 - 카드 클릭 시 상태바 "OO이 선택되었습니다" (p.116)
 - 상세보기 버튼은 @click.stop으로 카드 클릭 같이 터지는 거 방지 (p.102)
-- 도시 3개 → 10개 + 세종기지, 습도·바람 필드 추가해서 빨래 지수 계산
+- 도시 3개 → 10개 + 세종기지, 습도·바람 필드 추가해서 빨래 지수 계산 → 국내 화폭(/) 고을 목록과 두루마리에도 같은 데이터
 
 2. Composition API (같은 파일)
 - searchQuery, selectedCityInfo, weatherList를 ref로 (p.65)
@@ -47,24 +47,24 @@
 - 과제 1~3 원본은 /classic 탭에서 그대로 실행됨
 
 4. Router (router/index.js, App.vue)
-- 지연 로딩 import(), catch-all /:pathMatch(.*)* → 404 (p.195, p.196)
-- /weather/:cityId 동적 경로, onMounted에서 route.params로 도시 선택 (p.186, p.189)
+- 지연 로딩 import(), catch-all /:pathMatch(.*)* → 404 (p.195, p.196) → 전체 화면, 없는 주소 입력 시 404 페이지
+- /weather/:cityId 동적 경로, onMounted에서 route.params로 도시 선택 (p.186, p.189) → 상세(/weather/city_01)
 - 상세보기 window.alert → router.push (p.190, p.196)
-- RouterLink 내비 + RouterView (p.183)
-- 추가: 라우트 meta로 기온 화면에서만 단위 토글 표시, 검색어 ?q= 동기화(router.replace), 라우트별 document.title
+- RouterLink 내비 + RouterView (p.183) → 상단 내비 5개 메뉴
+- 추가: 라우트 meta로 기온 화면에서만 단위 토글 표시 → 상단 내비(대시보드·상세에서만 ℃/℉ 보임), 검색어 ?q= 동기화(router.replace), 라우트별 document.title → 브라우저 탭 제목
 
 5. Pinia (stores/configStore.js, components/exercise/UnitToggler.vue)
 - unit state / unitSymbol getter / toggleUnit action (p.203, p.212)
-- UnitToggler 내비 옆 배치, 메인·상세 단위 적용 (p.212)
+- UnitToggler 내비 옆 배치, 메인·상세 단위 적용 (p.212) → 상단 내비 오른쪽, 상세(/weather/…)
 - storeToRefs로 구조분해 (p.205)
 - 교재 참고란의 "중복은 Composable로" → composables/useDisplayTemp.js (p.212)
-- 추가: 단위를 localStorage에 저장 (p.207)
+- 추가: 단위를 localStorage에 저장 (p.207) → 새로고침 후에도 내비 토글 상태 유지
 
 6. Axios (api/openMeteo.js, composables/useWeather.js)
-- OpenWeatherMap 대신 키 없는 Open-Meteo 사용. 정적 배포에서 키가 번들에 남는 문제 회피 (p.274 API 키 주의)
-- axios.create로 baseURL·timeout, 인터셉터로 오류를 한글 문구로 (p.222, p.226)
-- 도시 21곳 좌표 묶음 요청 국내 1회·해외 1회, 예보는 두루마리 열 때 1회, sessionStorage 10분 캐시
-- 실패 시 표본 데이터 폴백, 화면에 "표본" 표시
+- OpenWeatherMap 대신 키 없는 Open-Meteo 사용. 정적 배포에서 키가 번들에 남는 문제 회피 (p.274 API 키 주의) → 국내 화폭(/), 세계화폭(/world), 두루마리, '지금 계신 곳의 하늘 보기'
+- axios.create로 baseURL·timeout, 인터셉터로 오류를 한글 문구로 (p.222, p.226) → 국내 화폭 '지금 계신 곳의 하늘 보기' 실패 시 문구
+- 도시 21곳 좌표 묶음 요청 국내 1회·해외 1회 → 국내 화폭·세계화폭, 예보는 두루마리 열 때 1회 → 두루마리 내일·모레·글피, sessionStorage 10분 캐시
+- 실패 시 표본 데이터 폴백, 화면에 "표본" 표시 → 국내 화폭 첫 화면 한 줄, 두루마리 날짜 옆, 세계화폭 독법
 
 7. UI Library (Element Plus) (p.233~249)
 - el-input 검색창, el-tag 등급, el-progress 점수 막대, el-button 상세보기, el-tabs 하단 탭
@@ -73,8 +73,8 @@
 8. 빌드·배포
 - ESLint eqeqeq 'always', no-console 'off', lint 에러 0 (p.270)
 - .env.staging / .env.production VITE_API_URL, build:staging, 대시보드 콘솔 출력으로 확인 (p.272)
-- npm run build → dist, GitHub Actions → GitHub Pages (p.273, p.274)
-- 하위 경로 /skala-vue/ 때문에 index.html 링크는 %BASE_URL%, 딥링크는 404.html = index.html 복사
+- npm run build → dist, GitHub Actions → GitHub Pages (p.273, p.274) → 배포 주소
+- 하위 경로 /skala-vue/ 때문에 index.html 링크는 %BASE_URL%, 딥링크는 404.html = index.html 복사 → 배포 주소에서 /world 직접 접속, 파비콘
 
 
 ## 실습에서 배운 것
