@@ -5,6 +5,7 @@ import BaseDashboardCard from '@/components/exercise/BaseDashboardCard.vue'
 import SearchBar from '@/components/exercise/SearchBar.vue'
 import WeatherCard from '@/components/exercise/WeatherCard.vue'
 import SummaryBar from '@/components/exercise/SummaryBar.vue'
+import DevLog from '@/components/exercise/DevLog.vue'
 import { weatherList, laundryScore, laundryGrade } from '@/data/weatherData.js'
 
 const router = useRouter()
@@ -126,6 +127,8 @@ const goDetail = (city) => {
     </BaseDashboardCard>
 
     <p class="bar">{{ statusBar }}</p>
+
+    <DevLog />
   </div>
 </template>
 
