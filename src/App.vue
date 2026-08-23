@@ -13,8 +13,8 @@ const showTop = ref(false)
 // 첫 로드 프리로더: 원화·폰트가 오기 전 빈 화면 대신 먹 제호를 보여준다
 const booting = ref(true)
 const bootLeaving = ref(false)
-const BOOT_MIN = 1800 // 먹 제호가 다 번질 시간은 준다
-const BOOT_MAX = 3200 // 그래도 너무 오래 잡아두진 않는다
+const BOOT_MIN = 2400 // 먹 제호가 다 번질 시간은 준다
+const BOOT_MAX = 3800 // 그래도 너무 오래 잡아두진 않는다
 const bootAt = Date.now()
 function bootDone() {
   if (bootLeaving.value) return
