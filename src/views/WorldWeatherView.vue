@@ -539,14 +539,12 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   inset: 0;
   will-change: transform, opacity;
 }
-.title-box {
-  animation: boxIn 1.4s ease-out 0.3s both;
-}
 @keyframes boxIn {
   from { opacity: 0; box-shadow: 0 0 0 0 rgba(251, 246, 234, 0); }
   to { opacity: 1; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45); }
 }
 .title-box {
+  animation: boxIn 1.4s ease-out 0.3s both;
   position: absolute;
   left: 50%;
   top: 50%;

@@ -1382,13 +1382,13 @@ function jumpTo(r) {
   .next-fab { padding: 12px 18px; }
   .vc span { font-size: 0.7em; }
   /* 숫자는 세로글 속에서 가로로 한 덩어리(縦中横) */
-.vc span .n {
-  font-style: normal;
-  text-combine-upright: all;
-  -webkit-text-combine: horizontal;
-  font-weight: 700;
-}
-.vc-empty { font-size: 14px; font-weight: 400; }
+  .vc span .n {
+    font-style: normal;
+    text-combine-upright: all;
+    -webkit-text-combine: horizontal;
+    font-weight: 700;
+  }
+  .vc-empty { font-size: 14px; font-weight: 400; }
   .mega {
     top: 22%;
     left: 5%;

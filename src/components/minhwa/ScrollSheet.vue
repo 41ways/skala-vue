@@ -235,7 +235,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .rod-l { --dir: 1; order: 1; }
 .rod-r { --dir: -1; order: 3; }
-.silk { order: 2; }
 /* 축 두 개가 아래서 함께 솟아오른 뒤, 양옆으로 벌어진다 */
 @keyframes rodIn {
   0% { transform: translateX(calc(var(--dir) * (min(960px, 94vw) / 2 - 22px))) translateY(75vh); }
@@ -245,6 +244,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
 /* 비단 표장 - 쪽빛 명주 만자(卍)문 */
 .silk {
+  order: 2;
   flex: 1;
   min-width: 0; /* 세로글 내용이 축 밖으로 밀어내지 않게 */
   margin: 0 -16px; /* 축 몸통 밑으로 파고들어 붙는다 */

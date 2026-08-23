@@ -132,9 +132,11 @@ h2 {
 .h,
 .mark {
   font-family: var(--font-display);
-  font-size: 20px;
-  color: var(--jeok);
   font-weight: 400;
+  color: var(--jeok);
+}
+.h {
+  font-size: 20px;
 }
 .mark {
   font-size: 15px;

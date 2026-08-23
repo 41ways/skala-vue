@@ -127,20 +127,16 @@ defineProps({
   pointer-events: none;
   animation: scFall 12s ease-in infinite;
 }
-.sc-fall.f1 { left: 18%; animation-delay: 0s; }
-.sc-fall.f2 { left: 40%; width: 9%; animation-delay: 0.12s; }
-.sc-fall.f3 { left: 60%; animation-delay: 0.05s; }
-.sc-fall.f4 { left: 76%; width: 5%; animation-delay: 0.2s; }
+.sc-fall.f1 { left: 18%; animation-delay: 0s; --sx: -14px; }
+.sc-fall.f2 { left: 40%; width: 9%; animation-delay: 0.12s; --sx: -4px; }
+.sc-fall.f3 { left: 60%; animation-delay: 0.05s; --sx: 8px; }
+.sc-fall.f4 { left: 76%; width: 5%; animation-delay: 0.2s; --sx: 16px; }
 @keyframes scFall {
   0%, 83% { opacity: 0; transform: translate(0, 0) scale(1); }
   84% { opacity: 1; transform: translate(0, 0) scale(1); }
   96% { opacity: 0; transform: translate(var(--sx, 0), 120%) scale(0.6); }
   100% { opacity: 0; }
 }
-.sc-fall.f1 { --sx: -14px; }
-.sc-fall.f2 { --sx: -4px; }
-.sc-fall.f3 { --sx: 8px; }
-.sc-fall.f4 { --sx: 16px; }
 
 /* 부위 모션 */
 /* 머리 - 갸웃갸웃 (목 기준) */
