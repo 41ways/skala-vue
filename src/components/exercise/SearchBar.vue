@@ -8,14 +8,21 @@ defineProps({
 
 const emit = defineEmits(['update-query'])
 
-const onInput = (e) => {
-  emit('update-query', e.target.value)
+// el-input은 값(문자열)을 그대로 넘겨준다
+const onInput = (value) => {
+  emit('update-query', value)
 }
 </script>
 
 <template>
   <div class="search">
-    <input :value="query" @input="onInput" placeholder="도시 이름을 입력하세요" />
+    <el-input
+      :model-value="query"
+      placeholder="도시 이름을 입력하세요"
+      clearable
+      size="large"
+      @update:model-value="onInput"
+    />
     <span class="typing">{{ query }}</span>
   </div>
 </template>
@@ -27,19 +34,24 @@ const onInput = (e) => {
   gap: 12px;
 }
 
-.search input {
+.search :deep(.el-input) {
   flex: 1;
-  border: none;
-  outline: none;
-  background: none;
-  border-bottom: 1px solid var(--line);
-  font-size: 16px;
-  padding: 4px 0;
-  color: inherit;
 }
-
-.search input:focus {
+/* Element Plus 기본 흰 박스를 한지 톤으로 */
+.search :deep(.el-input__wrapper) {
+  background: transparent;
+  box-shadow: none;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  padding-left: 0;
+}
+.search :deep(.el-input__wrapper.is-focus) {
+  box-shadow: none;
   border-bottom-color: var(--ink);
+}
+.search :deep(.el-input__inner) {
+  color: var(--ink);
+  font-family: var(--font-body);
 }
 
 .typing {

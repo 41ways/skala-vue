@@ -25,6 +25,9 @@ const emit = defineEmits(['select-card', 'click-detail'])
 
 const configStore = useConfigStore()
 const { unitSymbol } = storeToRefs(configStore)
+
+// 등급 → Element Plus 태그/막대 색
+const TYPES = { best: 'primary', good: 'success', fair: 'warning', none: 'info' }
 </script>
 
 <template>
@@ -39,14 +42,21 @@ const { unitSymbol } = storeToRefs(configStore)
         {{ city.status }} · {{ configStore.toTemp(city.temp) }}{{ unitSymbol }}
       </p>
       <p class="cond">습도 {{ city.humidity }}% · 바람 {{ city.wind }}m/s</p>
-      <span class="tag">{{ grade.label }}</span>
+      <el-tag :type="TYPES[grade.key]" size="small" effect="light" round>{{ grade.label }}</el-tag>
+      <el-progress
+        class="bar"
+        :percentage="score"
+        :stroke-width="6"
+        :show-text="false"
+        :status="grade.key === 'none' ? 'exception' : grade.key === 'best' ? 'success' : undefined"
+      />
     </div>
 
     <div class="right">
       <p class="score">
         {{ score }}<span class="unit">점</span>
       </p>
-      <button @click.stop="emit('click-detail', city)">상세보기</button>
+      <el-button size="small" plain @click.stop="emit('click-detail', city)">상세보기</el-button>
     </div>
   </article>
 </template>
@@ -134,12 +144,12 @@ const { unitSymbol } = storeToRefs(configStore)
   margin-top: 3px;
 }
 
-.tag {
-  display: inline-block;
+.left :deep(.el-tag) {
   margin-top: 7px;
-  padding: 2px 8px;
-  border-radius: 3px;
-  font-size: 11px;
+}
+.bar {
+  margin-top: 8px;
+  max-width: 180px;
 }
 
 .right {
@@ -161,18 +171,12 @@ const { unitSymbol } = storeToRefs(configStore)
   margin-left: 2px;
 }
 
-.right button {
-  border: 1px solid var(--line);
-  background: var(--baek);
-  border-radius: 3px;
-  padding: 4px 10px;
-  font-size: 12px;
+.right :deep(.el-button) {
+  font-family: var(--font-body);
   color: var(--ink-soft);
-  cursor: pointer;
 }
-
-.right button:hover {
-  border-color: var(--ink);
+.right :deep(.el-button:hover) {
   color: var(--ink);
+  border-color: var(--ink);
 }
 </style>
