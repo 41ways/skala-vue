@@ -1213,45 +1213,59 @@ function jumpTo(r) {
   text-shadow: 0 0 3px rgba(241, 231, 208, 0.9), 0 0 10px rgba(241, 231, 208, 0.8);
   transition: text-shadow 0.9s ease;
 }
-/* 말풍선: 세로 화기에선 첫 줄(오른쪽) 아래에, 위로 꼬리 */
+/* 말풍선: 세로 화기에선 맨 앞 고을 줄 위에, 아래로 꼬리 */
 .vc-hint {
   position: absolute;
   right: 0;
-  bottom: -10px;
-  transform: translate(0, 100%);
+  top: -12px;
+  transform: translate(0, -100%);
   writing-mode: horizontal-tb;
   white-space: nowrap;
-  padding: 6px 11px;
+  padding: 8px 14px;
   border-radius: 4px;
   background: var(--jeok);
-  color: var(--baek);
-  font-family: var(--font-display);
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  box-shadow: 0 6px 16px -8px rgba(34, 28, 22, 0.6);
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  box-shadow: 0 8px 20px -8px rgba(34, 28, 22, 0.7), inset 0 0 0 1.5px rgba(251, 246, 234, 0.45);
   animation: hintNudge 1.6s ease-in-out infinite;
   pointer-events: none;
 }
 .vc-hint::after {
   content: '';
   position: absolute;
-  right: 14px;
-  bottom: 100%;
+  right: 18px;
+  top: 100%;
   width: 0;
   height: 0;
-  border: 6px solid transparent;
-  border-bottom-color: var(--jeok);
-  border-top: 0;
+  border: 7px solid transparent;
+  border-top-color: var(--jeok);
+  border-bottom: 0;
 }
 @keyframes hintNudge {
-  0%, 100% { transform: translate(0, 100%); }
-  50% { transform: translate(0, calc(100% + 5px)); }
+  0%, 100% { transform: translate(0, -100%); }
+  50% { transform: translate(0, calc(-100% - 6px)); }
 }
 @media (max-width: 1100px) {
   /* 가로 칩 배열에서는 설명글이 위, 다음 폭 버튼이 아래 가운데라 오른쪽 끝 아래에 */
   .vc-hint {
     right: 0;
+    top: auto;
     bottom: -8px;
+    transform: translate(0, 100%);
+  }
+  .vc-hint::after {
+    top: auto;
+    bottom: 100%;
+    border: 7px solid transparent;
+    border-bottom-color: var(--jeok);
+    border-top: 0;
+  }
+  @keyframes hintNudge {
+    0%, 100% { transform: translate(0, 100%); }
+    50% { transform: translate(0, calc(100% + 6px)); }
   }
 }
 .side-cities.light .side-cap {
