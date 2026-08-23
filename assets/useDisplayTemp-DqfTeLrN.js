@@ -1,1 +1,0 @@
-import{bt as e,l as t}from"./runtime-core.esm-bundler-ClK__qKa.js";import{r as n}from"./pinia-DsVv8-sG.js";import{t as r}from"./configStore-EMpxyn-W.js";function i(i){let a=r(),{unitSymbol:o}=n(a),s=t(()=>a.toTemp(e(i)));return{value:s,text:t(()=>`${s.value}${o.value}`),unitSymbol:o}}export{i as t};
