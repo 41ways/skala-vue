@@ -294,12 +294,12 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
     <svg width="0" height="0" style="position: absolute" aria-hidden="true">
       <!-- 강풍 - 천이 펄럭이듯 그림 전체가 물결친다 (국기) -->
       <filter id="flagWave" x="-6%" y="-6%" width="112%" height="112%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.028" numOctaves="2" seed="6" result="w">
-          <animate attributeName="baseFrequency" values="0.012 0.028;0.017 0.022;0.012 0.028" dur="3.2s" repeatCount="indefinite" />
-          <animate attributeName="seed" values="6;7;8;9;6" dur="5.2s" repeatCount="indefinite" calcMode="discrete" />
+        <!-- 깃발처럼: 큰 파동 한두 줄만. 주파수를 낮춰 잔떨림을 없앰 -->
+        <feTurbulence type="fractalNoise" baseFrequency="0.003 0.009" numOctaves="1" seed="3" result="w">
+          <animate attributeName="baseFrequency" values="0.003 0.009;0.004 0.007;0.003 0.009" dur="4.2s" repeatCount="indefinite" />
         </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="w" scale="24" xChannelSelector="R" yChannelSelector="G">
-          <animate attributeName="scale" values="16;30;16" dur="2.6s" repeatCount="indefinite" />
+        <feDisplacementMap in="SourceGraphic" in2="w" scale="22" xChannelSelector="R" yChannelSelector="G">
+          <animate attributeName="scale" values="14;26;14" dur="4.2s" repeatCount="indefinite" />
         </feDisplacementMap>
       </filter>
       <!-- 물결 - 가로로 긴 잔물결이 흐른다 -->
@@ -713,17 +713,17 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   transform-origin: 50% 0%;
 }
 .paint.gale {
-  animation: galeFlutter 2.6s ease-in-out infinite;
+  animation: galeFlutter 4.2s ease-in-out infinite;
 }
 .paint.gale img {
   filter: url(#flagWave); /* 천 결이 바람에 일렁인다 */
 }
 @keyframes galeFlutter {
   0%, 100% { rotate: 0deg; translate: 0 0; }
-  18% { rotate: 1.8deg; translate: 22px 10px; }
-  38% { rotate: -1.3deg; translate: -18px 4px; }
-  58% { rotate: 1.5deg; translate: 16px 9px; }
-  78% { rotate: -0.9deg; translate: -10px 3px; }
+  18% { rotate: 0.9deg; translate: 12px 5px; }
+  38% { rotate: -0.7deg; translate: -10px 2px; }
+  58% { rotate: 0.8deg; translate: 9px 5px; }
+  78% { rotate: -0.5deg; translate: -6px 2px; }
 }
 @keyframes windFlutter {
   0%, 100% { rotate: 0deg; translate: 0 0; }
