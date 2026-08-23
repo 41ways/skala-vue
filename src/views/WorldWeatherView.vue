@@ -555,10 +555,6 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   background: rgba(11, 15, 24, 0.32);
   backdrop-filter: blur(2.5px);
 }
-.title-svg {
-  width: 100%;
-  display: block;
-}
 .ed-title {
   font-family: var(--font-display);
   font-size: clamp(46px, 7vw, 76px);
@@ -946,17 +942,6 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   font-size: 16px;
   border-radius: 3px;
   box-shadow: inset 0 0 0 1.5px rgba(251, 246, 234, 0.4);
-}
-.r-hanja {
-  display: inline-grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border: 1.2px solid rgba(232, 165, 176, 0.9);
-  color: #ffffff;
-  border-radius: 3px;
-  font-family: var(--font-display);
-  font-size: 15px;
 }
 .credit {
   display: inline-block;

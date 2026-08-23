@@ -646,20 +646,6 @@ function jumpTo(r) {
   display: grid;
   place-items: center;
 }
-/* 한지에 배접된 오봉도 - 표제 뒤 은은하게 */
-.hero-bg {
-  position: absolute;
-  inset: 0;
-}
-.hero-bg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 30%;
-  mix-blend-mode: multiply;
-  opacity: 0.1;
-  filter: blur(1.5px) saturate(0.9);
-}
 .hero-inner {
   text-align: center;
   padding: 0 24px;
@@ -856,13 +842,6 @@ function jumpTo(r) {
 .foot.light .dcap {
   color: #e8a5b0;
 }
-.city-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 16px;
-  clear: left;
-}
 .chip {
   display: inline-flex;
   align-items: center;
@@ -882,31 +861,10 @@ function jumpTo(r) {
   transform: translateY(-2px);
   color: var(--ink);
 }
-.chip-hanja {
-  display: inline-grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border: 1.2px solid var(--jeok);
-  color: var(--jeok);
-  border-radius: 3px;
-  font-family: var(--font-display);
-  font-size: 13px;
-}
 .chip b {
   font-weight: 700;
 }
-.chip-empty {
-  font-size: 13.5px;
-  color: var(--ink-soft);
-  margin: 0;
-  text-shadow: 0 0 14px rgba(241, 231, 208, 0.95);
-}
-.foot.light .chip-empty {
-  color: rgba(251, 246, 234, 0.85);
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
-}
-
+.foot.light 
 /* 발문 */
 .outro {
   text-align: center;
@@ -1319,15 +1277,7 @@ function jumpTo(r) {
   opacity: 0.75;
   max-height: 300px;
 }
-.side-cities .chip-empty {
-  padding: 8px 12px;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  background: rgba(251, 246, 234, 0.92);
-  box-shadow: 0 10px 26px rgba(34, 28, 22, 0.14);
-  text-shadow: none;
-}
-.side-cities.light .side-cap {
+.side-cities .side-cities.light .side-cap {
   color: rgba(251, 246, 234, 0.85);
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
   border-bottom-color: rgba(251, 246, 234, 0.3);

@@ -455,53 +455,6 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
   will-change: transform;
   filter: drop-shadow(0 18px 30px rgba(34, 28, 22, 0.28));
 }
-.cut-img {
-  display: block;
-  width: 100%;
-  height: auto;
-  user-select: none;
-}
-
-/* 누끼 인물 고유의 잔모션 - 그림 자체가 살아 있다 */
-.cut-img.sway {
-  animation: idleSway 4.6s ease-in-out infinite alternate;
-  transform-origin: 45% 88%;
-}
-@keyframes idleSway {
-  from { transform: rotate(-1.6deg); }
-  to { transform: rotate(2deg) translateY(-4px); }
-}
-.cut-img.bob {
-  animation: idleBob 3.6s ease-in-out infinite alternate;
-}
-@keyframes idleBob {
-  from { transform: translateY(0); }
-  to { transform: translateY(-6px); }
-}
-.cut-img.breathe {
-  animation: idleBreathe 4.8s ease-in-out infinite;
-  transform-origin: 45% 65%;
-}
-@keyframes idleBreathe {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.02) rotate(0.5deg); }
-}
-.cut-img.tussle {
-  animation: idleTussle 3.8s ease-in-out infinite;
-  transform-origin: 50% 80%;
-}
-@keyframes idleTussle {
-  0%, 100% { transform: translateX(-6px) rotate(-1.2deg); }
-  45% { transform: translateX(7px) rotate(1.4deg); }
-  70% { transform: translateX(3px) translateY(-6px) rotate(0.6deg); }
-}
-.cut-img.drift {
-  animation: idleDrift 6s ease-in-out infinite alternate;
-}
-@keyframes idleDrift {
-  from { transform: translateY(0) rotate(-0.4deg); }
-  to { transform: translateY(-8px) rotate(0.6deg); }
-}
 
 /* 물 위의 그림 (부감) */
 .w-main {
@@ -576,8 +529,6 @@ const snowFlakes = Array.from({ length: 90 }, (_, i) => {
 }
 .wd1 { left: 30%; animation-delay: 0s; }
 .wd2 { left: 70%; animation-delay: 1.1s; }
-.wd3 { left: 46%; animation-delay: 1.2s; }
-.wd4 { left: 63%; animation-delay: 1.7s; width: 6px; height: 10px; }
 @keyframes inkFall {
   0% { top: -4%; opacity: 0; transform: scaleY(1); }
   10% { opacity: 0.9; }
