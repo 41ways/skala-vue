@@ -1249,47 +1249,20 @@ function jumpTo(r) {
   50% { transform: translate(0, calc(-100% - 6px)); }
 }
 @media (max-width: 1100px) {
-  /* 가로 칩 배열에서는 떠 있지 않고 첫 칩 앞에 글자로 - 낙관 한 글자 + 점선 밑줄 */
+  /* 가로 칩 배열에서는 첫 칩(맨 앞 고을) 바로 위에 말풍선, 꼬리는 아래로 */
   .vc-hint {
-    position: static;
-    transform: none;
-    align-self: center;
-    margin-right: 2px;
-    padding: 0 0 2px;
-    background: none;
-    box-shadow: none;
-    border-radius: 0;
-    border-bottom: 1px dashed var(--jeok);
-    color: var(--jeok);
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: 14px;
-    letter-spacing: 0.12em;
-    animation: hintBlink 2.2s ease-in-out infinite;
-  }
-  .vc-hint::before {
-    content: '指';
-    display: inline-grid;
-    place-items: center;
-    width: 18px;
-    height: 18px;
-    margin-right: 6px;
-    background: var(--jeok);
-    color: var(--baek);
-    font-size: 11px;
-    border-radius: 2px;
-    vertical-align: 1px;
+    right: auto;
+    left: 0;
+    top: -8px;
+    transform: translate(0, -100%);
   }
   .vc-hint::after {
-    display: none;
+    right: auto;
+    left: 16px;
   }
-  .side-cities.light .vc-hint {
-    color: #f2b3bb;
-    border-bottom-color: #f2b3bb;
-  }
-  @keyframes hintBlink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.55; }
+  @keyframes hintNudge {
+    0%, 100% { transform: translate(0, -100%); }
+    50% { transform: translate(0, calc(-100% - 6px)); }
   }
 }
 .side-cities.light .side-cap {
