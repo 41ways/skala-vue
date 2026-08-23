@@ -1,0 +1,1 @@
+import{R as e,V as t,p as n,u as r}from"./runtime-core.esm-bundler-CqdV8JDQ.js";import{t as i}from"./_plugin-vue_export-helper-BDNMzG2s.js";var a={},o={class:`base-card`};function s(i,a){return e(),n(`div`,o,[t(i.$slots,`default`,{},()=>[a[0]||=r(`p`,null,`기본 콘텐츠 영역입니다.`,-1)])])}var c=i(a,[[`render`,s]]);export{c as default};

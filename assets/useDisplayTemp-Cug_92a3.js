@@ -1,1 +1,0 @@
-import{E as e,Q as t,S as n,j as r}from"./index-CtBt-Kth.js";function i(i){let a=n(),{unitSymbol:o}=e(a),s=r(()=>a.toTemp(t(i)));return{value:s,text:r(()=>`${s.value}${o.value}`),unitSymbol:o}}export{i as t};

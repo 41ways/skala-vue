@@ -1,0 +1,1 @@
+var e=`/skala-vue/assets/mudong-C9XJddkT.jpg`;export{e as t};
