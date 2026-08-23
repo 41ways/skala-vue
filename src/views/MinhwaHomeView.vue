@@ -267,7 +267,7 @@ function measure() {
     return p
   })
   // 발문이 올라오면 표제·차례를 거둔다 (글과 겹치지 않게)
-  if (outroEl.value && outroEl.value.getBoundingClientRect().top < vh * 0.7) act = -1
+  if (outroEl.value && outroEl.value.getBoundingClientRect().top < vh) act = -1
   activeIdx.value = act
 }
 function onMove(e) {
