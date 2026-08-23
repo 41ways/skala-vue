@@ -893,7 +893,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 }
 .foot {
   position: absolute;
-  left: 5%;
+  left: max(5%, 116px); /* 좌측 차례 레일과 겹치지 않게 */
   right: 5%;
   bottom: 6%;
   z-index: 3;
