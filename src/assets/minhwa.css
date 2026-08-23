@@ -104,20 +104,6 @@ a:hover {
   }
 }
 
-/* 붓 커서 (brush-cursor): 마우스가 있는 화면의 화폭 페이지에서만 */
-@media (hover: hover) and (pointer: fine) {
-  main.gukfok,
-  main.mangug {
-    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath d='M4 26c2-6 5-9 9-12l3 3c-3 4-6 7-12 9z' fill='%23221c16'/%3E%3Cpath d='M13 14l11-11 3 3-11 11z' fill='%23b23a26'/%3E%3Ccircle cx='5.5' cy='24.5' r='2.2' fill='%23221c16'/%3E%3C/svg%3E") 4 26, auto;
-  }
-  main.gukfok button,
-  main.gukfok a,
-  main.mangug button,
-  main.mangug a {
-    cursor: pointer;
-  }
-}
-
 /* 먹 화살 커서 (ink-cursor): 마우스가 있는 화면의 화폭 페이지에서만 */
 @media (hover: hover) and (pointer: fine) {
   main.gukfok,

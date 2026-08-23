@@ -237,7 +237,6 @@ const citiesFor = (ch, i) =>
 
 // 스크롤 진행도 + 마우스 시차 
 const heroEl = ref(null)
-const outroEl = ref(null)
 const chapterEls = ref([])
 const progress = ref([])
 const heroP = ref(0)
@@ -266,8 +265,6 @@ function measure() {
     if (r.top < vh * 0.5 && r.bottom > vh * 0.5) act = i
     return p
   })
-  // 발문이 올라오면 표제·차례를 거둔다 (글과 겹치지 않게)
-  if (outroEl.value && outroEl.value.getBoundingClientRect().top < vh) act = -1
   activeIdx.value = act
 }
 function onMove(e) {
@@ -591,7 +588,7 @@ function jumpTo(r) {
     <ScrollSheet :city="sheetCity" @close="sheetCity = null" />
 
     <!-- 발문 -->
-    <section ref="outroEl" class="outro">
+    <section class="outro">
       <div class="saekdong"></div>
       <p class="outro-copy">여섯 폭을 모두 거두었습니다.</p>
       <div class="outro-cities util">
@@ -867,11 +864,11 @@ function jumpTo(r) {
 .chip b {
   font-weight: 700;
 }
-.foot.light 
 /* 발문 */
 .outro {
   text-align: center;
-  padding: 0 24px 90px;
+  /* 왼쪽 표제·차례 레일(약 150px) 자리를 비우고 남은 폭 가운데에 */
+  padding: 0 24px 90px 160px;
 }
 .outro .saekdong {
   margin-bottom: 56px;
@@ -1328,6 +1325,9 @@ function jumpTo(r) {
   .rail,
   .side-title {
     display: none;
+  }
+  .outro {
+    padding-left: 24px;
   }
   .hero-copy { font-size: 15px; padding: 0 16px; }
   .hero-note { font-size: 11px; }
