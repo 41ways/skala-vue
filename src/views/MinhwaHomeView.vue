@@ -237,6 +237,7 @@ const citiesFor = (ch, i) =>
 
 // 스크롤 진행도 + 마우스 시차 
 const heroEl = ref(null)
+const outroEl = ref(null)
 const chapterEls = ref([])
 const progress = ref([])
 const heroP = ref(0)
@@ -265,6 +266,8 @@ function measure() {
     if (r.top < vh * 0.5 && r.bottom > vh * 0.5) act = i
     return p
   })
+  // 발문이 올라오면 표제·차례를 거둔다 (글과 겹치지 않게)
+  if (outroEl.value && outroEl.value.getBoundingClientRect().top < vh * 0.7) act = -1
   activeIdx.value = act
 }
 function onMove(e) {
@@ -588,7 +591,7 @@ function jumpTo(r) {
     <ScrollSheet :city="sheetCity" @close="sheetCity = null" />
 
     <!-- 발문 -->
-    <section class="outro">
+    <section ref="outroEl" class="outro">
       <div class="saekdong"></div>
       <p class="outro-copy">여섯 폭을 모두 거두었습니다.</p>
       <div class="outro-cities util">
