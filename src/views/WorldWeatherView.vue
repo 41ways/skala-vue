@@ -205,7 +205,7 @@ const rainDrops = Array.from({ length: 42 }, (_, i) => ({
   left: ((i * 37) % 100) + '%',
   duration: 0.9 + ((i * 13) % 10) / 11 + 's',
   delay: -((i * 7) % 20) / 10 + 's',
-  opacity: 0.2 + ((i * 11) % 10) / 26,
+  opacity: 0.55 + ((i * 11) % 10) / 22,
 }))
 // 도시별 효과 - 어느 부위를 오려 어떻게 흔들지
 // 효과 영역은 칼로 자르지 않고 - 가장자리를 흐려 그림에 스미게 한다 (mask)
@@ -858,9 +858,11 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 .w-drop {
   position: absolute;
   top: -6%;
-  width: 1.5px;
-  height: 34px;
-  background: linear-gradient(180deg, transparent, rgba(251, 246, 234, 0.7));
+  z-index: 3; /* 폭풍 어둠(z2) 위에 */
+  width: 2px;
+  height: 40px;
+  background: linear-gradient(180deg, transparent, rgba(251, 246, 234, 0.95));
+  box-shadow: 0 0 2px rgba(251, 246, 234, 0.5);
   transform: rotate(8deg);
   animation: wFall linear infinite;
   pointer-events: none;
@@ -870,9 +872,11 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 }
 /* 폭풍 도시(스칼라) - 비가 굵게 몰아친다 */
 .fx-group.storm .w-drop {
-  width: 2.4px;
-  height: 62px;
-  background: linear-gradient(180deg, transparent, rgba(251, 246, 234, 0.9));
+  width: 3px;
+  height: 70px;
+  opacity: 1 !important;
+  background: linear-gradient(180deg, transparent, #fff);
+  box-shadow: 0 0 3px rgba(255, 255, 255, 0.6);
   transform: rotate(16deg);
   animation-name: wFallStorm;
   animation-duration: 0.55s !important;
