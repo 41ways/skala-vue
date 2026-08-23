@@ -1,7 +1,7 @@
 <script setup>
 // 국내 화폭 (팔도청우록)
 // 스크롤 진행도에 따라 민화 6폭이 바뀌고, 날씨가 맞는 도시가 그 폭에 들어간다
-import { ref, computed, onMounted, onBeforeUnmount, defineAsyncComponent } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, defineAsyncComponent } from 'vue'
 import ArtStage from '@/components/minhwa/ArtStage.vue'
 import InkRipple from '@/components/minhwa/InkRipple.vue'
 import ScrollHint from '@/components/minhwa/ScrollHint.vue'
@@ -329,6 +329,14 @@ onBeforeUnmount(() => {
 // 정보 오버레이 : 그림이 자리잡은 뒤 순차 등장
 // 두루마리 날씨첩 - 화기의 고을을 누르면 펼쳐진다
 const sheetCity = ref(null)
+// 고을 이름이 버튼인 걸 모를 수 있어서, 처음 한 번만 말풍선으로 알려준다
+const vcHintSeen = ref(sessionStorage.getItem('cheongwoo:vc-hint') === '1')
+watch(sheetCity, (c) => {
+  if (c && !vcHintSeen.value) {
+    vcHintSeen.value = true
+    sessionStorage.setItem('cheongwoo:vc-hint', '1')
+  }
+})
 // 대청 - 스크롤하면 분합문이 양쪽으로 열리고, 문밖에 인왕제색도가 선다
 // 처음엔 흐린 대청 - 제목이 물러나는 동안 진해지고 → 문이 열리면 빈 마당에 비 → 틀이 걷히며 인왕제색도 화폭으로 넘어간다
 const dcFocus = computed(() => easeOut(clamp01((heroP.value - 0.04) / 0.3)))
@@ -564,6 +572,7 @@ function jumpTo(r) {
         <aside class="side-cities" :class="{ light: fld(ch, i, 'tone') === 'light' }" :style="sideStyle(i)">
           <p class="side-cap"><i class="cap-seal">{{ fld(ch, i, 'wHanja') }}</i>이 화폭의 고을</p>
           <template v-if="citiesFor(ch, i).length">
+            <span v-if="!vcHintSeen" class="vc-hint" aria-hidden="true">고을을 눌러 보세요</span>
             <button v-for="c in citiesFor(ch, i)" :key="c.id" class="vc" :aria-label="`${c.name} 날씨첩 열기 — ${c.temp}° ${c.status}`" @click="sheetCity = c">
               <b>{{ c.name }}</b><span><i class="n">{{ c.temp }}°</i> {{ c.status }}</span>
             </button>
@@ -1204,6 +1213,63 @@ function jumpTo(r) {
   text-shadow: 0 0 3px rgba(241, 231, 208, 0.9), 0 0 10px rgba(241, 231, 208, 0.8);
   transition: text-shadow 0.9s ease;
 }
+/* 말풍선: 세로 화기에선 첫 줄(오른쪽) 아래에, 위로 꼬리 */
+.vc-hint {
+  position: absolute;
+  right: 0;
+  bottom: -10px;
+  transform: translate(0, 100%);
+  writing-mode: horizontal-tb;
+  white-space: nowrap;
+  padding: 6px 11px;
+  border-radius: 4px;
+  background: var(--jeok);
+  color: var(--baek);
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  box-shadow: 0 6px 16px -8px rgba(34, 28, 22, 0.6);
+  animation: hintNudge 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+.vc-hint::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  bottom: 100%;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-bottom-color: var(--jeok);
+  border-top: 0;
+}
+@keyframes hintNudge {
+  0%, 100% { transform: translate(0, 100%); }
+  50% { transform: translate(0, calc(100% + 5px)); }
+}
+@media (max-width: 1100px) {
+  /* 가로 칩 배열에서는 칩 위에, 아래로 꼬리 */
+  .vc-hint {
+    right: auto;
+    left: 0;
+    bottom: auto;
+    top: -8px;
+    transform: translate(0, -100%);
+  }
+  .vc-hint::after {
+    right: auto;
+    left: 14px;
+    bottom: auto;
+    top: 100%;
+    border: 6px solid transparent;
+    border-top-color: var(--jeok);
+    border-bottom: 0;
+  }
+  @keyframes hintNudge {
+    0%, 100% { transform: translate(0, -100%); }
+    50% { transform: translate(0, calc(-100% - 5px)); }
+  }
+}
 .side-cities.light .side-cap {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.6);
 }
@@ -1277,7 +1343,7 @@ function jumpTo(r) {
   opacity: 0.75;
   max-height: 300px;
 }
-.side-cities .side-cities.light .side-cap {
+.side-cities.light .side-cap {
   color: rgba(251, 246, 234, 0.85);
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
   border-bottom-color: rgba(251, 246, 234, 0.3);
@@ -1369,7 +1435,8 @@ function jumpTo(r) {
 @media (prefers-reduced-motion: reduce) {
   .side-title,
   .rail-item,
-  .dc-drop {
+  .dc-drop,
+  .vc-hint {
     animation: none !important;
   }
   .stroke-title {
