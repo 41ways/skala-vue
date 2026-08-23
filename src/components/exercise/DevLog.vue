@@ -14,11 +14,11 @@ const toggle = (i) => {
     <header class="dl-head">
       <p class="eyebrow util">開發日誌</p>
       <h3>개발 일지</h3>
-      <p class="lead">카드를 누르면 그때 있었던 트러블슈팅과 결정을 볼 수 있습니다.</p>
+      <p class="lead">카드를 누르면 그때 있었던 일과 결정을 볼 수 있습니다. <i class="key red"></i>트러블슈팅 <i class="key yellow"></i>손질</p>
     </header>
 
     <ol class="cards">
-      <li v-for="(e, i) in devLog" :key="e.title" class="card" :class="{ on: open === i }">
+      <li v-for="(e, i) in devLog" :key="e.title" class="card" :class="[e.kind === 'tweak' ? 'tweak' : 'trouble', { on: open === i }]">
         <button class="head" type="button" :aria-expanded="open === i" @click="toggle(i)">
           <span class="date util">{{ e.date }}</span>
           <span class="title">{{ e.title }}</span>
@@ -72,14 +72,26 @@ h3 {
 .card {
   background: var(--baek);
   border: 1px solid var(--line);
-  border-left: 4px solid var(--hwang);
+  border-left: 4px solid var(--jeok); /* 트러블슈팅 = 빨강 */
   border-radius: 4px;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
+.card.tweak {
+  border-left-color: var(--hwang); /* 손질 = 노랑 */
+}
 .card.on {
-  border-left-color: var(--jeok);
   box-shadow: 0 10px 24px -18px rgba(34, 28, 22, 0.6);
 }
+.key {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin: 0 4px 0 10px;
+  vertical-align: -1px;
+  border-radius: 2px;
+}
+.key.red { background: var(--jeok); }
+.key.yellow { background: var(--hwang); }
 .head {
   all: unset;
   display: grid;

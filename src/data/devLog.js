@@ -1,7 +1,8 @@
-// 개발 일지. 막혔던 것과 어떻게 풀었는지. README '막혔던 것'의 긴 버전
+// 개발 일지. kind 없으면 진짜 트러블슈팅(빨강), 'tweak'는 고치다 발견한 수정사항·손질(노랑)
 export const devLog = [
   {
     date: '2026-08-21',
+    kind: 'tweak',
     title: 'Mock 데이터에서 Axios 실시간으로',
     summary: '표본 날씨를 Open-Meteo 실시간으로 바꿈. 키가 필요 없는 API를 골라서 키 노출 걱정을 없앰',
     tags: ['axios'],
@@ -47,6 +48,7 @@ export const devLog = [
   },
   {
     date: '2026-08-23',
+    kind: 'tweak',
     title: 'Element Plus를 등록만 함',
     summary: 'main.js에 app.use만 있고 el- 컴포넌트가 한 곳도 없었음',
     tags: ['ui-library', 'qa'],
@@ -91,6 +93,7 @@ export const devLog = [
   },
   {
     date: '2026-08-23',
+    kind: 'tweak',
     title: 'watch와 watchEffect',
     summary: '수업에서 둘 다 배웠고 어떻게 다른지도 배웠으나 과제에서는 필요가 생기기 전까지 감이 잘 안 잡혔음',
     tags: ['composition'],
@@ -100,7 +103,20 @@ export const devLog = [
     ],
   },
   {
+    date: '2026-08-24',
+    kind: 'tweak',
+    title: '로딩 화면이 너무 빨리 걷힘',
+    summary: '첫 화면 자원이 가벼워서 load 이벤트가 0.5초 안에 끝남. 먹 제호 번짐(1.4초)이 중간에 잘림',
+    tags: ['ux'],
+    detail: [
+      '원래는 load 이벤트가 오면 바로 걷히게 했는데, 실제 로딩이 빠르니 연출이 채 끝나기 전에 사라짐',
+      '최소 2.4초는 보여주고, 로딩이 느려도 3.8초에는 걷히도록 하한·상한을 둠',
+      '버그는 아니고 손질. 트러블슈팅과 구분하려고 노란 표시',
+    ],
+  },
+  {
     date: '2026-08-23',
+    kind: 'tweak',
     title: 'staging / production 환경별 빌드',
     summary: '.env.staging과 .env.production에 VITE_API_URL을 나눠 넣고 build:staging으로 따로 빌드',
     tags: ['env', 'build'],
