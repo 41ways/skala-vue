@@ -1249,23 +1249,47 @@ function jumpTo(r) {
   50% { transform: translate(0, calc(-100% - 6px)); }
 }
 @media (max-width: 1100px) {
-  /* 가로 칩 배열에서는 설명글이 위, 다음 폭 버튼이 아래 가운데라 오른쪽 끝 아래에 */
+  /* 가로 칩 배열에서는 떠 있지 않고 첫 칩 앞에 글자로 - 낙관 한 글자 + 점선 밑줄 */
   .vc-hint {
-    right: 0;
-    top: auto;
-    bottom: -8px;
-    transform: translate(0, 100%);
+    position: static;
+    transform: none;
+    align-self: center;
+    margin-right: 2px;
+    padding: 0 0 2px;
+    background: none;
+    box-shadow: none;
+    border-radius: 0;
+    border-bottom: 1px dashed var(--jeok);
+    color: var(--jeok);
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    animation: hintBlink 2.2s ease-in-out infinite;
+  }
+  .vc-hint::before {
+    content: '指';
+    display: inline-grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+    background: var(--jeok);
+    color: var(--baek);
+    font-size: 11px;
+    border-radius: 2px;
+    vertical-align: 1px;
   }
   .vc-hint::after {
-    top: auto;
-    bottom: 100%;
-    border: 7px solid transparent;
-    border-bottom-color: var(--jeok);
-    border-top: 0;
+    display: none;
   }
-  @keyframes hintNudge {
-    0%, 100% { transform: translate(0, 100%); }
-    50% { transform: translate(0, calc(100% + 6px)); }
+  .side-cities.light .vc-hint {
+    color: #f2b3bb;
+    border-bottom-color: #f2b3bb;
+  }
+  @keyframes hintBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
   }
 }
 .side-cities.light .side-cap {
@@ -1399,8 +1423,23 @@ function jumpTo(r) {
   .mega small { font-size: 10px; letter-spacing: 0.2em; }
   .narrative { font-size: 14.5px; line-height: 1.55; }
   .dcap { font-size: 2.2em; }
-  .foot { bottom: 23%; }
-  .side-cities { bottom: 9%; gap: 10px; } /* 다음 폭 버튼 자리를 비워 둔다 */
+  .foot { bottom: 24%; }
+  /* 휴대폰: 고을 칩은 한 줄로 두고 옆으로 민다 (줄이 늘어 설명글을 덮지 않게). 다음 폭 버튼 자리는 비워 둔다 */
+  .side-cities {
+    bottom: 9%;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: 90%;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    mask-image: linear-gradient(90deg, #000 88%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent);
+  }
+  .side-cities::-webkit-scrollbar { display: none; }
+  .vc { flex: 0 0 auto; }
   /* 터치 화면: 고을·다음 폭 버튼을 손가락 크기로 */
   .vc { font-size: 18px; padding: 9px 10px; margin: -9px -10px; min-height: 40px; display: inline-flex; align-items: baseline; }
   .next-fab { padding: 12px 18px; }
