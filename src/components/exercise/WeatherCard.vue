@@ -44,7 +44,7 @@ const TYPES = { best: 'primary', good: 'success', fair: 'warning', none: 'info' 
       <p class="cond">습도 {{ city.humidity }}% · 바람 {{ city.wind }}m/s</p>
       <el-tag :type="TYPES[grade.key]" size="small" effect="light" round>{{ grade.label }}</el-tag>
       <el-progress
-        class="bar"
+        class="score-bar"
         :percentage="score"
         :stroke-width="6"
         :show-text="false"
@@ -147,7 +147,7 @@ const TYPES = { best: 'primary', good: 'success', fair: 'warning', none: 'info' 
 .left :deep(.el-tag) {
   margin-top: 7px;
 }
-.bar {
+.score-bar {
   margin-top: 8px;
   max-width: 180px;
 }
