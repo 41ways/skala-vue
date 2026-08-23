@@ -235,6 +235,15 @@ function fxPaintStyle(i, art) {
 function readingAria(c) {
   return `${c.status}, 기온 ${c.temp}도, 습도 ${c.humidity}퍼센트, 바람 초속 ${c.wind}미터, ${c.isDay ? '낮' : '밤'}`
 }
+// 한자 독법 아래 한글 풀이 - 한자만으론 알아보기 어려워서
+function readingKo(c) {
+  const parts = [c.status, `${c.temp}°`, `습도 ${c.humidity}%`, `바람 ${c.wind}m/s`]
+  if (c.demo) parts.push('시연용 고정값')
+  else if (c.live && c.localTime) parts.push(`현지 ${c.localTime}`)
+  else parts.push('표본')
+  parts.push(c.isDay ? '낮' : '밤')
+  return parts.join(' · ')
+}
 // 고풍 독법 - 氣溫 二十二度, 濕度 四十一分, 風 四米
 function readingOf(c) {
   const parts = [`氣溫 ${tempHanja(c.temp)}`, `濕度 ${toHanja(c.humidity)}分`, `風 ${toHanja(Math.round(c.wind))}米`]
@@ -419,7 +428,10 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
           </p>
           <p class="reading" :aria-label="readingAria(c)">
             <i class="r-seal" aria-hidden="true">{{ STATUS_HANJA[c.status] ?? '天' }}</i>
-            <span class="r-text" aria-hidden="true">{{ readingOf(c) }}</span>
+            <span class="r-lines" aria-hidden="true">
+              <span class="r-text">{{ readingOf(c) }}</span>
+              <span class="r-ko">{{ readingKo(c) }}</span>
+            </span>
           </p>
           <p class="credit util">{{ artMap[c.id].caption }}</p>
         </div>
@@ -952,6 +964,17 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   letter-spacing: 0.2em;
   color: rgba(251, 246, 234, 0.92);
   clear: left;
+}
+.r-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.r-ko {
+  font-family: var(--font-body);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: rgba(251, 246, 234, 0.78);
 }
 .r-seal {
   display: inline-grid;
