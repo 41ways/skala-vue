@@ -1,19 +1,19 @@
 # 청우록 晴雨錄
 
-민화로 보는 오늘 날씨. 비 오는 도시는 인왕제색도 쪽에, 맑은 도시는 일월오봉도 쪽에 들어감.
+민화로 보는 오늘 날씨.
 
 배포 https://41ways.github.io/skala-vue/
 저장소 https://github.com/41ways/skala-vue
 
 수업 과제인 날씨 대시보드는 /classic에 그대로 두고, 그 위에 "그림이 날씨를 대신 말해주는 사이트"를 얹음.
-원래 민화를 좋아하기도 했고, 날씨 카드를 만들다 보니 숫자보다 그림 한 장이 더 와닿겠다 싶어서 시작.
+원래 화면에 그림을 꽉 채우는 디자인을 좋아하기도 했고, 날씨 카드를 만들다 보니 숫자보다 그림 한 장이 더 와닿겠다 싶어서 시작.
 
 
 ## 화면
 
 | 경로 | 화면 | 설명 |
 |---|---|---|
-| / | 국내 화폭 | 한옥 문이 열리면서 시작. 국내 10개 도시 + 세종기지 날씨에 따라 민화 6폭이 차례로 나오고, 도시 이름을 누르면 두루마리가 펼쳐짐 |
+| / | 국내 화폭 | 한옥 문이 열리면서 시작. 국내 10개 도시 날씨에 따라 민화 6폭이 차례로 나오고, 도시 이름을 누르면 두루마리가 펼쳐짐 |
 | /world | 세계화폭 | 해외 10곳. 나라마다 그 나라 그림 한 폭, 현지 시각, 비·안개·바람 효과. 두 번째 '스칼라'는 시연용이라 날씨 고정 |
 | /guide | 빨래 지침 | 빨래 지수 계산 규칙과 예시 |
 | /classic | 실습 대시보드 | 과제 화면. 아래에 개발 일지 / 배운 점 / 회고 탭 |
@@ -23,41 +23,58 @@
 
 ## 과제 단원별로 한 것
 
-교재 순서대로. 파일 단위로 더 자세한 건 /classic의 '배운 점' 탭에 있음.
+교재 순서대로. 괄호 안은 교재 쪽수. 더 자세한 건 /classic 아래 '배운 점' 탭.
 
 1. Vue 문법 (views/WeatherHomeView.vue)
-v-for + :key 도시 카드, v-if 더움/선선함 라벨, 검색 input, 카드 클릭하면 상태바, 상세보기는 @click.stop.
-도시를 10곳 + 세종기지로 늘리고 습도·바람을 넣어서 빨래 지수를 계산하게 함.
+- v-for + :key로 도시 카드 출력 (p.87, p.116)
+- v-if로 25도 기준 더움/선선함 라벨 (p.84, p.116)
+- 검색 input 한글 입력 출력 (p.116)
+- 카드 클릭 시 상태바 "OO이 선택되었습니다" (p.116)
+- 상세보기 버튼은 @click.stop으로 카드 클릭 같이 터지는 거 방지 (p.102)
+- 도시 3개 → 10개 + 세종기지, 습도·바람 필드 추가해서 빨래 지수 계산
 
 2. Composition API (같은 파일)
-searchQuery, selectedCityInfo, weatherList는 ref, filteredWeatherList는 computed.
-watch(selectedCityInfo), watchEffect(searchQuery)는 콘솔에 찍힘.
-추가한 computed: scoredList, sortedList, averageScore, dryableCount.
+- searchQuery, selectedCityInfo, weatherList를 ref로 (p.65)
+- filteredWeatherList는 computed로 검색어 필터 (p.127, p.145)
+- watch(selectedCityInfo) 콘솔 출력, watchEffect(searchQuery) 콘솔 출력 (p.130, p.141)
+- 추가 computed: scoredList, sortedList, averageScore, dryableCount
 
 3. 컴포넌트 (components/exercise/)
-BaseDashboardCard(slot), SearchBar(props, update-query), WeatherCard(props, select-card / click-detail). SummaryBar는 하나 더 뗌.
-원본 WeatherParent 같은 건 archive/에 있음.
+- BaseDashboardCard: slot으로 내용 주입 (p.173, p.178)
+- SearchBar: props로 검색어 받고 update-query emit (p.157, p.165)
+- WeatherCard: select-card, click-detail emit (p.165)
+- SummaryBar 추가 분리, 각 컴포넌트 style scoped (p.178)
+- 과제 1~3 원본은 /classic 탭에서 그대로 실행됨
 
 4. Router (router/index.js, App.vue)
-지연 로딩, 404 catch-all, /weather/:cityId(onMounted에서 route.params로 도시 찾기), 상세보기는 alert 대신 router.push.
-더 한 것: 라우트 meta로 기온 나오는 화면에서만 단위 토글 표시, 검색어를 ?q=에 넣기(router.replace), 라우트마다 document.title.
+- 지연 로딩 import(), catch-all /:pathMatch(.*)* → 404 (p.195, p.196)
+- /weather/:cityId 동적 경로, onMounted에서 route.params로 도시 선택 (p.186, p.189)
+- 상세보기 window.alert → router.push (p.190, p.196)
+- RouterLink 내비 + RouterView (p.183)
+- 추가: 라우트 meta로 기온 화면에서만 단위 토글 표시, 검색어 ?q= 동기화(router.replace), 라우트별 document.title
 
 5. Pinia (stores/configStore.js, components/exercise/UnitToggler.vue)
-unit / unitSymbol / toggleUnit. 토글은 내비 옆에 있고 메인·상세 둘 다 바뀜.
-교재에 "메인/상세 중복은 Composable로 풀 수 있다"고 돼 있어서 composables/useDisplayTemp.js로 묶어 봄. 고른 단위는 localStorage에 남김.
+- unit state / unitSymbol getter / toggleUnit action (p.203, p.212)
+- UnitToggler 내비 옆 배치, 메인·상세 단위 적용 (p.212)
+- storeToRefs로 구조분해 (p.205)
+- 교재 참고란의 "중복은 Composable로" → composables/useDisplayTemp.js (p.212)
+- 추가: 단위를 localStorage에 저장 (p.207)
 
 6. Axios (api/openMeteo.js, composables/useWeather.js)
-OpenWeatherMap은 키가 필요한데 GitHub Pages는 정적이라 키가 번들에 그대로 남음. 그래서 키 없는 Open-Meteo로 바꿈.
-axios.create로 baseURL과 timeout을 묶고, 인터셉터에서 429·타임아웃·네트워크 오류를 한글 문구로 변환.
-요청은 도시 21곳을 좌표 묶음으로 국내 1번 해외 1번, 예보는 두루마리 열 때 1번, 10분 안엔 sessionStorage 캐시. 실패하면 표본 데이터로 돌아가고 화면에 "표본"이라고 뜸.
+- OpenWeatherMap 대신 키 없는 Open-Meteo 사용. 정적 배포에서 키가 번들에 남는 문제 회피 (p.274 API 키 주의)
+- axios.create로 baseURL·timeout, 인터셉터로 오류를 한글 문구로 (p.222, p.226)
+- 도시 21곳 좌표 묶음 요청 국내 1회·해외 1회, 예보는 두루마리 열 때 1회, sessionStorage 10분 캐시
+- 실패 시 표본 데이터 폴백, 화면에 "표본" 표시
 
-7. UI Library (Element Plus)
-el-input(검색), el-tag·el-progress·el-button(카드), el-tabs(아래 탭). 기본 색이 한지 톤이랑 안 맞아서 :deep()으로 색만 덮어씀.
+7. UI Library (Element Plus) (p.233~249)
+- el-input 검색창, el-tag 등급, el-progress 점수 막대, el-button 상세보기, el-tabs 하단 탭
+- :deep()으로 한지 톤에 맞게 색만 변경
 
 8. 빌드·배포
-ESLint eqeqeq / no-console off, lint 0 에러.
-.env.staging / .env.production에 VITE_API_URL, build:staging으로 확인(대시보드 콘솔에 찍힘).
-GitHub Actions가 main push마다 빌드해서 Pages로. 하위 경로(/skala-vue/)라 파비콘·매니페스트 링크는 %BASE_URL%, 딥링크는 404.html을 index로 복사해서 받음.
+- ESLint eqeqeq 'always', no-console 'off', lint 에러 0 (p.270)
+- .env.staging / .env.production VITE_API_URL, build:staging, 대시보드 콘솔 출력으로 확인 (p.272)
+- npm run build → dist, GitHub Actions → GitHub Pages (p.273, p.274)
+- 하위 경로 /skala-vue/ 때문에 index.html 링크는 %BASE_URL%, 딥링크는 404.html = index.html 복사
 
 
 ## 실습에서 배운 것
@@ -153,6 +170,7 @@ npm run build:staging
 - Element Plus 등록만 함 - app.use만 해두고 실제로는 한 군데도 안 쓰고 있었음. 제출 전에 과제 표랑 대조하다 발견.
 - 페이지 전환 애니메이션 - Transition mode="out-in"을 걸었더니 탭이 비활성일 때 다음 화면이 안 뜸. 뺌.
 - Pages 하위 경로 - /favicon.ico 같은 절대 경로가 404. %BASE_URL%로.
+- watch와 watchEffect - 둘 다 써보기 전엔 같은 건 줄 알았음. watch는 지정한 값이 바뀔 때만, watchEffect는 안에서 쓴 값이 바뀌면 알아서 다시 돎.
 
 
 ## 회고
