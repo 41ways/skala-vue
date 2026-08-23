@@ -472,7 +472,7 @@ function jumpTo(r) {
   const vh = window.innerHeight
   const target = el.getBoundingClientRect().top + window.scrollY + (el.offsetHeight - vh) * r.f
   if (window.__lenis) window.__lenis.scrollTo(target, { duration: 1.6 })
-  else window.scrollTo({ top: target, behavior: 'smooth' })
+  else window.scrollTo({ top: target, behavior: 'auto' }) // Lenis가 없으면 = 모션 줄이기 설정, 바로 이동
 }
 </script>
 
