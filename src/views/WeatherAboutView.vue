@@ -7,6 +7,15 @@ import mudong from '@/assets/minhwa-art/mudong.jpg'
 import ssireum from '@/assets/minhwa-art/ssireum.jpg'
 import seodang from '@/assets/minhwa-art/seodang.jpg'
 import tiger from '@/assets/minhwa-art/tiger.jpg'
+import { weatherList, worldList } from '@/data/weatherData.js'
+
+// 머리 숫자
+const stats = [
+  { n: 6, k: '폭', d: '날씨마다 한 폭' },
+  { n: weatherList.length, k: '고을', d: '국내 + 세종기지' },
+  { n: worldList.length, k: '곳', d: '세계 화폭' },
+  { n: 10, k: '분', d: '실측 갱신 주기' },
+]
 
 const menus = [
   { to: '/', name: '국내 화폭', hanja: '八道晴雨錄', desc: '한옥 분합문이 열리며 시작. 국내 열 고을과 남극 세종기지의 오늘 하늘을 여섯 폭 민화가 대신 전합니다.' },
@@ -28,12 +37,22 @@ const pairs = [
 <template>
   <main class="about">
     <header class="head">
+      <div class="head-art" aria-hidden="true">
+        <img :src="inwang" alt="" decoding="async" />
+        <span class="vt">晴雨錄</span>
+      </div>
       <p class="eyebrow util">晴雨錄 · 서비스 소개</p>
       <h1>화폭을 내리면 팔도의 날씨가 펼쳐집니다</h1>
       <p class="lead">
         청우록(晴雨錄)은 조선의 민화·풍속화가 지금의 날씨를 대신 말해 주는 스크롤 화폭입니다. 비가 드는 고을은 「인왕제색도」에,
         맑은 고을은 「일월오봉도」에 깃들고, 고을 이름을 누르면 두루마리가 펼쳐져 오늘과 앞날의 하늘을 세로 기문으로 적어 줍니다.
       </p>
+      <ul class="stats">
+        <li v-for="st in stats" :key="st.k">
+          <b>{{ st.n }}<small>{{ st.k }}</small></b>
+          <span>{{ st.d }}</span>
+        </li>
+      </ul>
     </header>
 
     <section>
@@ -90,6 +109,68 @@ const pairs = [
   margin: 0 auto;
   padding: 48px 24px 96px;
   color: var(--ink);
+}
+.head {
+  position: relative;
+  padding-top: 12px;
+}
+/* 머리 그림: 인왕제색도를 옅게 깔고 오른쪽에 세로 제호 */
+.head-art {
+  position: relative;
+  height: 220px;
+  margin: 0 0 26px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--baek);
+}
+.head-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 40%;
+  filter: saturate(0.7) contrast(0.95);
+  -webkit-mask-image: linear-gradient(90deg, #000 40%, rgba(0, 0, 0, 0.35) 100%);
+  mask-image: linear-gradient(90deg, #000 40%, rgba(0, 0, 0, 0.35) 100%);
+}
+.head-art .vt {
+  position: absolute;
+  right: 22px;
+  top: 18px;
+  writing-mode: vertical-rl;
+  font-family: var(--font-display);
+  font-size: 40px;
+  letter-spacing: 0.3em;
+  color: var(--ink);
+  text-shadow: 0 0 12px rgba(251, 246, 234, 0.9);
+}
+.stats {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 26px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--line);
+}
+.stats li {
+  display: grid;
+  gap: 2px;
+}
+.stats b {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--jeok);
+}
+.stats small {
+  margin-left: 3px;
+  font-size: 13px;
+  color: var(--ink);
+}
+.stats span {
+  font-size: 13px;
+  color: var(--ink-soft);
 }
 .eyebrow {
   margin: 0 0 8px;
@@ -231,5 +312,10 @@ a {
 }
 .back a {
   text-decoration: none;
+}
+@media (max-width: 520px) {
+  .head-art { height: 150px; }
+  .head-art .vt { font-size: 28px; right: 14px; top: 12px; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
