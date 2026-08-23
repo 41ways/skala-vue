@@ -13,15 +13,21 @@ const showTop = ref(false)
 // 첫 로드 프리로더: 원화·폰트가 오기 전 빈 화면 대신 먹 제호를 보여준다
 const booting = ref(true)
 const bootLeaving = ref(false)
+const BOOT_MIN = 1800 // 먹 제호가 다 번질 시간은 준다
+const BOOT_MAX = 3200 // 그래도 너무 오래 잡아두진 않는다
+const bootAt = Date.now()
 function bootDone() {
   if (bootLeaving.value) return
-  bootLeaving.value = true
-  setTimeout(() => (booting.value = false), 700) // Transition 대신 타이머: 숨은 탭에서도 확실히 걷힌다
+  const wait = Math.max(0, BOOT_MIN - (Date.now() - bootAt))
+  setTimeout(() => {
+    bootLeaving.value = true
+    setTimeout(() => (booting.value = false), 700) // Transition 대신 타이머: 숨은 탭에서도 확실히 걷힌다
+  }, wait)
 }
 onMounted(() => {
-  if (document.readyState === 'complete') setTimeout(bootDone, 350)
-  else window.addEventListener('load', () => setTimeout(bootDone, 350), { once: true })
-  setTimeout(bootDone, 2600) // 너무 오래 기다리지 않게
+  if (document.readyState === 'complete') bootDone()
+  else window.addEventListener('load', bootDone, { once: true })
+  setTimeout(bootDone, BOOT_MAX)
 })
 function onScrollTop() {
   showTop.value = window.scrollY > window.innerHeight * 1.2
