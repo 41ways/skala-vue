@@ -195,7 +195,7 @@ const firstChar = (s) => s.slice(0, 1)
 const restChars = (s) => s.slice(1)
 
 // 날씨 기운 (그림 위 가벼운 오버레이)
-const rainDrops = Array.from({ length: 26 }, (_, i) => ({
+const rainDrops = Array.from({ length: 42 }, (_, i) => ({
   left: ((i * 37) % 100) + '%',
   duration: 0.9 + ((i * 13) % 10) / 11 + 's',
   delay: -((i * 7) % 20) / 10 + 's',
@@ -216,7 +216,7 @@ const fxMap = {
 function fxVis(i) {
   const p = progress.value[i] ?? 0
   // 원색 리빌(0.22~0.48)이 거의 끝난 뒤에야 효과가 스며든다
-  return { opacity: (easeOut(clamp01((p - 0.4) / 0.14)) * (1 - clamp01((p - 0.84) / 0.12))).toFixed(3) }
+  return { opacity: (easeOut(clamp01((p - 0.3) / 0.12)) * (1 - clamp01((p - 0.86) / 0.12))).toFixed(3) }
 }
 // 효과 레이어용 그림 스타일 - 리빌 마스크는 빼고(자체 부드러운 마스크 사용) 움직임만 따라간다
 function fxPaintStyle(i, art) {
@@ -283,8 +283,8 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
           <animate attributeName="baseFrequency" values="0.012 0.028;0.017 0.022;0.012 0.028" dur="3.2s" repeatCount="indefinite" />
           <animate attributeName="seed" values="6;7;8;9;6" dur="5.2s" repeatCount="indefinite" calcMode="discrete" />
         </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="w" scale="10" xChannelSelector="R" yChannelSelector="G">
-          <animate attributeName="scale" values="7;12;7" dur="3.2s" repeatCount="indefinite" />
+        <feDisplacementMap in="SourceGraphic" in2="w" scale="24" xChannelSelector="R" yChannelSelector="G">
+          <animate attributeName="scale" values="16;30;16" dur="2.6s" repeatCount="indefinite" />
         </feDisplacementMap>
       </filter>
       <!-- 물결 - 가로로 긴 잔물결이 흐른다 -->
@@ -362,7 +362,7 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
           <img v-if="artMap[c.id].img" :src="artMap[c.id].img" :alt="artMap[c.id].caption" loading="lazy" decoding="async" draggable="false" />
         </div>
         <!-- 날씨 기운 + 도시별 효과 - 그림과 함께 나타난다 -->
-        <div class="fx-group" :style="fxVis(i)">
+        <div class="fx-group" :class="{ storm: fxMap[c.id]?.storm }" :style="fxVis(i)">
           <template v-if="c.status === '비' || c.status === '뇌우'">
             <span
               v-for="(d, j) in rainDrops"
@@ -695,17 +695,17 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   transform-origin: 50% 0%;
 }
 .paint.gale {
-  animation: galeFlutter 3.2s ease-in-out infinite;
+  animation: galeFlutter 2.6s ease-in-out infinite;
 }
 .paint.gale img {
   filter: url(#flagWave); /* 천 결이 바람에 일렁인다 */
 }
 @keyframes galeFlutter {
   0%, 100% { rotate: 0deg; translate: 0 0; }
-  20% { rotate: 0.5deg; translate: 5px 2px; }
-  45% { rotate: -0.35deg; translate: -4px 1px; }
-  70% { rotate: 0.4deg; translate: 3px 2px; }
-  85% { rotate: -0.25deg; translate: -2px 0; }
+  18% { rotate: 1.8deg; translate: 22px 10px; }
+  38% { rotate: -1.3deg; translate: -18px 4px; }
+  58% { rotate: 1.5deg; translate: 16px 9px; }
+  78% { rotate: -0.9deg; translate: -10px 3px; }
 }
 @keyframes windFlutter {
   0%, 100% { rotate: 0deg; translate: 0 0; }
@@ -774,17 +774,21 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
   background: radial-gradient(ellipse at 62% 18%, rgba(255, 255, 255, 0.95), rgba(220, 230, 255, 0.4) 30%, transparent 65%);
   mix-blend-mode: screen;
   opacity: 0;
-  animation: flash 11s linear infinite;
+  animation: flash 6s linear infinite;
 }
 @keyframes flash {
-  0%, 38%, 100% { opacity: 0; }
-  39% { opacity: 0.9; }
-  40% { opacity: 0.15; }
-  41.5% { opacity: 1; }
-  43% { opacity: 0; }
-  74% { opacity: 0; }
-  74.6% { opacity: 0.7; }
-  75.5% { opacity: 0; }
+  0%, 14%, 100% { opacity: 0; }
+  15% { opacity: 1; }
+  16.5% { opacity: 0.2; }
+  18% { opacity: 1; }
+  20.5% { opacity: 0; }
+  47% { opacity: 0; }
+  48% { opacity: 0.85; }
+  49.5% { opacity: 0; }
+  78% { opacity: 0; }
+  78.7% { opacity: 1; }
+  80% { opacity: 0.25; }
+  81.5% { opacity: 0; }
 }
 
 /* 선묘 에칭 - 엣지 추출 백선 */
@@ -845,6 +849,18 @@ const snowFlakes = Array.from({ length: 22 }, (_, i) => ({
 }
 @keyframes wFall {
   to { transform: translateY(112vh) rotate(8deg); }
+}
+/* 폭풍 도시(스칼라) - 비가 굵게 몰아친다 */
+.fx-group.storm .w-drop {
+  width: 2.4px;
+  height: 62px;
+  background: linear-gradient(180deg, transparent, rgba(251, 246, 234, 0.9));
+  transform: rotate(16deg);
+  animation-name: wFallStorm;
+  animation-duration: 0.55s !important;
+}
+@keyframes wFallStorm {
+  to { transform: translateY(115vh) translateX(-14vw) rotate(16deg); }
 }
 .w-flake {
   position: absolute;
