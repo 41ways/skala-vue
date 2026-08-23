@@ -6,7 +6,7 @@ import { cityCoords, codeToStatus, cachedGet } from '@/composables/useWeather.js
 import { toHanja, ganjiYear, STATUS_HANJA as HANJA } from '@/utils/hanja.js'
 import { laundryScore, laundryGrade } from '@/data/weatherData.js'
 import hanjiImg from '@/assets/minhwa-art/bg/mudong.jpg'
-import rodImg from '@/assets/minhwa-art/rod.png'
+import rodImg from '@/assets/minhwa-art/rod.webp'
 import silkImg from '@/assets/minhwa-art/silk.jpg'
 
 const props = defineProps({
@@ -214,7 +214,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   filter: blur(6px);
   z-index: -1;
 }
-/* 축 - 로즈우드 사진 텍스처 + 옥 축두 (rod.png) */
+/* 축 - 로즈우드 사진 텍스처 + 옥 축두 (rod.webp) */
 .rod {
   position: relative;
   z-index: 3;
