@@ -105,12 +105,11 @@ Vue가 뭔지 (MVVM, SPA, 컴포넌트)
 - 컴포저블: useWeather(조회), useDisplayTemp(단위 변환, toValue로 값·ref·getter 다 받음)
 
 디렉티브
-- v-bind 클래스 - 어두운 화폭이면 :class="{ light }"로 글자색 반전
+- v-bind 클래스 - 일월오봉도처럼 어두운 폭은 챕터 데이터에 tone: 'light'를 하드코딩해 두고, :class="{ light }"로 글자를 흰색으로 바꿈. 배경색을 읽어서 판단하는 건 아님
 - v-bind 스타일 - 스크롤 진행도로 opacity·transform 실시간 계산 (교재의 "수치를 실시간으로 미세 조정할 때" 그 경우)
 - v-if / v-show - 드물게 바뀌는 빗방울은 v-if, 자주 토글되는 차례는 v-show
 - v-for + :key - 도시, 챕터, 누끼 부위, 빗방울까지 전부
 - v-on - @click으로 두루마리 열고 닫기, @click.stop으로 버블링 차단
-- v-pre / v-once / v-memo - 쓸 데가 없어서 안 씀
 
 컴포넌트 통신
 - props / emits - SearchBar(update-query), WeatherCard(select-card, click-detail), ScrollSheet(close)
