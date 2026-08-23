@@ -84,7 +84,8 @@ h3 {
   line-height: 1.7;
 }
 .title b {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
+  font-weight: 700;
   font-size: 17px;
   margin-right: 10px;
 }

@@ -107,14 +107,15 @@ h3 {
 }
 .title {
   grid-area: title;
-  font-family: var(--font-display);
-  font-size: 16px;
-  letter-spacing: 0.04em;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.01em;
   color: var(--ink);
 }
 .summary {
   grid-area: summary;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
   color: var(--ink-soft);
 }

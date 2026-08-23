@@ -101,7 +101,7 @@ h4 {
   gap: 8px;
   margin: 0 0 8px;
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 18px;
   letter-spacing: 0.08em;
 }
 .seal {
@@ -133,7 +133,7 @@ td {
 }
 th {
   width: 150px;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-weight: 700;
   color: var(--ink);
   white-space: nowrap;

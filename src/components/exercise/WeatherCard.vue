@@ -132,10 +132,10 @@ const TYPES = { best: 'primary', good: 'success', fair: 'warning', none: 'info' 
 }
 
 .name {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 19px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.01em;
 }
 
 .cond {
