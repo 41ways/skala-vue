@@ -803,7 +803,7 @@ function jumpTo(r) {
 
 .foot {
   position: absolute;
-  left: max(5%, 118px);
+  left: max(5%, 146px); /* 좌측 차례 레일(폭 127px) 과 겹치지 않게 */
   right: 5%;
   bottom: 6%;
   z-index: 5;
@@ -1290,7 +1290,7 @@ function jumpTo(r) {
     right: 5%;
     left: auto;
     top: auto;
-    bottom: 3%;
+    bottom: 7%; /* 다음 폭 버튼 자리를 비워 둔다 */
     transform: none;
     writing-mode: horizontal-tb;
     flex-direction: row;
@@ -1309,8 +1309,15 @@ function jumpTo(r) {
     margin-top: 0;
     margin-left: 6px;
   }
+  /* 세로 차례는 여백이 없으면 설명글 위로 올라탄다 - 넓은 화면에서만 */
+  .rail {
+    display: none;
+  }
   .foot {
-    bottom: 12%;
+    bottom: 30%;
+  }
+  .next-fab {
+    bottom: 1.4%;
   }
 }
 
@@ -1325,8 +1332,8 @@ function jumpTo(r) {
   .mega small { font-size: 10px; letter-spacing: 0.2em; }
   .narrative { font-size: 14.5px; line-height: 1.55; }
   .dcap { font-size: 2.2em; }
-  .foot { bottom: 17%; }
-  .side-cities { bottom: 2.5%; gap: 10px; }
+  .foot { bottom: 23%; }
+  .side-cities { bottom: 9%; gap: 10px; } /* 다음 폭 버튼 자리를 비워 둔다 */
   /* 터치 화면: 고을·다음 폭 버튼을 손가락 크기로 */
   .vc { font-size: 18px; padding: 9px 10px; margin: -9px -10px; min-height: 40px; display: inline-flex; align-items: baseline; }
   .next-fab { padding: 12px 18px; }

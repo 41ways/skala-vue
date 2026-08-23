@@ -212,6 +212,10 @@ nav {
   font-size: 14px;
   font-weight: 500;
   overflow-x: auto;
+  scrollbar-width: none;
+}
+nav::-webkit-scrollbar {
+  display: none;
 }
 nav a {
   color: var(--ink-soft);
@@ -227,7 +231,15 @@ nav a:hover {
   .top { padding: 10px 14px; gap: 8px; }
   .logo { font-size: 19px; }
   .logo small { display: none; }
-  nav { gap: 14px; font-size: 13px; width: 100%; padding-bottom: 2px; }
+  /* 좁은 화면에서는 차례가 옆으로 밀린다 - 오른쪽 끝을 흐려 더 있다는 걸 알린다 */
+  nav {
+    gap: 14px;
+    font-size: 13px;
+    width: 100%;
+    padding-bottom: 2px;
+    mask-image: linear-gradient(90deg, #000 88%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent);
+  }
   .totop { right: 14px; bottom: 16px; width: 40px; height: 40px; }
 }
 
