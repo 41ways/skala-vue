@@ -1,13 +1,13 @@
 <script setup>
-import { ref } from 'vue'
 import DevLog from '@/components/exercise/DevLog.vue'
 import { learned, reflections } from '@/data/learned.js'
 
-const tab = ref('log')
+// 부모(대시보드 위 세부 탭)에서도 바꿀 수 있게 v-model
+const tab = defineModel('tab', { default: 'log' })
 </script>
 
 <template>
-  <section class="notes">
+  <section id="notes" class="notes">
     <header class="nt-head">
       <p class="eyebrow util">學習記錄</p>
       <h3>수업에서 배운 것, 만들며 겪은 것</h3>

@@ -12,6 +12,23 @@ import { weatherList, laundryScore, laundryGrade } from '@/data/weatherData.js'
 const router = useRouter()
 
 const route = useRoute()
+// 위 세부 탭 - 아래에 더 있다는 걸 놓치지 않게
+const notesTab = ref('log')
+const sections = [
+  { id: 'board', label: '대시보드' },
+  { id: 'practice', label: '과제·실습 1~13' },
+  { id: 'notes', label: '개발 일지', tab: 'log' },
+  { id: 'notes', label: '배운 점', tab: 'learned' },
+  { id: 'notes', label: '회고', tab: 'reflect' },
+]
+const goto = (sec) => {
+  if (sec.tab) notesTab.value = sec.tab
+  const el = document.getElementById(sec.id)
+  if (!el) return
+  const top = el.getBoundingClientRect().top + window.scrollY - 72
+  if (window.__lenis) window.__lenis.scrollTo(top, { duration: 1 })
+  else window.scrollTo({ top, behavior: 'smooth' })
+}
 // 검색어는 주소 ?q= 에도 적어 둔다 - 새로고침·공유해도 같은 결과
 const searchQuery = ref(typeof route.query.q === 'string' ? route.query.q : '')
 const selectedCityInfo = ref(null)
@@ -99,6 +116,11 @@ const goDetail = (city) => {
       </p>
     </header>
 
+    <nav class="subnav util" aria-label="이 페이지 안 이동">
+      <button v-for="sec in sections" :key="sec.label" type="button" @click="goto(sec)">{{ sec.label }}</button>
+    </nav>
+
+    <div id="board"></div>
     <BaseDashboardCard title="도시 검색">
       <SearchBar :query="searchQuery" @update-query="updateQuery" />
     </BaseDashboardCard>
@@ -134,7 +156,7 @@ const goDetail = (city) => {
 
     <PracticeTabs />
 
-    <DevNotes />
+    <DevNotes v-model:tab="notesTab" />
   </div>
 </template>
 
@@ -144,7 +166,31 @@ const goDetail = (city) => {
 }
 
 .head {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
+}
+.subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.subnav button {
+  border: 1px solid var(--line);
+  background: rgba(251, 246, 234, 0.7);
+  border-radius: 999px;
+  padding: 6px 13px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  cursor: pointer;
+}
+.subnav button:hover {
+  border-color: var(--jeok);
+  color: var(--jeok);
 }
 .src {
   margin: 8px 0 0;

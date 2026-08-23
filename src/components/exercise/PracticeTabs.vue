@@ -17,7 +17,7 @@ const tab = ref(groups[0].id)
 </script>
 
 <template>
-  <section class="practice">
+  <section id="practice" class="practice">
     <header class="pr-head">
       <p class="eyebrow util">實習</p>
       <h3>실습한 것들</h3>
