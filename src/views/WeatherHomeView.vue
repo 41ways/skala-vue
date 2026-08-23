@@ -7,6 +7,7 @@ import WeatherCard from '@/components/exercise/WeatherCard.vue'
 import SummaryBar from '@/components/exercise/SummaryBar.vue'
 import DevNotes from '@/components/exercise/DevNotes.vue'
 import PracticeTabs from '@/components/exercise/PracticeTabs.vue'
+import UnitToggler from '@/components/exercise/UnitToggler.vue'
 import { weatherList, laundryScore, laundryGrade } from '@/data/weatherData.js'
 
 const router = useRouter()
@@ -116,9 +117,12 @@ const goDetail = (city) => {
       </p>
     </header>
 
-    <nav class="subnav util" aria-label="이 페이지 안 이동">
-      <button v-for="sec in sections" :key="sec.label" type="button" @click="goto(sec)">{{ sec.label }}</button>
-    </nav>
+    <div class="subbar">
+      <nav class="subnav" aria-label="이 페이지 안 이동">
+        <button v-for="sec in sections" :key="sec.label" type="button" @click="goto(sec)">{{ sec.label }}</button>
+      </nav>
+      <UnitToggler />
+    </div>
 
     <div id="board"></div>
     <BaseDashboardCard title="도시 검색">
@@ -168,29 +172,47 @@ const goDetail = (city) => {
 .head {
   margin-bottom: 14px;
 }
-.subnav {
+.subbar {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 18px;
-  padding: 8px 0;
+  padding: 6px 0;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
+/* 위 메뉴와 같은 문법: 글자만, 주홍으로 현재/호버, 사이엔 가는 괘선 */
+.subnav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
 .subnav button {
-  border: 1px solid var(--line);
-  background: rgba(251, 246, 234, 0.7);
-  border-radius: 999px;
-  padding: 6px 13px;
+  border: 0;
+  background: none;
+  padding: 6px 12px;
   font-family: var(--font-display);
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  color: var(--ink);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
   cursor: pointer;
 }
+.subnav button + button {
+  border-left: 1px solid var(--line);
+}
 .subnav button:hover {
-  border-color: var(--jeok);
   color: var(--jeok);
+}
+@media (max-width: 600px) {
+  .subbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .subnav button {
+    padding: 6px 9px;
+    font-size: 13px;
+  }
 }
 .src {
   margin: 8px 0 0;

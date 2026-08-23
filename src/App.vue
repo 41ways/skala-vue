@@ -2,7 +2,6 @@
 import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import Lenis from 'lenis'
-import UnitToggler from '@/components/exercise/UnitToggler.vue'
 
 // 관성 스무스 스크롤 - 화폭이 물 흐르듯 넘어간다
 const route = useRoute()
@@ -86,8 +85,6 @@ onBeforeUnmount(() => {
       <RouterLink to="/classic">실습 대시보드</RouterLink>
       <RouterLink to="/about">소개</RouterLink>
     </nav>
-    <!-- 단위 토글은 라우트 meta.showsTemp 가 있는 화면에서만 (경로를 App이 알 필요 없음) -->
-    <UnitToggler v-if="route.meta.showsTemp" class="unit" />
   </header>
   <div class="saekdong"></div>
   <div id="main"></div>
@@ -156,9 +153,6 @@ onBeforeUnmount(() => {
 }
 .skip:focus {
   top: 12px;
-}
-.unit {
-  margin-left: 12px;
 }
 .top {
   display: flex;

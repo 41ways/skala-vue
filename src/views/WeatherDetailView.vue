@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useDisplayTemp } from '@/composables/useDisplayTemp.js'
+import UnitToggler from '@/components/exercise/UnitToggler.vue'
 import {
   findCity,
   laundryScore,
@@ -35,7 +36,10 @@ const goBack = () => {
 
 <template>
   <div v-if="city" class="detail">
-    <button class="back" @click="goBack">← 목록으로</button>
+    <div class="topline">
+      <button class="back" @click="goBack">← 목록으로</button>
+      <UnitToggler />
+    </div>
 
     <header :class="grade.key">
       <p class="city">{{ city.name }}</p>
@@ -77,6 +81,15 @@ const goBack = () => {
   color: var(--ink);
 }
 
+.topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.topline .back {
+  margin-bottom: 0;
+}
 .back {
   border: none;
   background: none;
