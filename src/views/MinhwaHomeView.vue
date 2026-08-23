@@ -572,7 +572,7 @@ function jumpTo(r) {
         <aside class="side-cities" :class="{ light: fld(ch, i, 'tone') === 'light' }" :style="sideStyle(i)">
           <p class="side-cap"><i class="cap-seal">{{ fld(ch, i, 'wHanja') }}</i>이 화폭의 고을</p>
           <template v-if="citiesFor(ch, i).length">
-            <span v-if="!vcHintSeen" class="vc-hint" aria-hidden="true">고을을 눌러 보세요</span>
+            <span v-if="!vcHintSeen" class="vc-hint" aria-hidden="true">눌러 보세요</span>
             <button v-for="c in citiesFor(ch, i)" :key="c.id" class="vc" :aria-label="`${c.name} 날씨첩 열기 — ${c.temp}° ${c.status}`" @click="sheetCity = c">
               <b>{{ c.name }}</b><span><i class="n">{{ c.temp }}°</i> {{ c.status }}</span>
             </button>
@@ -1248,26 +1248,10 @@ function jumpTo(r) {
   50% { transform: translate(0, calc(100% + 5px)); }
 }
 @media (max-width: 1100px) {
-  /* 가로 칩 배열에서는 칩 위에, 아래로 꼬리 */
+  /* 가로 칩 배열에서는 설명글이 위, 다음 폭 버튼이 아래 가운데라 오른쪽 끝 아래에 */
   .vc-hint {
-    right: auto;
-    left: 0;
-    bottom: auto;
-    top: -8px;
-    transform: translate(0, -100%);
-  }
-  .vc-hint::after {
-    right: auto;
-    left: 14px;
-    bottom: auto;
-    top: 100%;
-    border: 6px solid transparent;
-    border-top-color: var(--jeok);
-    border-bottom: 0;
-  }
-  @keyframes hintNudge {
-    0%, 100% { transform: translate(0, -100%); }
-    50% { transform: translate(0, calc(-100% - 5px)); }
+    right: 0;
+    bottom: -8px;
   }
 }
 .side-cities.light .side-cap {
