@@ -1,8 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import { useConfigStore } from '@/stores/configStore.js'
+import { useDisplayTemp } from '@/composables/useDisplayTemp.js'
 import {
   findCity,
   laundryScore,
@@ -14,10 +13,9 @@ import {
 const route = useRoute()
 const router = useRouter()
 
-const configStore = useConfigStore()
-const { unitSymbol } = storeToRefs(configStore)
 
 const city = ref(null)
+const { text: tempText } = useDisplayTemp(() => city.value?.temp ?? 0)
 const score = ref(0)
 const grade = ref(null)
 
@@ -51,7 +49,7 @@ const goBack = () => {
       <dd>{{ city.status }}</dd>
 
       <dt>기온</dt>
-      <dd>{{ configStore.toTemp(city.temp) }}{{ unitSymbol }}</dd>
+      <dd>{{ tempText }}</dd>
 
       <dt>습도</dt>
       <dd>{{ city.humidity }}% ({{ humidityText(city.humidity) }})</dd>

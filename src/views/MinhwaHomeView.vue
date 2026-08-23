@@ -431,8 +431,8 @@ function askHere() {
         const cur = d.current
         const c = { temp: Math.round(cur.temperature_2m), humidity: cur.relative_humidity_2m, wind: cur.wind_speed_10m, status: codeToStatus(cur.weather_code) }
         hereSky.value = `지금 계신 곳 — ${c.status} ${c.temp}° · 습도 ${c.humidity}% · 빨래 ${laundryScore(c)}점`
-      } catch {
-        hereSky.value = '지금 계신 곳의 하늘을 받지 못했습니다'
+      } catch (e) {
+        hereSky.value = e.userMessage ?? '지금 계신 곳의 하늘을 받지 못했습니다'
       } finally {
         hereBusy.value = false
       }

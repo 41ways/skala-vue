@@ -92,6 +92,17 @@ export const devLog = [
   },
   {
     date: '2026-08-23',
+    title: '다른 교육생 저장소 4곳을 읽고 가져온 것',
+    summary: '같은 과제를 푼 동료들의 코드를 보고, 우리 것에 없던 두 가지를 들여왔다.',
+    tags: ['review', 'composable', 'axios'],
+    detail: [
+      '단위 변환 중복: 카드와 상세 화면이 각각 store.toTemp()를 불렀다. 교재 Pinia 단원의 "중복은 Composable로" 메모 그대로 useDisplayTemp()로 묶었다 — 숫자·ref·getter 무엇을 넘겨도 toValue()로 받는다.',
+      'Axios 인스턴스: 주소를 호출할 때마다 문자열로 적고 있었다. api/openMeteo.js 에 baseURL·타임아웃·응답 인터셉터(429/타임아웃/네트워크 → 한국어 문구)를 모았다.',
+      '남긴 것: 서버리스 프록시로 키를 숨기는 방식(동료 2명)은 우리는 키 없는 API라 불필요. 운세·공유카드 같은 확장은 화폭 컨셉에 안 맞아 보류.',
+    ],
+  },
+  {
+    date: '2026-08-23',
     title: 'staging / production 환경별 빌드',
     summary: '.env.staging / .env.production 에 VITE_API_URL을 나눠 넣고 build:staging 으로 분리 빌드.',
     tags: ['env', 'build'],

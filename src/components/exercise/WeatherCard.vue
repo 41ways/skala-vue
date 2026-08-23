@@ -1,8 +1,7 @@
 <script setup>
-import { storeToRefs } from 'pinia'
-import { useConfigStore } from '@/stores/configStore.js'
+import { useDisplayTemp } from '@/composables/useDisplayTemp.js'
 
-defineProps({
+const props = defineProps({
   city: {
     type: Object,
     required: true,
@@ -23,8 +22,7 @@ defineProps({
 
 const emit = defineEmits(['select-card', 'click-detail'])
 
-const configStore = useConfigStore()
-const { unitSymbol } = storeToRefs(configStore)
+const { text: tempText } = useDisplayTemp(() => props.city.temp)
 
 // 등급 → Element Plus 태그/막대 색
 const TYPES = { best: 'primary', good: 'success', fair: 'warning', none: 'info' }
@@ -39,7 +37,7 @@ const TYPES = { best: 'primary', good: 'success', fair: 'warning', none: 'info' 
     <div class="left">
       <p class="name">{{ city.name }}</p>
       <p class="cond">
-        {{ city.status }} · {{ configStore.toTemp(city.temp) }}{{ unitSymbol }}
+        {{ city.status }} · {{ tempText }}
       </p>
       <p class="cond">습도 {{ city.humidity }}% · 바람 {{ city.wind }}m/s</p>
       <el-tag :type="TYPES[grade.key]" size="small" effect="light" round>{{ grade.label }}</el-tag>

@@ -1,7 +1,7 @@
 // 날씨 컴포저블. Open-Meteo 조회, 실패하면 weatherData.js 표본으로 폴백
 // TODO: 예보(daily)도 여기서 같이 받으면 두루마리에서 따로 안 불러도 됨
 import { ref } from 'vue'
-import axios from 'axios'
+import { openMeteo } from '@/api/openMeteo.js'
 import { weatherList, worldList } from '@/data/weatherData.js'
 
 // 실습 데이터의 6개 도시에 좌표만 부여 (기존 파일은 건드리지 않음)
@@ -41,7 +41,7 @@ export async function cachedGet(params) {
   } catch {
     /* 저장소 못 읽으면 그냥 요청 */
   }
-  const { data } = await axios.get('https://api.open-meteo.com/v1/forecast', { params })
+  const { data } = await openMeteo.get('/forecast', { params })
   try {
     sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), data }))
   } catch {
