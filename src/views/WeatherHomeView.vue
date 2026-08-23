@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, watchEffect } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, useRouter, useRoute } from 'vue-router'
 import BaseDashboardCard from '@/components/exercise/BaseDashboardCard.vue'
 import SearchBar from '@/components/exercise/SearchBar.vue'
 import WeatherCard from '@/components/exercise/WeatherCard.vue'
@@ -10,7 +10,9 @@ import { weatherList, laundryScore, laundryGrade } from '@/data/weatherData.js'
 
 const router = useRouter()
 
-const searchQuery = ref('')
+const route = useRoute()
+// 검색어는 주소 ?q= 에도 적어 둔다 - 새로고침·공유해도 같은 결과
+const searchQuery = ref(typeof route.query.q === 'string' ? route.query.q : '')
 const selectedCityInfo = ref(null)
 const sortOrder = ref('')
 const onlyDryable = ref(false)
@@ -68,6 +70,7 @@ watchEffect(() => {
 
 const updateQuery = (value) => {
   searchQuery.value = value
+  router.replace({ query: value ? { ...route.query, q: value } : { ...route.query, q: undefined } })
 }
 
 const changeSort = (order) => {

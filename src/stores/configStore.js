@@ -1,8 +1,12 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { defineStore } from 'pinia'
 
+const KEY = 'cheongwoo:unit'
+
 export const useConfigStore = defineStore('config', () => {
-  const unit = ref('celsius')
+  // 마지막에 고른 단위를 기억한다 (새로고침해도 유지)
+  const unit = ref(localStorage.getItem(KEY) === 'fahrenheit' ? 'fahrenheit' : 'celsius')
+  watch(unit, (u) => localStorage.setItem(KEY, u))
   const sortOrder = ref('')
 
   const unitSymbol = computed(() => (unit.value === 'celsius' ? '℃' : '℉'))

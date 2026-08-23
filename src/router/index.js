@@ -27,11 +27,13 @@ const router = createRouter({
       path: '/classic',
       name: 'classic-home',
       component: () => import('../views/WeatherHomeView.vue'),
+      meta: { showsTemp: true }, // 기온이 보이는 화면 = 내비에 단위 토글
     },
     {
       path: '/weather/:cityId',
       name: 'weather-detail',
       component: () => import('../views/WeatherDetailView.vue'),
+      meta: { showsTemp: true },
     },
     {
       path: '/about',

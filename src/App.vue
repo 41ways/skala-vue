@@ -88,8 +88,8 @@ onBeforeUnmount(() => {
       <RouterLink to="/classic">실습 대시보드</RouterLink>
       <RouterLink to="/about">소개</RouterLink>
     </nav>
-    <!-- 단위 토글은 실습 화면(대시보드/상세)에서만 -->
-    <UnitToggler v-if="route.path === '/classic' || route.path.startsWith('/weather/')" class="unit" />
+    <!-- 단위 토글은 라우트 meta.showsTemp 가 있는 화면에서만 (경로를 App이 알 필요 없음) -->
+    <UnitToggler v-if="route.meta.showsTemp" class="unit" />
   </header>
   <div class="saekdong"></div>
   <div id="main"></div>
