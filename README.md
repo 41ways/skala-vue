@@ -61,77 +61,75 @@
 - 추가: 단위를 localStorage에 저장 (p.207) → 새로고침 후에도 내비 토글 상태 유지
 
 6. Axios (api/openMeteo.js, composables/useWeather.js)
-- OpenWeatherMap 대신 키 없는 Open-Meteo 사용. 정적 배포에서 키가 번들에 남는 문제 회피 (p.274 API 키 주의) → 국내 화폭(/), 세계화폭(/world), 두루마리, '지금 계신 곳의 하늘 보기'
-- axios.create로 baseURL·timeout, 인터셉터로 오류를 한글 문구로 (p.222, p.226) → 국내 화폭 '지금 계신 곳의 하늘 보기' 실패 시 문구
-- 도시 21곳 좌표 묶음 요청 국내 1회·해외 1회 → 국내 화폭·세계화폭, 예보는 두루마리 열 때 1회 → 두루마리 내일·모레·글피, sessionStorage 10분 캐시
-- 실패 시 표본 데이터 폴백, 화면에 "표본" 표시 → 국내 화폭 첫 화면 한 줄, 두루마리 날짜 옆, 세계화폭 독법
+- 실습 12에서는 OpenWeatherMap을 썼는데 키가 필요함. GitHub Pages는 키를 숨길 데가 없어서 과제에서는 키 없는 Open-Meteo로 바꿈 (p.274)
+- 주소랑 타임아웃은 axios.create로 한 곳에 둠. 실패하면 인터셉터가 한글 문구로 바꿔 줌 (p.222, p.226) → 국내 화폭 '지금 계신 곳의 하늘 보기'에서 실패 시 보임
+- 처음엔 도시마다 따로 불러서 429가 남. 좌표를 묶어서 국내 1번, 해외 1번만 부르고 10분 캐시 → 막혔던 것 참고
+- 그래도 실패하면 표본 데이터로 돌아가고 화면에 "표본"이라고 표시 → 국내 화폭 첫 줄, 두루마리, 세계화폭
 
 7. UI Library (Element Plus) (p.233~249)
-- el-input 검색창, el-tag 등급, el-progress 점수 막대, el-button 상세보기, el-tabs 하단 탭
-- :deep()으로 한지 톤에 맞게 색만 변경
+- 실습 13에서 써 본 것 중 검색창(el-input), 등급 태그(el-tag), 점수 막대(el-progress), 버튼(el-button), 탭(el-tabs)을 대시보드에 씀
+- 기본 색이 한지 배경과 안 맞아서 :deep()으로 색만 바꿈
 
 8. 빌드·배포
-- ESLint eqeqeq 'always', no-console 'off', lint 에러 0 (p.270)
-- .env.staging / .env.production VITE_API_URL, build:staging, 대시보드 콘솔 출력으로 확인 (p.272)
-- npm run build → dist, GitHub Actions → GitHub Pages (p.273, p.274) → 배포 주소
-- 하위 경로 /skala-vue/ 때문에 index.html 링크는 %BASE_URL%, 딥링크는 404.html = index.html 복사 → 배포 주소에서 /world 직접 접속, 파비콘
+- ESLint에 eqeqeq, no-console off 넣고 lint 에러 0 (p.270)
+- .env.staging / .env.production 만들고 build:staging으로 빌드하면 대시보드 콘솔에 어느 env가 로드됐는지 찍힘 (p.272)
+- main에 push하면 GitHub Actions가 빌드해서 Pages에 올림 (p.273, p.274)
+- 주소가 /skala-vue/ 밑이라 파비콘이 안 떠서 %BASE_URL%로 고침. /world를 바로 열면 404가 나서 404.html을 index.html 복사본으로 둠 → 막혔던 것 참고
 
 
-## 실습에서 배운 것
-
-교재 단원 순서. 수업에서 한 것과 이 프로젝트에서 실제로 쓴 자리.
+## 실습에서 배운 것과 프로젝트 적용 내용
 
 Modern JavaScript
-- 구조분해·spread - API 응답 const { data } = …, 도시 객체 복사 { ...c, temp, live: true } (useWeather.js)
-- 옵셔널 체이닝 ?. / 널 병합 ?? - props.city?.temp ?? 0 (ScrollSheet.vue 등)
-- map / filter / find / toSorted - 도시 검색·정렬 (WeatherHomeView.vue)
-- 템플릿 리터럴 - 인라인 스타일 translateY(${…}px) (ArtStage.vue)
+- 구조분해, spread: API 응답 받을 때 const { data }, 도시에 날씨 덮어쓸 때 { ...c, temp }
+- ?. 와 ??: 아직 값이 없을 수도 있는 곳에 props.city?.temp ?? 0
+- map, filter, find, toSorted: 도시 검색하고 점수순으로 정렬
+- 템플릿 리터럴: 스타일 문자열 만들 때
 
-Vue가 뭔지 (MVVM, SPA, 컴포넌트)
-- 데이터가 바뀌면 화면이 따라옴. DOM을 직접 만지는 코드 없음
-- index.html 하나 + Router로 화면 전환. 서버는 날씨 데이터만 줌
-- 그림 무대(ArtStage), 누끼 인물(MinhwaCut), 두루마리(ScrollSheet)를 부품으로 조립
+Vue가 뭔지
+- 데이터만 바꾸면 화면이 따라옴. DOM을 직접 고치는 코드는 하나도 없음
+- index.html 하나에 Router로 화면만 바꿈. 서버는 날씨 숫자만 줌
+- 그림 무대, 누끼 인물, 두루마리를 각각 컴포넌트로 만들어서 조립
 
-프로젝트 구조 · SFC
-- index.html - main.js - App.vue 흐름 그대로. main.js에서 Pinia·Router·Element Plus 등록
-- 모든 .vue가 <script setup> / <template> / <style scoped>. Options API는 안 씀
-- 파일명은 파스칼 케이스
+프로젝트 구조, SFC
+- index.html에서 main.js, App.vue로 이어지는 흐름 그대로. main.js에 Pinia, Router, Element Plus 등록
+- 모든 .vue 파일은 script setup, template, style scoped 세 칸. Options API는 안 씀
+- 파일 이름은 파스칼 케이스
 
 반응성
-- ref - 스크롤 진행도, 두루마리에 띄울 도시, 한자/숫자 모드
-- computed - 검색 결과, 평균 점수, 한자 숫자 텍스트
-- watch - 도시가 바뀌면 예보 다시 호출, 라우트 바뀌면 맨 위로 / watchEffect - 검색어 추적
-- onMounted에서 API 호출·리스너 등록, onBeforeUnmount에서 해제
-- 컴포저블: useWeather(조회), useDisplayTemp(단위 변환, toValue로 값·ref·getter 다 받음)
+- ref: 스크롤 진행도, 두루마리에 띄울 도시, 한자/숫자 모드
+- computed: 검색 결과, 평균 점수, 한자로 바꾼 숫자
+- watch: 도시가 바뀌면 예보 다시 부르기. watchEffect: 검색어 따라가기
+- onMounted에서 API 부르고 스크롤 리스너 달기, onBeforeUnmount에서 떼기
+- 컴포저블: useWeather(날씨 조회), useDisplayTemp(단위 바꾸기)
 
 디렉티브
-- v-bind 클래스 - 일월오봉도처럼 어두운 폭은 챕터 데이터에 tone: 'light'를 하드코딩해 두고, :class="{ light }"로 글자를 흰색으로 바꿈. 배경색을 읽어서 판단하는 건 아님
-- v-bind 스타일 - 스크롤 진행도로 opacity·transform 실시간 계산 (교재의 "수치를 실시간으로 미세 조정할 때" 그 경우)
-- v-if / v-show - 드물게 바뀌는 빗방울은 v-if, 자주 토글되는 차례는 v-show
-- v-for + :key - 도시, 챕터, 누끼 부위, 빗방울까지 전부
-- v-on - @click으로 두루마리 열고 닫기, @click.stop으로 버블링 차단
+- :class: 일월오봉도처럼 어두운 폭은 데이터에 tone: 'light'라고 적어 두고 글자를 흰색으로. 배경색을 읽는 건 아님
+- :style: 스크롤 진행도 숫자로 투명도와 위치를 계속 바꿈
+- v-if는 비 안 오는 화폭엔 아예 없는 빗방울에, v-show는 스크롤마다 보였다 안 보였다 하는 차례에
+- v-for에는 전부 :key
+- @click으로 두루마리 열고 닫기, @click.stop으로 카드 클릭 같이 터지는 거 막기
 
 컴포넌트 통신
-- props / emits - SearchBar(update-query), WeatherCard(select-card, click-detail), ScrollSheet(close)
-- slot - BaseDashboardCard
-- <Transition> - 두루마리, 맨 위로 버튼, 개발 일지 펼침
-- defineAsyncComponent - 두루마리는 처음 누를 때 불러옴
+- props로 내려주고 emit으로 올려받기: 검색창, 날씨 카드, 두루마리 닫기
+- slot: 대시보드 카드 틀
+- Transition: 두루마리 열릴 때, 맨 위로 버튼, 개발 일지 펼칠 때
+- defineAsyncComponent: 두루마리는 누를 때 처음 불러옴
 
 Router
-- 지연 로딩, catch-all, 동적 경로, router.push / router.replace, scrollBehavior
-- route.meta - 기온 나오는 화면에서만 단위 토글
+- 지연 로딩, 없는 주소는 404, /weather/:cityId, router.push와 replace, 화면 바뀌면 맨 위로
+- route.meta로 기온 나오는 화면에서만 단위 토글
 
 Pinia
-- state / getter / action, storeToRefs, localStorage에 단위 저장
+- 단위 하나를 state로, 기호는 getter, 바꾸는 건 action. storeToRefs로 꺼내 씀. localStorage에 저장
 
 Axios
-- axios.create + 인터셉터, 요청 묶기, 캐시, 실패 시 표본 폴백
+- axios.create로 주소 한 곳에, 인터셉터로 오류 문구, 요청 묶어서 줄이기, 10분 캐시, 안 되면 표본으로
 
 UI Library
-- Element Plus: el-input, el-tag, el-progress, el-button, el-tabs
+- Element Plus의 input, tag, progress, button, tabs
 
-빌드·배포
-- ESLint 커스텀 규칙, Prettier, .env 모드 분리, build:staging, GitHub Actions - Pages
+빌드, 배포
+- ESLint 규칙 추가, Prettier, .env 두 개로 나누기, build:staging, GitHub Actions로 Pages에 올리기
 
 
 ## 날씨와 그림
