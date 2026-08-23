@@ -46,7 +46,7 @@ watch(
     if (lenis) lenis.scrollTo(0, { immediate: true })
     window.scrollTo(0, 0)
     showTop.value = false
-    const t = TITLES[path] ?? (path.startsWith('/weather/') ? '고을 상세' : '')
+    const t = TITLES[path] ?? (path.startsWith('/weather/') ? '고을 상세' : route.name === 'not-found' ? '길 없음' : '')
     document.title = t ? `${t} · 청우록` : '청우록 — 민화로 보는 오늘의 하늘'
   },
   { immediate: true },
