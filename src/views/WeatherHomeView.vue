@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, watchEffect } from 'vue'
-import { useRouter } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import BaseDashboardCard from '@/components/exercise/BaseDashboardCard.vue'
 import SearchBar from '@/components/exercise/SearchBar.vue'
 import WeatherCard from '@/components/exercise/WeatherCard.vue'
@@ -87,6 +87,11 @@ const goDetail = (city) => {
     <header class="head">
       <h3>오늘 빨래 널기 좋은 곳</h3>
       <p>기온, 습도, 바람, 하늘 상태를 합쳐 100점으로 계산합니다.</p>
+      <p class="src">
+        수업 실습 화면이라 표본 자료로 동작합니다. 오늘의 실측 하늘은
+        <RouterLink to="/">국내 화폭</RouterLink>, 계산 규칙은
+        <RouterLink to="/guide">빨래 지침</RouterLink>에 있습니다.
+      </p>
     </header>
 
     <BaseDashboardCard title="도시 검색">
@@ -131,6 +136,14 @@ const goDetail = (city) => {
 
 .head {
   margin-bottom: 16px;
+}
+.src {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+.src a {
+  color: var(--jeok);
 }
 
 .head h3 {

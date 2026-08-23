@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useConfigStore } from '@/stores/configStore.js'
 import {
@@ -31,7 +31,7 @@ onMounted(() => {
 })
 
 const goBack = () => {
-  router.push('/')
+  router.push('/classic')
 }
 </script>
 
@@ -62,6 +62,10 @@ const goBack = () => {
       <dt>도시 코드</dt>
       <dd>{{ city.id }}</dd>
     </dl>
+
+    <p class="src">
+      실습용 표본 자료입니다. 오늘의 실측 하늘은 <RouterLink to="/">국내 화폭</RouterLink>에서 볼 수 있습니다.
+    </p>
   </div>
 
   <div v-else class="detail">
@@ -183,6 +187,14 @@ header p {
   margin: 0;
 }
 
+.src {
+  margin: 14px 0 0;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+.src a {
+  color: var(--jeok);
+}
 .none {
   padding: 40px 0;
   text-align: center;
