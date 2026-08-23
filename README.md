@@ -1,6 +1,6 @@
 # 청우록 晴雨錄
 
-민화로 보는 오늘 날씨.
+그림으로 보는 오늘 날씨.
 
 배포 https://41ways.github.io/skala-vue/
 저장소 https://github.com/41ways/skala-vue
